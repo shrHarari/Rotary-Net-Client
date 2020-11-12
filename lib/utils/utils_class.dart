@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
@@ -229,9 +230,9 @@ class Utils {
   //#region Upload Image To Server
   static Future<String> uploadImageToServer(String aFileName) async {
     try {
-      String _imagePostUrl = Constants.rotaryUtilContentUrl + "/uploadPersonCardImage";
+      String _getUrlUploadImage = GlobalsService.applicationServer + Constants.rotaryUtilContentUrl + "/uploadPersonCardImage";
+      var request = http.MultipartRequest('POST', Uri.parse(_getUrlUploadImage));
 
-      var request = http.MultipartRequest('POST', Uri.parse(_imagePostUrl));
       // Map<String, String> bodyFields = {'image': 'TEST.jpg'};
       // request.fields.addAll(bodyFields);
       // request.fields['image'] = 'TEST.jpg';
@@ -263,10 +264,8 @@ class Utils {
   //#region Delete Image To Server
   static Future<String> deleteImageFromServer(String aFileName) async {
     try {
-      print('>>>>>>>> deleteImageFromServer / aFileName: $aFileName');
-      String _deleteUrl = Constants.rotaryUtilContentUrl + "/deletePersonCardImage/$aFileName";
-
-      http.Response response = await http.delete(_deleteUrl);
+      String _deleteUrlImage = GlobalsService.applicationServer + Constants.rotaryUtilContentUrl + "/deletePersonCardImage/$aFileName";
+      http.Response response = await http.delete(_deleteUrlImage);
 
       if (response.statusCode <= 300) {
         print('Utils / Upload Image To Server / Return Value: ${response.reasonPhrase}');

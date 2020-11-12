@@ -9,6 +9,7 @@ import 'package:rotary_net/screens/message_detail_pages/message_detail_edit_page
 import 'package:rotary_net/screens/message_detail_pages/message_detail_page_widgets.dart';
 import 'package:rotary_net/screens/personal_area_pages/personal_area_page_screen.dart';
 import 'package:rotary_net/screens/rotary_users_pages/rotary_users_list_page_screen.dart';
+import 'package:rotary_net/screens/settings/user_settings_screen.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 
@@ -137,7 +138,17 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
                 ListTile(
                   leading: Icon(Icons.settings),
                   title: Text('הגדרות'),
-                  onTap: () => {Navigator.of(context).pop()},
+                  onTap: () => {
+                    Navigator.of(context).pop(),
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          UserSettingsScreen(),
+                      ),
+                    )
+                  },
                 ),
                 Divider(),
 

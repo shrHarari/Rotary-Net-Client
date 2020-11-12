@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:rotary_net/objects/rotary_cluster_object.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'dart:developer' as developer;
@@ -24,12 +25,12 @@ class RotaryClusterService {
   // =========================================================
   Future getAllRotaryClusterList({bool withPopulate = false}) async {
     try {
-      String _getUrl;
+      String _getUrlCluster;
 
-      if (withPopulate) _getUrl = Constants.rotaryClusterUrl + "/withClubs";
-      else _getUrl = Constants.rotaryClusterUrl;
+      if (withPopulate) _getUrlCluster = GlobalsService.applicationServer + Constants.rotaryClusterUrl + "/withClubs";
+      else _getUrlCluster = GlobalsService.applicationServer + Constants.rotaryClusterUrl;
 
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlCluster);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -63,12 +64,12 @@ class RotaryClusterService {
   // =========================================================
   Future getRotaryClusterByClusterId(String aClusterId, {bool withPopulate = false}) async {
     try {
-      String _getUrl;
+      String _getUrlCluster;
 
-      if (withPopulate) _getUrl = Constants.rotaryClusterUrl + "/withClubs/$aClusterId";
-      else _getUrl = Constants.rotaryClusterUrl + "/$aClusterId";
+      if (withPopulate) _getUrlCluster = GlobalsService.applicationServer + Constants.rotaryClusterUrl + "/withClubs/$aClusterId";
+      else _getUrlCluster = GlobalsService.applicationServer + Constants.rotaryClusterUrl + "/$aClusterId";
 
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlCluster);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -100,11 +101,9 @@ class RotaryClusterService {
   // =========================================================
   Future getRotaryClusterByClusterName(String aClusterName) async {
     try {
-      String _getUrl;
+      String _getUrlCluster = GlobalsService.applicationServer + Constants.rotaryClusterUrl + "/clusterName/$aClusterName";
 
-      _getUrl = Constants.rotaryClusterUrl + "/clusterName/$aClusterName";
-
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlCluster);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -140,7 +139,8 @@ class RotaryClusterService {
     try{
       String jsonToPost = aRotaryClusterObj.rotaryClusterObjectToJson(aRotaryClusterObj);
 
-      Response response = await post(Constants.rotaryClusterUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      String _insertUrlCluster = GlobalsService.applicationServer + Constants.rotaryClusterUrl;
+      Response response = await post(_insertUrlCluster, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -177,11 +177,10 @@ class RotaryClusterService {
   //=============================================================================
   Future insertRotaryClusterWithArea(String aAreaId, RotaryClusterObject aRotaryClusterObj) async {
     try{
-      String _getUrl = Constants.rotaryClusterUrl + "/areaId/$aAreaId";
-
       String jsonToPost = aRotaryClusterObj.rotaryClusterObjectToJson(aRotaryClusterObj);
 
-      Response response = await post(_getUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      String _insertUrlCluster = GlobalsService.applicationServer + Constants.rotaryClusterUrl + "/areaId/$aAreaId";
+      Response response = await post(_insertUrlCluster, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -221,9 +220,9 @@ class RotaryClusterService {
     try {
       String jsonToPost = aRotaryClusterObj.rotaryClusterObjectToJson(aRotaryClusterObj);
 
-      String _updateUrl = Constants.rotaryClusterUrl + "/${aRotaryClusterObj.clusterId}";
+      String _updateUrlCluster = GlobalsService.applicationServer + Constants.rotaryClusterUrl + "/${aRotaryClusterObj.clusterId}";
 
-      Response response = await put(_updateUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      Response response = await put(_updateUrlCluster, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -256,9 +255,9 @@ class RotaryClusterService {
   //=============================================================================
   Future deleteRotaryClusterByClusterId(RotaryClusterObject aRotaryClusterObj) async {
     try {
-      String _deleteUrl = Constants.rotaryClusterUrl + "/${aRotaryClusterObj.clusterId}";
+      String _deleteUrlCluster = GlobalsService.applicationServer + Constants.rotaryClusterUrl + "/${aRotaryClusterObj.clusterId}";
 
-      Response response = await delete(_deleteUrl, headers: Constants.rotaryUrlHeader);
+      Response response = await delete(_deleteUrlCluster, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];

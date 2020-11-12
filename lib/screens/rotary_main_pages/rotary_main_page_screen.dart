@@ -5,13 +5,13 @@ import 'package:rotary_net/BLoCs/messages_list_bloc.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/objects/message_populated_object.dart';
-import 'package:rotary_net/screens/debug_setting_screen.dart';
 import 'package:rotary_net/screens/event_search_result_pages/event_search_result_page_screen.dart';
 import 'package:rotary_net/screens/message_detail_pages/rotary_main_page_message_list_tile.dart';
 import 'package:rotary_net/screens/person_card_search_result_pages/person_card_search_result_page_screen.dart';
 import 'package:rotary_net/screens/rotary_main_pages/rotary_main_page_action_image_icons.dart';
 import 'package:rotary_net/screens/rotary_main_pages/rotary_main_page_header_search_box.dart';
 import 'package:rotary_net/screens/rotary_main_pages/rotary_main_page_header_title.dart';
+import 'package:rotary_net/screens/settings/application_setting_screen.dart';
 import 'package:rotary_net/shared/constants.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
@@ -102,12 +102,11 @@ class _RotaryMainPageScreenState extends State<RotaryMainPageScreen> {
   //#endregion
 
   //#region Open Debug Settings
-  Future<void> openDebugSettings() async {
-    // Navigate to DebugSettings Screen
+  Future<void> openApplicationSettings() async {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DebugSettingsScreen(),
+        builder: (context) => ApplicationSettingsScreen(),
       ),
     );
   }
@@ -343,7 +342,7 @@ class _RotaryMainPageScreenState extends State<RotaryMainPageScreen> {
             child: IconButton(
               icon: Icon(Icons.build, color: Colors.white),
               onPressed: () async {
-                await openDebugSettings();
+                await openApplicationSettings();
                 },
             ),
           ),

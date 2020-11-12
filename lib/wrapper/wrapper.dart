@@ -55,7 +55,7 @@ class _WrapperState extends State<Wrapper> {
     var userGlobal = ConnectedUserGlobal();
 
     ConnectedUserObject _currentConnectedUserObj = userGlobal.getConnectedUserObject();
-    print('Wrapper / _currentConnectedUserObj: $_currentConnectedUserObj');
+    print('Wrapper / CurrentConnectedUserObj: $_currentConnectedUserObj');
     return _currentConnectedUserObj;
   }
   //#endregion

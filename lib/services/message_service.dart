@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:rotary_net/objects/message_object.dart';
 import 'package:rotary_net/objects/message_populated_object.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
@@ -114,9 +115,8 @@ class MessageService {
   // =========================================================
   Future getMessagesList() async {
     try {
-      String _getUrl = Constants.rotaryMessageUrl;
-
-      Response response = await get(_getUrl);
+      String _getUrlMessage = GlobalsService.applicationServer + Constants.rotaryMessageUrl;
+      Response response = await get(_getUrlMessage);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -150,9 +150,8 @@ class MessageService {
   // =========================================================
   Future getMessagesListByComposerId(String aComposerId) async {
     try {
-      String _getUrl = Constants.rotaryMessageUrl + "/composerId/$aComposerId";
-
-      Response response = await get(_getUrl);
+      String _getUrlMessage = GlobalsService.applicationServer + Constants.rotaryMessageUrl + "/composerId/$aComposerId";
+      Response response = await get(_getUrlMessage);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -218,10 +217,11 @@ class MessageService {
   //=============================================================================
   Future insertMessage(MessageObject aMessageObj) async {
     try {
-      String _getUrl = Constants.rotaryMessageUrl;
       String jsonToPost = aMessageObj.messageObjectToJson(aMessageObj);
 
-      Response response = await post(_getUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      String _insertUrlMessage = GlobalsService.applicationServer + Constants.rotaryMessageUrl;
+      Response response = await post(_insertUrlMessage, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -256,9 +256,9 @@ class MessageService {
     try {
       String jsonToPost = aMessageObj.messageObjectToJson(aMessageObj);
 
-      String _updateUrl = Constants.rotaryMessageUrl + "/${aMessageObj.messageId}";
+      String _updateUrlMessage = GlobalsService.applicationServer + Constants.rotaryMessageUrl + "/${aMessageObj.messageId}";
+      Response response = await put(_updateUrlMessage, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
-      Response response = await put(_updateUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -288,9 +288,9 @@ class MessageService {
   //=============================================================================
   Future deleteMessageById(MessageObject aMessageObj) async {
     try {
-      String _deleteUrl = Constants.rotaryMessageUrl + "/${aMessageObj.messageId}";
+      String _deleteUrlMessage = GlobalsService.applicationServer + Constants.rotaryMessageUrl + "/${aMessageObj.messageId}";
+      Response response = await delete(_deleteUrlMessage, headers: Constants.rotaryUrlHeader);
 
-      Response response = await delete(_deleteUrl, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -327,9 +327,9 @@ class MessageService {
   //=============================================================================
   Future removeMessageFromPersonCardMessageQueue(MessageObject aMessageObj, String aPersonCardId) async {
     try {
-      String _deleteUrl = Constants.rotaryMessageUrl + "/removeMessageQueue/${aMessageObj.messageId}/personCard/$aPersonCardId";
+      String _deleteUrlMessage = GlobalsService.applicationServer + Constants.rotaryMessageUrl + "/removeMessageQueue/${aMessageObj.messageId}/personCard/$aPersonCardId";
+      Response response = await put(_deleteUrlMessage, headers: Constants.rotaryUrlHeader);
 
-      Response response = await put(_deleteUrl, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -366,10 +366,9 @@ class MessageService {
   //=============================================================================
   Future addMessageBackToPersonCardMessageQueue(MessageObject aMessageObj, String aPersonCardId) async {
     try {
-      String _addMessageUrl = Constants.rotaryMessageUrl + "/addMessageQueue/${aMessageObj.messageId}/personCard/$aPersonCardId";
-      print ("_addUrl: $_addMessageUrl");
+      String _addUrlMessage = GlobalsService.applicationServer + Constants.rotaryMessageUrl + "/addMessageQueue/${aMessageObj.messageId}/personCard/$aPersonCardId";
+      Response response = await put(_addUrlMessage, headers: Constants.rotaryUrlHeader);
 
-      Response response = await put(_addMessageUrl, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];

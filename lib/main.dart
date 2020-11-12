@@ -22,13 +22,13 @@ class RotaryNetApp extends StatelessWidget {
   Future<DataRequiredForBuild> getAllRequiredDataForBuild() async {
 
     /// Call Global first ===>>> Initiate Logger
-    bool _debugMode = await initializeGlobalValues();
+    bool _applicationMode = await initializeGlobalValues();
     await ConnectionService.checkConnection();
 
     ConnectedUserObject _connectedUserObj = await initializeConnectedUserObject();
 
     return DataRequiredForBuild(
-      debugMode: _debugMode,
+      applicationMode: _applicationMode,
       connectedUserObj: _connectedUserObj,
     );
   }
@@ -39,10 +39,10 @@ class RotaryNetApp extends StatelessWidget {
     await LoggerService.initializeLogging();
     await LoggerService.log('<${this.runtimeType}> Logger was initiated');
 
-    bool _debugMode = await GlobalsService.getDebugMode();
-    await GlobalsService.setDebugMode(_debugMode);
+    bool _applicationMode = await GlobalsService.getApplicationMode();
+    await GlobalsService.setApplicationMode(_applicationMode);
 
-    return _debugMode;
+    return _applicationMode;
   }
   //#endregion
 
@@ -125,10 +125,10 @@ class RotaryNetApp extends StatelessWidget {
 
 class DataRequiredForBuild {
   ConnectedUserObject connectedUserObj;
-  bool debugMode;
+  bool applicationMode;
 
   DataRequiredForBuild({
     this.connectedUserObj,
-    this.debugMode,
+    this.applicationMode,
   });
 }

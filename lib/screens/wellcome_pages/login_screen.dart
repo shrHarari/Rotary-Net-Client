@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
-import 'package:rotary_net/screens/debug_setting_screen.dart';
 import 'package:rotary_net/screens/rotary_main_pages/rotary_main_page_screen.dart';
+import 'package:rotary_net/screens/settings/application_setting_screen.dart';
 import 'package:rotary_net/screens/wellcome_pages/register_screen.dart';
 import 'package:rotary_net/screens/wellcome_pages/wellcome_decoration_style.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
@@ -127,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DebugSettingsScreen(),
+        builder: (context) => ApplicationSettingsScreen(),
       ),
     );
   }

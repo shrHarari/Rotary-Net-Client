@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'dart:developer' as developer;
@@ -17,7 +18,8 @@ class LoginService {
       final jsonToPost = aConnectedUserObj.connectedUserToJson(aConnectedUserObj);
 
       // Check If User Login Parameters are OK !!!
-      Response response = await post(Constants.rotaryUserLoginUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      String _getUrlConnectedUser = GlobalsService.applicationServer + Constants.rotaryUserLoginUrl;
+      Response response = await post(_getUrlConnectedUser, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;

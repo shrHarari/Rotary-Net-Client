@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:rotary_net/objects/rotary_area_object.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'dart:developer' as developer;
@@ -32,12 +33,12 @@ class RotaryAreaService {
   // =========================================================
   Future getAllRotaryAreaList({bool withPopulate = false}) async {
     try {
-      String _getUrl;
+      String _getUrlArea;
 
-      if (withPopulate) _getUrl = Constants.rotaryAreaUrl + "/withClusters";
-      else _getUrl = Constants.rotaryAreaUrl;
+      if (withPopulate) _getUrlArea = GlobalsService.applicationServer + Constants.rotaryAreaUrl + "/withClusters";
+      else _getUrlArea = GlobalsService.applicationServer + Constants.rotaryAreaUrl;
 
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlArea);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -71,12 +72,12 @@ class RotaryAreaService {
   // =========================================================
   Future getRotaryAreaByAreaId(String aAreaId, {bool withPopulate = false}) async {
     try {
-      String _getUrl;
+      String _getUrlArea;
 
-      if (withPopulate) _getUrl = Constants.rotaryAreaUrl + "/withClusters/$aAreaId";
-      else _getUrl = Constants.rotaryAreaUrl + "/$aAreaId";
+      if (withPopulate) _getUrlArea = GlobalsService.applicationServer + Constants.rotaryAreaUrl + "/withClusters/$aAreaId";
+      else _getUrlArea = GlobalsService.applicationServer + Constants.rotaryAreaUrl + "/$aAreaId";
 
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlArea);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -108,11 +109,9 @@ class RotaryAreaService {
   // =========================================================
   Future getRotaryAreaByAreaName(String aAreaName) async {
     try {
-      String _getUrl;
+      String _getUrlArea = GlobalsService.applicationServer + Constants.rotaryAreaUrl + "/areaName/$aAreaName";
 
-      _getUrl = Constants.rotaryAreaUrl + "/areaName/$aAreaName";
-
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlArea);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -146,9 +145,11 @@ class RotaryAreaService {
   //=============================================================================
   Future insertRotaryArea(RotaryAreaObject aRotaryAreaObj) async {
     try {
+      String _getUrlArea = GlobalsService.applicationServer + Constants.rotaryAreaUrl;
+
       String jsonToPost = aRotaryAreaObj.rotaryAreaObjectToJson(aRotaryAreaObj);
 
-      Response response = await post(Constants.rotaryAreaUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      Response response = await post(_getUrlArea, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -187,9 +188,9 @@ class RotaryAreaService {
     try {
       String jsonToPost = aRotaryAreaObj.rotaryAreaObjectToJson(aRotaryAreaObj);
 
-      String _updateUrl = Constants.rotaryAreaUrl + "/${aRotaryAreaObj.areaId}";
+      String _updateUrlArea = GlobalsService.applicationServer + Constants.rotaryAreaUrl + "/${aRotaryAreaObj.areaId}";
 
-      Response response = await put(_updateUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      Response response = await put(_updateUrlArea, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -223,9 +224,9 @@ class RotaryAreaService {
   //=============================================================================
   Future deleteRotaryAreaByAreaId(RotaryAreaObject aRotaryAreaObj) async {
     try {
-      String _deleteUrl = Constants.rotaryAreaUrl + "/${aRotaryAreaObj.areaId}";
+      String _deleteUrlArea = GlobalsService.applicationServer + Constants.rotaryAreaUrl + "/${aRotaryAreaObj.areaId}";
 
-      Response response = await delete(_deleteUrl, headers: Constants.rotaryUrlHeader);
+      Response response = await delete(_deleteUrlArea, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];

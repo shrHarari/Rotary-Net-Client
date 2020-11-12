@@ -4,70 +4,77 @@ import 'package:rotary_net/services/logger_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GlobalsService {
-  static bool isDebugMode;
+  static bool applicationMode;    // SERVER Mode --->>> true // CLIENT Mode --->>> False
+  static String applicationServer;
 
-  //#region Debug Mode
+  //#region Application Mode
   //------------------------------------------------------------------------------
-  static Future setDebugMode(bool aDebugMode) async {
-    isDebugMode = aDebugMode;
+  static Future setApplicationMode(bool aApplicationMode) async {
+    applicationMode = aApplicationMode;
+
+    // SERVER Mode --->>> true // CLIENT Mode --->>> False
+    if (aApplicationMode) applicationServer = Constants.SERVER_HOST_URL;
+    else applicationServer = Constants.CLIENT_HOST_URL;
   }
 
-  //#region Get Debug Mode
+  //#region Get Application Mode
   // =============================================================================
-  static Future getDebugMode() async {
+  static Future getApplicationMode() async {
     try {
-      bool debugMode = await readDebugModeFromSP();
-      if (debugMode == null) {
-        debugMode = false;
+      bool applicationMode = await readApplicationModeFromSP();
+      if (applicationMode == null) {
+        applicationMode = false;
       }
-      return debugMode;
+      return applicationMode;
       }
       catch (e) {
-        await LoggerService.log('<GlobalsService> Get Debug Mode >>> ERROR: ${e.toString()}');
+        await LoggerService.log('<GlobalsService> Get Application Mode >>> ERROR: ${e.toString()}');
         developer.log(
-          'getDebugMode',
+          'getApplicationMode',
           name: 'GlobalsService',
-          error: 'Get Debug Mode >>> ERROR: ${e.toString()}',
+          error: 'Get Application Mode >>> ERROR: ${e.toString()}',
         );
         return null;
     }
   }
   //#endregion
 
-  //#region Read Debug Mode From Shared Preferences [ReadFromSP]
+  //#region Read Application Mode From Shared Preferences [ReadFromSP]
   // =============================================================================
-  static Future readDebugModeFromSP() async {
+  static Future readApplicationModeFromSP() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      bool debugMode = prefs.getBool(Constants.rotaryDebugMode);
-      return debugMode;
+      bool applicationMode = prefs.getBool(Constants.rotaryApplicationMode);
+
+      if (applicationMode == null) applicationMode = true;  // SERVER Mode [default]
+      return applicationMode;
     }
     catch (e){
-      await LoggerService.log('<GlobalsService> Read Debug Mode From SP >>> ERROR: ${e.toString()}');
+      await LoggerService.log('<GlobalsService> Read Application Mode From SP >>> ERROR: ${e.toString()}');
       developer.log(
-        'readDebugModeFromSP',
+        'readApplicationModeFromSP',
         name: 'GlobalsService',
-        error: 'Read Debug Mode From SP >>> ERROR: ${e.toString()}',
+        error: 'Read Application Mode From SP >>> ERROR: ${e.toString()}',
       );
       return null;
     }
   }
   //#endregion
 
-  //#region Write Debug Mode To Shared Preferences [WriteToSP]
+  //#region Write Application Mode To Shared Preferences [WriteToSP]
   //=============================================================================
-  static Future writeDebugModeToSP(bool aDebugMode) async {
+  static Future writeApplicationModeToSP(bool aApplicationMode) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(Constants.rotaryDebugMode, aDebugMode);
+      await prefs.setBool(Constants.rotaryApplicationMode, aApplicationMode);
       return 'Status OK';
     }
     catch (e){
-      await LoggerService.log('<GlobalsService> Write Debug Mode To SP >>> ERROR: ${e.toString()}');
+      await LoggerService.log('<GlobalsService> Write Application Mode To SP >>> ERROR: ${e.toString()}');
       developer.log(
-        'writeDebugModeToSP',
+        'writeApplicationModeToSP',
         name: 'GlobalsService',
-        error: 'Write Debug Mode To SP >>> ERROR: ${e.toString()}',
+        error: 'Write Application Mode To SP >>> ERROR: ${e.toString()}',
       );
       return null;
     }
@@ -81,7 +88,7 @@ class GlobalsService {
   static Future clearGlobalsDataFromSharedPreferences() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.remove(Constants.rotaryDebugMode);
+      await prefs.remove(Constants.rotaryApplicationMode);
     }
     catch (e){
       await LoggerService.log('<GlobalsService> Clear Globals Data From SharedPreferences >>> ERROR: ${e.toString()}');

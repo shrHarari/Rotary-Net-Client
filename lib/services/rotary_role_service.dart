@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:rotary_net/objects/rotary_role_object.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'dart:developer' as developer;
@@ -35,7 +36,8 @@ class RotaryRoleService {
   // =========================================================
   Future getAllRotaryRolesList() async {
     try {
-      Response response = await get(Constants.rotaryRoleUrl);
+      String _getUrlRole = GlobalsService.applicationServer + Constants.rotaryRoleUrl;
+      Response response = await get(_getUrlRole);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -69,9 +71,9 @@ class RotaryRoleService {
   // =========================================================
   Future getRotaryRoleByRoleId(String aRoleId) async {
     try {
-      String _getUrl = Constants.rotaryRoleUrl + "/$aRoleId";
+      String _getUrlRole = GlobalsService.applicationServer + Constants.rotaryRoleUrl + "/$aRoleId";
 
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlRole);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -104,9 +106,8 @@ class RotaryRoleService {
 
   Future getRotaryRoleByRoleEnum(int aRoleEnum) async {
     try {
-      String _getUrl = Constants.rotaryRoleUrl + "/roleEnum/$aRoleEnum";
-
-      Response response = await get(_getUrl);
+      String _getUrlRole = GlobalsService.applicationServer + Constants.rotaryRoleUrl + "/roleEnum/$aRoleEnum";
+      Response response = await get(_getUrlRole);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -140,9 +141,11 @@ class RotaryRoleService {
   //=============================================================================
   Future insertRotaryRole(RotaryRoleObject aRotaryRoleObj) async {
     try {
+      String _getUrlRole = GlobalsService.applicationServer + Constants.rotaryRoleUrl;
+
       String jsonToPost = aRotaryRoleObj.rotaryRoleObjectToJson(aRotaryRoleObj);
 
-      Response response = await post(Constants.rotaryRoleUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      Response response = await post(_getUrlRole, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -181,9 +184,9 @@ class RotaryRoleService {
     try {
       String jsonToPost = aRotaryRoleObj.rotaryRoleObjectToJson(aRotaryRoleObj);
 
-      String _updateUrl = Constants.rotaryRoleUrl + "/${aRotaryRoleObj.roleId}";
+      String _updateUrlRole = GlobalsService.applicationServer + Constants.rotaryRoleUrl + "/${aRotaryRoleObj.roleId}";
 
-      Response response = await put(_updateUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      Response response = await put(_updateUrlRole, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -217,9 +220,9 @@ class RotaryRoleService {
   //=============================================================================
   Future deleteRotaryRoleByRoleId(RotaryRoleObject aRotaryRoleObj) async {
     try {
-      String _deleteUrl = Constants.rotaryRoleUrl + "/${aRotaryRoleObj.roleId}";
+      String _deleteUrlRole = GlobalsService.applicationServer + Constants.rotaryRoleUrl + "/${aRotaryRoleObj.roleId}";
 
-      Response response = await delete(_deleteUrl, headers: Constants.rotaryUrlHeader);
+      Response response = await delete(_deleteUrlRole, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];

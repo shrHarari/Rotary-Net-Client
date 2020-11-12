@@ -26,13 +26,13 @@ class InitDatabaseService {
   // =========================================================
   Future initializeUsersTableData() async {
     try {
-      String initializeUsersJsonForDebug = InitDataBaseData.createJsonRowsForUsers();
+      String initializeUsersJsonInitApp = InitDataBaseData.createJsonRowsForUsers();
 
-      var initializeUsersListForDebug = jsonDecode(initializeUsersJsonForDebug) as List;
-      List<UserObject> userObjListForDebug = initializeUsersListForDebug.map((userJsonDebug) => UserObject.fromJson(userJsonDebug)).toList();
+      var initializeUsersListInitApp = jsonDecode(initializeUsersJsonInitApp) as List;
+      List<UserObject> userObjListInitApp = initializeUsersListInitApp.map((userJson) => UserObject.fromJson(userJson)).toList();
 
-      userObjListForDebug.sort((a, b) => a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase()));
-      return userObjListForDebug;
+      userObjListInitApp.sort((a, b) => a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase()));
+      return userObjListInitApp;
     }
     catch (e) {
       await LoggerService.log('<InitDatabaseService> Initialize Users Table Data >>> ERROR: ${e.toString()}');
@@ -60,15 +60,15 @@ class InitDatabaseService {
   // ========================================================================
   Future<List<PersonCardObject>> initializePersonCardsTableData() async {
     try {
-        String initializePersonCardsJsonForDebug = InitDataBaseData.createJsonRowsForPersonCards();
+        String initializePersonCardsJsonInitApp = InitDataBaseData.createJsonRowsForPersonCards();
 
-        var initializePersonCardsListForDebug = jsonDecode(initializePersonCardsJsonForDebug) as List;
+        var initializePersonCardsListInitApp = jsonDecode(initializePersonCardsJsonInitApp) as List;
 
-        List<PersonCardObject> personCardObjListForDebug = initializePersonCardsListForDebug.map((personJsonDebug) =>
-            PersonCardObject.fromJson(personJsonDebug)).toList();
+        List<PersonCardObject> personCardObjListInitApp = initializePersonCardsListInitApp.map((personJson) =>
+            PersonCardObject.fromJson(personJson)).toList();
 
-        personCardObjListForDebug.sort((a, b) => a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase()));
-        return personCardObjListForDebug;
+        personCardObjListInitApp.sort((a, b) => a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase()));
+        return personCardObjListInitApp;
     }
     catch (e) {
       await LoggerService.log('<InitDatabaseService> Get PersonCards List From Server >>> ERROR: ${e.toString()}');
@@ -97,13 +97,13 @@ class InitDatabaseService {
   // ========================================================================
   Future initializeEventsTableData() async {
     try {
-      String initializeEventsJsonForDebug = InitDataBaseData.createJsonRowsForEvents();
+      String initializeEventsJsonInitApp = InitDataBaseData.createJsonRowsForEvents();
 
-      var initializeEventsListForDebug = jsonDecode(initializeEventsJsonForDebug) as List;    // List of Users to display;
-      List<EventObject> eventObjListForDebug = initializeEventsListForDebug.map((eventJsonDebug) => EventObject.fromJson(eventJsonDebug)).toList();
+      var initializeEventsListInitApp = jsonDecode(initializeEventsJsonInitApp) as List;    // List of Users to display;
+      List<EventObject> eventObjListInitApp = initializeEventsListInitApp.map((eventJson) => EventObject.fromJson(eventJson)).toList();
 
-      eventObjListForDebug.sort((a, b) => a.eventName.toLowerCase().compareTo(b.eventName.toLowerCase()));
-      return eventObjListForDebug;
+      eventObjListInitApp.sort((a, b) => a.eventName.toLowerCase().compareTo(b.eventName.toLowerCase()));
+      return eventObjListInitApp;
     }
     catch (e) {
       await LoggerService.log('<InitDatabaseService> Get Events List From Server >>> ERROR: ${e.toString()}');
@@ -131,15 +131,15 @@ class InitDatabaseService {
   // ========================================================================
   Future initializeMessagesTableData() async {
     try {
-      String initializeMessagesJsonForDebug = InitDataBaseData.createJsonRowsForMessages();
+      String initializeMessagesJsonInitApp = InitDataBaseData.createJsonRowsForMessages();
 
-      var initializeMessagesListForDebug = jsonDecode(initializeMessagesJsonForDebug) as List;    // List of Users to display;
-      List<MessageObject> messageObjListForDebug = initializeMessagesListForDebug.map((messageJsonDebug) =>
-          MessageObject.fromJson(messageJsonDebug)).toList();
-      // print('eventObjListForDebug.length: ${eventObjListForDebug.length}');
+      var initializeMessagesListInitApp = jsonDecode(initializeMessagesJsonInitApp) as List;    // List of Users to display;
+      List<MessageObject> messageObjListInitApp = initializeMessagesListInitApp.map((messageJson) =>
+          MessageObject.fromJson(messageJson)).toList();
+      // print('eventObjListInitApp.length: ${eventObjListInitApp.length}');
 
-      messageObjListForDebug.sort((a, b) => a.messageCreatedDateTime.compareTo(b.messageCreatedDateTime));
-      return messageObjListForDebug;
+      messageObjListInitApp.sort((a, b) => a.messageCreatedDateTime.compareTo(b.messageCreatedDateTime));
+      return messageObjListInitApp;
     }
     catch (e) {
       await LoggerService.log('<InitDatabaseService> Get Messages List From Server >>> ERROR: ${e.toString()}');
@@ -157,14 +157,14 @@ class InitDatabaseService {
   // ========================================================================
   Future initializeRotaryRoleTableData() async {
     try {
-      String initializeRotaryRoleJsonForDebug = InitDataBaseData.createJsonRowsForRotaryRole();
+      String initializeRotaryRoleJsonInitApp = InitDataBaseData.createJsonRowsForRotaryRole();
 
-      var initializeRotaryRoleListForDebug = jsonDecode(initializeRotaryRoleJsonForDebug) as List;
-      List<RotaryRoleObject> rotaryRoleObjListForDebug = initializeRotaryRoleListForDebug.map((roleJsonDebug) =>
-          RotaryRoleObject.fromJson(roleJsonDebug)).toList();
+      var initializeRotaryRoleListInitApp = jsonDecode(initializeRotaryRoleJsonInitApp) as List;
+      List<RotaryRoleObject> rotaryRoleObjListInitApp = initializeRotaryRoleListInitApp.map((roleJson) =>
+          RotaryRoleObject.fromJson(roleJson)).toList();
 
-      rotaryRoleObjListForDebug.sort((a, b) => a.roleName.toLowerCase().compareTo(b.roleName.toLowerCase()));
-      return rotaryRoleObjListForDebug;
+      rotaryRoleObjListInitApp.sort((a, b) => a.roleName.toLowerCase().compareTo(b.roleName.toLowerCase()));
+      return rotaryRoleObjListInitApp;
     }
     catch (e) {
       await LoggerService.log('<InitDatabaseService> Initialize RotaryRole Table Data >>> ERROR: ${e.toString()}');
@@ -192,14 +192,14 @@ class InitDatabaseService {
   // ========================================================================
   Future initializeRotaryAreaTableData() async {
     try {
-      String initializeRotaryAreaJsonForDebug = InitDataBaseData.createJsonRowsForRotaryArea();
+      String initializeRotaryAreaJsonInitApp = InitDataBaseData.createJsonRowsForRotaryArea();
 
-      var initializeRotaryAreaListForDebug = jsonDecode(initializeRotaryAreaJsonForDebug) as List;
-      List<RotaryAreaObject> rotaryAreaObjListForDebug = initializeRotaryAreaListForDebug.map((areaJsonDebug) =>
-          RotaryAreaObject.fromJson(areaJsonDebug)).toList();
+      var initializeRotaryAreaListInitApp = jsonDecode(initializeRotaryAreaJsonInitApp) as List;
+      List<RotaryAreaObject> rotaryAreaObjListInitApp = initializeRotaryAreaListInitApp.map((areaJson) =>
+          RotaryAreaObject.fromJson(areaJson)).toList();
 
-      rotaryAreaObjListForDebug.sort((a, b) => a.areaName.toLowerCase().compareTo(b.areaName.toLowerCase()));
-      return rotaryAreaObjListForDebug;
+      rotaryAreaObjListInitApp.sort((a, b) => a.areaName.toLowerCase().compareTo(b.areaName.toLowerCase()));
+      return rotaryAreaObjListInitApp;
     }
     catch (e) {
       await LoggerService.log('<InitDatabaseService> Initialize RotaryArea Table Data >>> ERROR: ${e.toString()}');
@@ -221,20 +221,20 @@ class InitDatabaseService {
     RotaryAreaService areaService = RotaryAreaService();
     starterRotaryAreaList.forEach((RotaryAreaObject rotaryAreaObj) async => await areaService.insertRotaryArea(rotaryAreaObj));
   }
-//#endregion
+  //#endregion
 
   //#region Initialize Rotary Cluster Table Data [INIT Cluster BY JSON DATA]
   // ========================================================================
   Future initializeRotaryClusterTableData(String aAreaName) async {
     try {
-      String initializeRotaryClusterJsonForDebug = InitDataBaseData.createJsonRowsForRotaryCluster(aAreaName);
+      String initializeRotaryClusterJsonInitApp = InitDataBaseData.createJsonRowsForRotaryCluster(aAreaName);
 
-      var initializeRotaryClusterListForDebug = jsonDecode(initializeRotaryClusterJsonForDebug) as List;
-      List<RotaryClusterObject> rotaryClusterObjListForDebug = initializeRotaryClusterListForDebug.map((clusterJsonDebug) =>
-          RotaryClusterObject.fromJson(clusterJsonDebug)).toList();
+      var initializeRotaryClusterListInitApp = jsonDecode(initializeRotaryClusterJsonInitApp) as List;
+      List<RotaryClusterObject> rotaryClusterObjListInitApp = initializeRotaryClusterListInitApp.map((clusterJson) =>
+          RotaryClusterObject.fromJson(clusterJson)).toList();
 
-      rotaryClusterObjListForDebug.sort((a, b) => a.clusterName.toLowerCase().compareTo(b.clusterName.toLowerCase()));
-      return rotaryClusterObjListForDebug;
+      rotaryClusterObjListInitApp.sort((a, b) => a.clusterName.toLowerCase().compareTo(b.clusterName.toLowerCase()));
+      return rotaryClusterObjListInitApp;
     }
     catch (e) {
       await LoggerService.log('<InitDatabaseService> Initialize RotaryCluster Table Data >>> ERROR: ${e.toString()}');
@@ -270,19 +270,19 @@ class InitDatabaseService {
   // ========================================================================
   Future initializeRotaryClubTableData(String aClusterName) async {
     try {
-      String initializeRotaryClubJsonForDebug = InitDataBaseData.createJsonRowsForRotaryClub(aClusterName);
+      String initializeRotaryClubJsonInitApp = InitDataBaseData.createJsonRowsForRotaryClub(aClusterName);
 
-      List<RotaryClubObject> rotaryClubObjListForDebug;
-      if (initializeRotaryClubJsonForDebug != null)
+      List<RotaryClubObject> rotaryClubObjListInitApp;
+      if (initializeRotaryClubJsonInitApp != null)
       {
-        var initializeRotaryClubListForDebug = jsonDecode(initializeRotaryClubJsonForDebug) as List;    // List of Cluster to display;
-        rotaryClubObjListForDebug = initializeRotaryClubListForDebug.map((clubJsonDebug) =>
-            RotaryClubObject.fromJson(clubJsonDebug)).toList();
+        var initializeRotaryClubListInitApp = jsonDecode(initializeRotaryClubJsonInitApp) as List;    // List of Cluster to display;
+        rotaryClubObjListInitApp = initializeRotaryClubListInitApp.map((clubJson) =>
+            RotaryClubObject.fromJson(clubJson)).toList();
 
-        rotaryClubObjListForDebug.sort((a, b) => a.clubName.toLowerCase().compareTo(b.clubName.toLowerCase()));
+        rotaryClubObjListInitApp.sort((a, b) => a.clubName.toLowerCase().compareTo(b.clubName.toLowerCase()));
       }
 
-      return rotaryClubObjListForDebug;
+      return rotaryClubObjListInitApp;
     }
     catch (e) {
       await LoggerService.log('<InitDatabaseService> Initialize RotaryClub Table Data >>> ERROR: ${e.toString()}');

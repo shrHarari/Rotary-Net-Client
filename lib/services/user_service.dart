@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:rotary_net/objects/user_object.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'dart:developer' as developer;
@@ -47,7 +48,8 @@ class UserService {
   // =========================================================
   Future getAllUsersList() async {
     try {
-      Response response = await get(Constants.rotaryUserUrl);
+      String _getUrlUser = GlobalsService.applicationServer + Constants.rotaryUserUrl;
+      Response response = await get(_getUrlUser);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -83,9 +85,9 @@ class UserService {
   Future getUsersListBySearchQuery(String aValueToSearch) async {
 
     try {
-      String _getUrl = Constants.rotaryUserUrl + "/query/$aValueToSearch";
+      String _getUrlUser = GlobalsService.applicationServer + Constants.rotaryUserUrl + "/query/$aValueToSearch";
 
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlUser);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -121,9 +123,9 @@ class UserService {
   Future<UserObject> getUserByEmail(String aEmail) async {
 
     try {
-      String _getUrl = Constants.rotaryUserUrl + "/email/$aEmail";
+      String _getUrlUser = GlobalsService.applicationServer + Constants.rotaryUserUrl + "/email/$aEmail";
 
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlUser);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -167,7 +169,9 @@ class UserService {
     try {
       String jsonToPost = aUserObj.userToJson(aUserObj);
 
-      Response response = await post(Constants.rotaryUserUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      String _insertUrlUser = GlobalsService.applicationServer + Constants.rotaryUserUrl;
+      Response response = await post(_insertUrlUser, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -200,9 +204,9 @@ class UserService {
       // Convert ConnectedUserObject To Json
       String jsonToPost = aUserObj.userToJson(aUserObj);
 
-      String _updateUrl = Constants.rotaryUserUrl + "/${aUserObj.userId}";
+      String _updateUrlUser = GlobalsService.applicationServer + Constants.rotaryUserUrl + "/${aUserObj.userId}";
+      Response response = await put(_updateUrlUser, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
-      Response response = await put(_updateUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -232,9 +236,9 @@ class UserService {
   //=============================================================================
   Future deleteUserById(UserObject aUserObj) async {
     try {
-      String _deleteUrl = Constants.rotaryUserUrl + "/${aUserObj.userId}";
+      String _deleteUrlUser = GlobalsService.applicationServer + Constants.rotaryUserUrl + "/${aUserObj.userId}";
 
-      Response response = await delete(_deleteUrl, headers: Constants.rotaryUrlHeader);
+      Response response = await delete(_deleteUrlUser, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];

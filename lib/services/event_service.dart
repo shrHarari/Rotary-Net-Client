@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:rotary_net/objects/event_object.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'dart:developer' as developer;
@@ -50,8 +51,8 @@ class EventService {
   // =========================================================
   Future getEventsListBySearchQuery(String aValueToSearch) async {
     try {
-      String _getUrl = Constants.rotaryEventUrl + "/query/$aValueToSearch";
-      Response response = await get(_getUrl);
+      String _getUrlEvent = GlobalsService.applicationServer + Constants.rotaryEventUrl + "/query/$aValueToSearch";
+      Response response = await get(_getUrlEvent);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -90,10 +91,11 @@ class EventService {
   //=============================================================================
   Future insertEvent(EventObject aEventObj) async {
     try {
-      // Convert ConnectedUserObject To Json
       String jsonToPost = aEventObj.eventToJson(aEventObj);
 
-      Response response = await post(Constants.rotaryEventUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      String _insertUrlEvent = GlobalsService.applicationServer + Constants.rotaryEventUrl;
+      Response response = await post(_insertUrlEvent, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -128,11 +130,10 @@ class EventService {
     try {
       // Convert EventObject To Json
       String jsonToPost = aEventObj.eventToJson(aEventObj);
-      print ('updateEventByEventId / EventObject / jsonToPost: $jsonToPost');
 
-      String _updateUrl = Constants.rotaryEventUrl + "/${aEventObj.eventId}";
+      String _updateUrlEvent = GlobalsService.applicationServer + Constants.rotaryEventUrl + "/${aEventObj.eventId}";
+      Response response = await put(_updateUrlEvent, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
-      Response response = await put(_updateUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -163,9 +164,9 @@ class EventService {
   //=============================================================================
   Future deleteEventById(EventObject aEventObj) async {
     try {
-      String _deleteUrl = Constants.rotaryEventUrl + "/${aEventObj.eventId}";
+      String _deleteUrlEvent = GlobalsService.applicationServer + Constants.rotaryEventUrl + "/${aEventObj.eventId}";
+      Response response = await delete(_deleteUrlEvent, headers: Constants.rotaryUrlHeader);
 
-      Response response = await delete(_deleteUrl, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];

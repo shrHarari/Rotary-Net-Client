@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:rotary_net/objects/rotary_club_object.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'dart:developer' as developer;
@@ -32,7 +33,9 @@ class RotaryClubService {
   // =========================================================
   Future getAllRotaryClubList() async {
     try {
-      Response response = await get(Constants.rotaryClubUrl);
+      String _getUrlClub = GlobalsService.applicationServer + Constants.rotaryClubUrl;
+
+      Response response = await get(_getUrlClub);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -66,9 +69,9 @@ class RotaryClubService {
   // =========================================================
   Future getRotaryClubByClubId(String aClubId) async {
     try {
-      String _getUrl = Constants.rotaryClubUrl + "/$aClubId";
+      String _getUrlClub = GlobalsService.applicationServer + Constants.rotaryClubUrl + "/$aClubId";
 
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlClub);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -100,9 +103,9 @@ class RotaryClubService {
   // =========================================================
   Future getRotaryClubByClubName(String aClubName) async {
     try {
-      String _getUrl = Constants.rotaryClubUrl + "/clubName/$aClubName";
+      String _getUrlClub = GlobalsService.applicationServer + Constants.rotaryClubUrl + "/clubName/$aClubName";
 
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlClub);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -138,7 +141,9 @@ class RotaryClubService {
     try{
       String jsonToPost = aRotaryClubObj.rotaryClubObjectToJson(aRotaryClubObj);
 
-      Response response = await post(Constants.rotaryClubUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      String _insertUrlClub = GlobalsService.applicationServer + Constants.rotaryClubUrl;
+      Response response = await post(_insertUrlClub, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -175,11 +180,10 @@ class RotaryClubService {
   //=============================================================================
   Future insertRotaryClubWithCluster(String aClusterId, RotaryClubObject aRotaryClubObj) async {
     try{
-      String _getUrl = Constants.rotaryClubUrl + "/clusterId/$aClusterId";
-
       String jsonToPost = aRotaryClubObj.rotaryClubObjectToJson(aRotaryClubObj);
 
-      Response response = await post(_getUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      String _insertUrlClub = GlobalsService.applicationServer + Constants.rotaryClubUrl + "/clusterId/$aClusterId";
+      Response response = await post(_insertUrlClub, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -219,9 +223,9 @@ class RotaryClubService {
     try {
       String jsonToPost = aRotaryClubObj.rotaryClubObjectToJson(aRotaryClubObj);
 
-      String _updateUrl = Constants.rotaryClubUrl + "/${aRotaryClubObj.clubId}";
+      String _updateUrlClub = GlobalsService.applicationServer + Constants.rotaryClubUrl + "/${aRotaryClubObj.clubId}";
+      Response response = await put(_updateUrlClub, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
-      Response response = await put(_updateUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -254,9 +258,9 @@ class RotaryClubService {
   //=============================================================================
   Future deleteRotaryClubByClubId(RotaryClubObject aRotaryClubObj) async {
     try {
-      String _deleteUrl = Constants.rotaryClubUrl + "/${aRotaryClubObj.clubId}";
+      String _deleteUrlClub = GlobalsService.applicationServer + Constants.rotaryClubUrl + "/${aRotaryClubObj.clubId}";
+      Response response = await delete(_deleteUrlClub, headers: Constants.rotaryUrlHeader);
 
-      Response response = await delete(_deleteUrl, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];

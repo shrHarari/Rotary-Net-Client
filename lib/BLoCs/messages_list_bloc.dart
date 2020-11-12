@@ -11,7 +11,7 @@ class MessagesListBloc implements BloC {
     getMessagesListPopulated();
   }
 
-  /// Use for debugging: when the user is being changed
+  /// Use for Application Check: when the user is being changed
   /// and refresh is needed
   setPersonCardId (String aPersonCardId){
     argPersonCardId = aPersonCardId;

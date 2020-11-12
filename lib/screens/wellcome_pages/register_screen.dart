@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
-import 'package:rotary_net/screens/debug_setting_screen.dart';
 import 'package:rotary_net/screens/rotary_main_pages/rotary_main_page_screen.dart';
+import 'package:rotary_net/screens/settings/application_setting_screen.dart';
 import 'package:rotary_net/screens/wellcome_pages/login_screen.dart';
 import 'package:rotary_net/screens/wellcome_pages/wellcome_decoration_style.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
@@ -140,13 +140,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
   //#endregion
 
-  //#region Open Debug Settings Screen
-  Future<void> openDebugSettingsScreen() async {
-    //Navigate to DebugSettings Screen
+  //#region Open Application Settings Screen
+  Future<void> openApplicationSettingsScreen() async {
+    //Navigate to ApplicationSettings Screen
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DebugSettingsScreen(),
+        builder: (context) => ApplicationSettingsScreen(),
       ),
     );
   }
@@ -184,7 +184,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
             ),
-            Positioned(top: 40, left: 20, child: openDebugButton()),
+            Positioned(top: 40, left: 20, child: openApplicationButton()),
             Positioned(top: 40, right: 20, child: exitButton()),
           ],
         ),
@@ -194,9 +194,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   ///------>> Build All Page Widgets
   ///==============================================================================
-  Widget openDebugButton() {
+  Widget openApplicationButton() {
     return InkWell(
-      onTap: () async{await openDebugSettingsScreen();},
+      onTap: () async{await openApplicationSettingsScreen();},
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 10),
         child: Row(

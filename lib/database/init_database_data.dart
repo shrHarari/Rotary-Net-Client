@@ -1,7 +1,7 @@
 
 class InitDataBaseData {
 
-  //#region Create Json Rows: Users [Data for Debug]
+  //#region Create Json Rows: Users [Data for Init App]
   static String createJsonRowsForUsers() {
 
     String userRowsJson =
@@ -142,7 +142,7 @@ class InitDataBaseData {
   }
   //#endregion
 
-  //#region Create Json Rows: PersonCards [Data for Debug]
+  //#region Create Json Rows: PersonCards [Data for Init App]
   static String createJsonRowsForPersonCards() {
     final String someText = "\\nשל כרטיס הביקור של אלק באלדווי\\nפירוט נוסף\\nועוד פירוט\\nשורה נונספת ארוכה מאודדדדדדדדדדד דדדדדדדדדדדדד דדדדדדדדדדדד  דדדדד\\nועוד שורה ארררררוככככה יחדגיכחגי דגיכגדי דגכי ידגכי דגכי דגכי דגכי\\nסוף";
 
@@ -166,7 +166,8 @@ class InitDataBaseData {
         '"areaId": "ישראל", '
         '"clusterId": "גוש דן", '
         '"clubId": "תל-אביב", '
-        '"roleId": "1" '
+        '"roleId": "1", '
+        '"messages": [] '
       '},'
       '{'
         '"personCardId": "2", '
@@ -186,7 +187,8 @@ class InitDataBaseData {
         '"areaId": "ישראל", '
         '"clusterId": "גוש דן", '
         '"clubId": "תל-אביב", '
-        '"roleId": "6" '
+        '"roleId": "6", '
+        '"messages": [] '
       '},'
       '{'
         '"personCardId": "3", '
@@ -206,7 +208,8 @@ class InitDataBaseData {
         '"areaId": "ישראל", '
         '"clusterId": "שומרון", '
         '"clubId": "קיסריה", '
-        '"roleId": "3" '
+        '"roleId": "3", '
+        '"messages": [] '
       '},'
       '{'
         '"personCardId": "4", '
@@ -226,7 +229,8 @@ class InitDataBaseData {
         '"areaId": "ישראל", '
         '"clusterId": "שומרון", '
         '"clubId": "קיסריה", '
-        '"roleId": "4" '
+        '"roleId": "4", '
+        '"messages": [] '
       '},'
       '{'
         '"personCardId": "5", '
@@ -246,7 +250,8 @@ class InitDataBaseData {
         '"areaId": "ישראל", '
         '"clusterId": "שומרון", '
         '"clubId": "קיסריה", '
-        '"roleId": "5" '
+        '"roleId": "5", '
+        '"messages": [] '
       '},'
       '{'
         '"personCardId": "6", '
@@ -266,7 +271,8 @@ class InitDataBaseData {
         '"areaId": "ישראל", '
         '"clusterId": "שומרון", '
         '"clubId": "קיסריה", '
-        '"roleId": "6" '
+        '"roleId": "6", '
+        '"messages": [] '
       '},'
       '{'
         '"personCardId": "7", '
@@ -286,7 +292,8 @@ class InitDataBaseData {
         '"areaId": "ישראל", '
         '"clusterId": "שומרון", '
         '"clubId": "כפר יונה", '
-        '"roleId": "6" '
+        '"roleId": "6", '
+        '"messages": [] '
       '},'
       '{'
         '"personCardId": "8", '
@@ -306,7 +313,8 @@ class InitDataBaseData {
         '"areaId": "ישראל", '
         '"clusterId": "חיפה והקריות", '
         '"clubId": "חיפה", '
-        '"roleId": "4" '
+        '"roleId": "4", '
+        '"messages": [] '
       '},'
       '{'
         '"personCardId": "9", '
@@ -326,7 +334,8 @@ class InitDataBaseData {
         '"areaId": "ישראל", '
         '"clusterId": "חיפה והקריות", '
         '"clubId": "חיפה", '
-        '"roleId": "6" '
+        '"roleId": "6", '
+        '"messages": [] '
       '},'
       '{'
         '"personCardId": "10", '
@@ -346,7 +355,8 @@ class InitDataBaseData {
         '"areaId": "ארצות הברית", '
         '"clusterId": "חוף מערבי", '
         '"clubId": "ניו-יורק", '
-        '"roleId": "3" '
+        '"roleId": "3", '
+        '"messages": [] '
       '},'
       '{'
         '"personCardId": "11", '
@@ -366,7 +376,8 @@ class InitDataBaseData {
         '"areaId": "צרפת", '
         '"clusterId": "מרכז צרפת", '
         '"clubId": "פריז", '
-        '"roleId": "3" '
+        '"roleId": "3", '
+        '"messages": [] '
       '},'
       '{'
         '"personCardId": "12", '
@@ -386,7 +397,8 @@ class InitDataBaseData {
         '"areaId": "ישראל", '
         '"clusterId": "חיפה והקריות", '
         '"clubId": "נהריה", '
-        '"roleId": "6" '
+        '"roleId": "6", '
+        '"messages": [] '
       '}'
     ']';
 
@@ -394,7 +406,7 @@ class InitDataBaseData {
   }
   //#endregion
 
-  //#region Create Json Rows: Events [Data for Debug]
+  //#region Create Json Rows: Events [Data for Init App]
   static String createJsonRowsForEvents() {
 
     String eventsListJson =
@@ -445,7 +457,7 @@ class InitDataBaseData {
   }
   //#endregion
 
-  //#region Create Json Rows: Messages [Data for Debug]
+  //#region Create Json Rows: Messages [Data for Init App]
   static String createJsonRowsForMessages() {
         final String longMessageText = "שלום לכולם, הודעה ארוכה\\nעם כמה שורות\\nשורה שלישית\\nועוד שורה ארוכה עם הרבה מילים שצריכות להיות בכמה שורות";
         final String extraLongMessageText = "הודעה חשובה וארוכה\\nעם כמה שורות\\nשורה שלישית\\nועוד שורה ארוכה עם הרבה מילים שצריכות להיות בכמה שורות\\n"
@@ -487,7 +499,7 @@ class InitDataBaseData {
   }
   //#endregion
 
-  //#region Create Json Rows: Rotary Role [Data for Debug]
+  //#region Create Json Rows: Rotary Role [Data for Init App]
   static String createJsonRowsForRotaryRole() {
 
     String rolesListJson =
@@ -528,22 +540,25 @@ class InitDataBaseData {
   }
   //#endregion
 
-  //#region Create Json Rows: Rotary Area [Data for Debug]
+  //#region Create Json Rows: Rotary Area [Data for Init App]
   static String createJsonRowsForRotaryArea() {
 
     String rotaryAreasListJson =
       '['
         '{'
           '"areaId": 1, '
-          '"areaName": "ישראל" '
+          '"areaName": "ישראל", '
+          '"clusters": [] '
         '},'
         '{'
           '"areaId": 2, '
-          '"areaName": "ארצות הברית" '
+          '"areaName": "ארצות הברית", '
+          '"clusters": [] '
         '},'
         '{'
           '"areaId": 3, '
-          '"areaName": "צרפת" '
+          '"areaName": "צרפת", '
+          '"clusters": [] '
         '}'
       ']';
 
@@ -551,7 +566,7 @@ class InitDataBaseData {
   }
   //#endregion
 
-  //#region Create Json Rows: Rotary Cluster [Data for Debug]
+  //#region Create Json Rows: Rotary Cluster [Data for Init App]
   static String createJsonRowsForRotaryCluster(String aAreaName) {
     String rotaryClusterListJson;
 
@@ -561,15 +576,18 @@ class InitDataBaseData {
           '['
             '{'
               '"clusterId": 1, '
-              '"clusterName": "גוש דן" '
+              '"clusterName": "גוש דן", '
+              '"clubs": [] '
             '},'
             '{'
               '"clusterId": 2, '
-              '"clusterName": "שומרון" '
+              '"clusterName": "שומרון", '
+              '"clubs": [] '
             '},'
             '{'
               '"clusterId": 3, '
-              '"clusterName": "חיפה והקריות" '
+              '"clusterName": "חיפה והקריות", '
+              '"clubs": [] '
             '}'
           ']';
         break;
@@ -578,11 +596,13 @@ class InitDataBaseData {
         '['
           '{'
             '"clusterId": 1, '
-            '"clusterName": "חוף מזרחי" '
+            '"clusterName": "חוף מזרחי", '
+            '"clubs": [] '
           '},'
           '{'
             '"clusterId": 2, '
-            '"clusterName": "חוף מערבי" '
+            '"clusterName": "חוף מערבי", '
+            '"clubs": [] '
           '}'
         ']';
         break;
@@ -591,11 +611,13 @@ class InitDataBaseData {
         '['
           '{'
             '"clusterId": 1, '
-            '"clusterName": "מרכז צרפת" '
+            '"clusterName": "מרכז צרפת", '
+            '"clubs": [] '
           '},'
           '{'
             '"clusterId": 2, '
-            '"clusterName": "אזור החוף" '
+            '"clusterName": "אזור החוף", '
+            '"clubs": [] '
           '}'
         ']';
         break;
@@ -604,7 +626,7 @@ class InitDataBaseData {
   }
   //#endregion
 
-  //#region Create Json Rows: Rotary Cluster OLD [Data for Debug]
+  //#region Create Json Rows: Rotary Cluster OLD [Data for Init App]
   static String createJsonRowsForRotaryClusterOLD() {
 
     String rotaryClusterListJson =
@@ -650,7 +672,7 @@ class InitDataBaseData {
   }
   //#endregion
 
-  //#region Create Json Rows: Rotary Club [Data for Debug]
+  //#region Create Json Rows: Rotary Club [Data for Init App]
   static String createJsonRowsForRotaryClub(String  aClusterName) {
     String rotaryClubsListJson;
 
@@ -759,7 +781,7 @@ class InitDataBaseData {
   }
   //#endregion
 
-  //#region Create Json Rows: Rotary Club OLD [Data for Debug]
+  //#region Create Json Rows: Rotary Club OLD [Data for Init App]
   static String createJsonRowsForRotaryClubOLD() {
 
     String rotaryClubsListJson =

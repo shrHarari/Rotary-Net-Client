@@ -676,14 +676,14 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
             child:
             // Image.memory(currentPersonCardImageBytes),
             // Image.network('https://picsum.photos/250?image=9'),
-            Image.network('${Constants.rotaryLocalHost}/PersonCardImages/$currentPersonCardImage'),
+            // Image.network('${Constants.rotaryLocalHost}/PersonCardImages/$currentPersonCardImage'),
 
-        // CircleAvatar(
-        //       radius: 30.0,
-        //       backgroundColor: Colors.blue[900],
-        //       backgroundImage: FileImage(File("${Constants.rotaryLocalHost}/PersonCardImages/$currentPersonCardImage")),
-        //       // backgroundImage: FileImage(File(currentPersonCardImage)),
-        //     ),
+        CircleAvatar(
+              radius: 30.0,
+              backgroundColor: Colors.blue[900],
+              // backgroundImage: FileImage(File("${Constants.rotaryLocalHost}/PersonCardImages/$currentPersonCardImage")),
+              backgroundImage: FileImage(File(currentPersonCardImage)),
+            ),
             // CachedNetworkImage(
             //   imageUrl: 'https://picsum.photos/250?image=9',
             //   // imageUrl: "${Constants.rotaryLocalHost}/PersonCardImages/$currentPersonCardImage",

@@ -1,12 +1,15 @@
 
 //#region Application Global Parameters
 // ==============================================================
+import 'package:rotary_net/services/globals_service.dart';
+
 const String rotaryApplicationName = 'מועדון רוטרי';
 //#endregion
 
 //#region Application Parameters: SharedPreferences [Key Name]
 // ==============================================================
-const String rotaryDebugMode = 'Rotary Debug Mode';
+// const String rotaryDebugMode = 'Rotary Debug Mode';
+const String rotaryApplicationMode = 'Rotary Application Mode';
 //#endregion
 
 //#region Application parameters [Globals Values]
@@ -20,27 +23,23 @@ const String rotaryFolderEventImages = 'assets/images/event_images';
 // ==============================================================
 const Map<String, String> rotaryUrlHeader = {"Content-type": "application/json"};
 
-/////// const String rotaryUserUrl = 'http://localhost:3030/api/user/';
-/////// ----------------------- localhost = 10.100.102.6 [using ipconfig <command on cmd>]
+/////// --->>> localhost = 10.100.102.6 [by using ipconfig <command on cmd>]
+const String CLIENT_HOST_URL = 'http://10.100.102.6:3030';
+const String SERVER_HOST_URL = 'https://rotary-net.herokuapp.com';
 
-const String rotaryLocalHost = 'http://10.100.102.6:3030';
-// const String rotaryLocalHost = 'file:///C:/FLUTTER_OCTIA/rotary_net_server/server';
-// const String rotaryLocalHost = 'C:/FLUTTER_OCTIA/rotary_net_server/server';
-// const String rotaryLocalHost = 'http://localhost:3030';
-// const String rotaryLocalHost = 'http://localhost';
-const String rotaryRoleUrl = 'http://10.100.102.6:3030/api/role';
-const String rotaryAreaUrl = 'http://10.100.102.6:3030/api/area';
-const String rotaryClusterUrl = 'http://10.100.102.6:3030/api/cluster';
-const String rotaryClubUrl = 'http://10.100.102.6:3030/api/club';
-const String rotaryUserUrl = 'http://10.100.102.6:3030/api/user';
-const String rotaryPersonCardUrl = 'http://10.100.102.6:3030/api/personcard';
-const String rotaryEventUrl = 'http://10.100.102.6:3030/api/event';
-const String rotaryMessageUrl = 'http://10.100.102.6:3030/api/message';
+const String rotaryRoleUrl = '/api/role';
+const String rotaryAreaUrl = '/api/area';
+const String rotaryClusterUrl = '/api/cluster';
+const String rotaryClubUrl = '/api/club';
+const String rotaryUserUrl = '/api/user';
+const String rotaryPersonCardUrl = '/api/personcard';
+const String rotaryEventUrl = '/api/event';
+const String rotaryMessageUrl = '/api/message';
 
-const String rotaryUserLoginUrl = 'http://10.100.102.6:3030/api/user/login';
+const String rotaryUserLoginUrl = '/api/user/login';
 
-const String rotaryMenuPagesContentUrl = 'http://10.100.102.6:3030/api/menupage';
-const String rotaryUtilContentUrl = 'http://10.100.102.6:3030/api/util';
+const String rotaryMenuPagesContentUrl = '/api/menupage';
+const String rotaryUtilContentUrl = '/api/util';
 
 //#endregion
 

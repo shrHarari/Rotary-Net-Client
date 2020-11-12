@@ -9,6 +9,7 @@ import 'package:rotary_net/objects/rotary_club_object.dart';
 import 'package:rotary_net/objects/rotary_cluster_object.dart';
 import 'package:rotary_net/objects/rotary_role_object.dart';
 import 'package:rotary_net/objects/user_object.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/services/rotary_area_service.dart';
 import 'package:rotary_net/services/rotary_club_service.dart';
@@ -95,11 +96,12 @@ class PersonCardService {
   // ==================================================================
   Future getPersonCardsListBySearchQuery(String aValueToSearch, {bool withPopulate = false}) async {
     try {
-      String _getUrl;
+      String _getUrlPersonCard;
 
-      if (withPopulate) _getUrl = Constants.rotaryPersonCardUrl + "/query/$aValueToSearch/populated";
-      else _getUrl = Constants.rotaryPersonCardUrl + "/query/$aValueToSearch";
-      Response response = await get(_getUrl);
+      if (withPopulate) _getUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/query/$aValueToSearch/populated";
+      else _getUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/query/$aValueToSearch";
+
+      Response response = await get(_getUrlPersonCard);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -139,20 +141,21 @@ class PersonCardService {
       Constants.RotaryRolesEnum _roleEnum;
       Constants.RotaryRolesEnum _roleEnumValue = _roleEnum.convertToEnum(aPersonCardRoleAndHierarchyIdObject.roleEnum);
 
-      String _getUrl;
+      String _getUrl = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl;
+      String _getUrlPersonCard;
 
       switch (_roleEnumValue) {
         case Constants.RotaryRolesEnum.RotaryManager:
-          _getUrl = Constants.rotaryPersonCardUrl + "/roleHierarchyByAll";
+          _getUrlPersonCard = _getUrl + "/roleHierarchyByAll";
           break;
         case Constants.RotaryRolesEnum.AreaManager:
-          _getUrl = Constants.rotaryPersonCardUrl + "/roleHierarchyByAreaId/${aPersonCardRoleAndHierarchyIdObject.areaId}";
+          _getUrlPersonCard = _getUrl + "/roleHierarchyByAreaId/${aPersonCardRoleAndHierarchyIdObject.areaId}";
           break;
         case Constants.RotaryRolesEnum.ClusterManager:
-          _getUrl = Constants.rotaryPersonCardUrl + "/roleHierarchyByClusterId/${aPersonCardRoleAndHierarchyIdObject.clusterId}";
+          _getUrlPersonCard = _getUrl + "/roleHierarchyByClusterId/${aPersonCardRoleAndHierarchyIdObject.clusterId}";
           break;
         case Constants.RotaryRolesEnum.ClubManager:
-          _getUrl = Constants.rotaryPersonCardUrl + "/roleHierarchyByClubId/${aPersonCardRoleAndHierarchyIdObject.clubId}";
+          _getUrlPersonCard = _getUrl + "/roleHierarchyByClubId/${aPersonCardRoleAndHierarchyIdObject.clubId}";
           break;
 
         case Constants.RotaryRolesEnum.Gizbar:
@@ -160,7 +163,7 @@ class PersonCardService {
         default:
           return [];
       }
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlPersonCard);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
@@ -194,15 +197,14 @@ class PersonCardService {
   // =========================================================
   Future getPersonCardByPersonId(String aPersonCardId, {bool withPopulate = false}) async {
     try {
-      String _getUrl;
-
       /// In case of User (Guest) without PersonCardObject ===>>> return Empty PersonCardObject
       if (aPersonCardId == null) return null;
 
-      if (withPopulate) _getUrl = Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId/populated";
-      else _getUrl = Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId";
+      String _getUrlPersonCard;
+      if (withPopulate) _getUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId/populated";
+      else _getUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId";
 
-      Response response = await get(_getUrl);
+      Response response = await get(_getUrlPersonCard);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -245,8 +247,8 @@ class PersonCardService {
   //#region Get PersonCard By Id Populated [PersonCard + Populate All Fields without Messages]
   Future getPersonCardByIdPopulated(String aPersonCardId) async {
     try {
-      String _getUrl = Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId/populated";
-      Response response = await get(_getUrl);
+      String _getUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId/populated";
+      Response response = await get(_getUrlPersonCard);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -285,8 +287,10 @@ class PersonCardService {
   //#region Get PersonCard By Id Message Populated [PersonCard + Populate Only Messages List]
   Future getPersonCardByIdMessagePopulated(String aPersonCardId) async {
     try {
-      String _getUrl = Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId/message_populated";
-      Response response = await get(_getUrl);
+      if ((aPersonCardId == null) || (aPersonCardId == ''))  return null;
+
+      String _getUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId/message_populated";
+      Response response = await get(_getUrlPersonCard);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -330,8 +334,8 @@ class PersonCardService {
   //#region Get PersonCard By Id All Populated [PersonCard + Populate All Fields]
   Future getPersonCardByIdAllPopulated(String aPersonCardId) async {
     try {
-      String _getUrl = Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId/all_populated";
-      Response response = await get(_getUrl);
+      String _getUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId/all_populated";
+      Response response = await get(_getUrlPersonCard);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
@@ -375,11 +379,11 @@ class PersonCardService {
   //=============================================================================
   Future insertPersonCard(String aUserId, PersonCardObject aPersonCardObj) async {
     try {
-      String _getUrl = Constants.rotaryPersonCardUrl + "/userId/$aUserId";
-
       String jsonToPost = aPersonCardObj.personCardToJson(aPersonCardObj);
 
-      Response response = await post(_getUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      String _insertUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/userId/$aUserId";
+      Response response = await post(_insertUrlPersonCard, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -409,7 +413,6 @@ class PersonCardService {
   //=============================================================================
   Future insertPersonCardOnInitializeDataBase(PersonCardObject aPersonCardObj) async {
     try {
-
       /// Convert PersonCardObj.personCardId[InitValue] ===>>> User._id
       UserService userService = UserService();
       UserObject userObj;
@@ -439,11 +442,11 @@ class PersonCardService {
       clubObj = await clubService.getRotaryClubByClubName(aPersonCardObj.clubId);
       aPersonCardObj.setClubId(clubObj.clubId);
 
-      String _getUrl = Constants.rotaryPersonCardUrl + "/userId/${userObj.userId}";
-
       String jsonToPost = aPersonCardObj.personCardToJson(aPersonCardObj);
 
-      Response response = await post(_getUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      String _insertUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/userId/${userObj.userId}";
+      Response response = await post(_insertUrlPersonCard, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -476,9 +479,9 @@ class PersonCardService {
       // Convert PersonCardObject To Json
       String jsonToPost = aPersonCardObj.personCardToJson(aPersonCardObj);
 
-      String _updateUrl = Constants.rotaryPersonCardUrl + "/${aPersonCardObj.personCardId}";
+      String _updateUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/${aPersonCardObj.personCardId}";
 
-      Response response = await put(_updateUrl, headers: Constants.rotaryUrlHeader, body: jsonToPost);
+      Response response = await put(_updateUrlPersonCard, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
@@ -508,9 +511,9 @@ class PersonCardService {
   //=============================================================================
   Future deletePersonCardById(PersonCardObject aPersonCardObj) async {
     try {
-      String _deleteUrl = Constants.rotaryPersonCardUrl + "/${aPersonCardObj.personCardId}";
+      String _deleteUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/${aPersonCardObj.personCardId}";
 
-      Response response = await delete(_deleteUrl, headers: Constants.rotaryUrlHeader);
+      Response response = await delete(_deleteUrlPersonCard, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:collection';
 import 'package:http/http.dart';
 import 'package:rotary_net/objects/menu_page_object.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'dart:developer' as developer;
@@ -16,8 +17,8 @@ class MenuPagesService {
     Map<String, dynamic> pageContentItemsMap = HashMap();
 
     try {
-      String _getUrl = Constants.rotaryMenuPagesContentUrl + "/$aPageName";
-      Response response = await get(_getUrl);
+      String _getUrlMenuPage = GlobalsService.applicationServer + Constants.rotaryMenuPagesContentUrl + "/$aPageName";
+      Response response = await get(_getUrlMenuPage);
 
       if (response.statusCode <= 300) {
         String jsonResponse = response.body;
