@@ -101,7 +101,7 @@ class _RotaryMainPageScreenState extends State<RotaryMainPageScreen> {
   }
   //#endregion
 
-  //#region Open Debug Settings
+  //#region Open Application Settings
   Future<void> openApplicationSettings() async {
     Navigator.push(
       context,
@@ -206,6 +206,7 @@ class _RotaryMainPageScreenState extends State<RotaryMainPageScreen> {
   //#region Open Menu
   Future<void> openMenu() async {
     // Open Menu from Left side
+    FocusScope.of(context).requestFocus(FocusNode()); // Hide Keyboard
     _scaffoldKey.currentState.openDrawer();
   }
   //# endregion

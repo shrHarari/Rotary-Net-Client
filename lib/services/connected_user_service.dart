@@ -88,10 +88,10 @@ class ConnectedUserService {
           _stayConnected);
     }
     catch  (e) {
-      await LoggerService.log('<UserService> Read Connected User Object Data From SecureStorage >>> ERROR: ${e.toString()}');
+      await LoggerService.log('<ConnectedUserService> Read Connected User Object Data From SecureStorage >>> ERROR: ${e.toString()}');
       developer.log(
         'readConnectedUserObjectDataFromSecureStorage',
-        name: 'UserService',
+        name: 'ConnectedUserService',
         error: 'Read Connected User Object Data From SecureStorage >>> ERROR: ${e.toString()}',
       );
       return null;
@@ -122,10 +122,10 @@ class ConnectedUserService {
       await secureStorage.write(key: Constants.rotaryUserStayConnected, value: _stayConnected);
     }
     catch  (e) {
-      await LoggerService.log('<UserService> Write Connected User Object Data To SecureStorage >>> ERROR: ${e.toString()}');
+      await LoggerService.log('<ConnectedUserService> Write Connected User Object Data To SecureStorage >>> ERROR: ${e.toString()}');
       developer.log(
         'writeConnectedUserObjectDataToSecureStorage',
-        name: 'UserService',
+        name: 'ConnectedUserService',
         error: 'Write Connected User Object Data To SecureStorage >>> ERROR: ${e.toString()}',
       );
       return null;
@@ -142,16 +142,64 @@ class ConnectedUserService {
       await secureStorage.write(key: Constants.rotaryUserType, value: EnumToString.parse(aUserType));
     }
     catch  (e) {
-      await LoggerService.log('<UserService> Write Connected User Type To SecureStorage >>> ERROR: ${e.toString()}');
+      await LoggerService.log('<ConnectedUserService> Write Connected User Type To SecureStorage >>> ERROR: ${e.toString()}');
       developer.log(
         'writeConnectedUserTypeToSecureStorage',
-        name: 'UserService',
+        name: 'ConnectedUserService',
         error: 'Write Connected User Type To SecureStorage >>> ERROR: ${e.toString()}',
       );
       return null;
     }
   }
   //#endregion
+
+  //#endregion
+
+  //#region Rotary Role Enum Data ==>> Secure Storage
+
+  //#region Read Rotary Role Enum Data From Secure Storage [ReadFromSS]
+  //=============================================================================
+  Future<Constants.RotaryRolesEnum> readRotaryRoleEnumDataFromSecureStorage() async {
+    Constants.RotaryRolesEnum _rotaryRoleEnum;
+    try{
+      final secureStorage = new FlutterSecureStorage();
+      _rotaryRoleEnum = EnumToString.fromString(Constants.RotaryRolesEnum.values, await secureStorage.read(key: Constants.rotaryRoleEnum));
+      return _rotaryRoleEnum;
+    }
+    catch  (e) {
+      await LoggerService.log('<ConnectedUserService> Read Rotary Role Enum Data From SecureStorage >>> ERROR: ${e.toString()}');
+      developer.log(
+        'readRotaryRoleEnumDataFromSecureStorage',
+        name: 'ConnectedUserService',
+        error: 'Read Rotary Role Enum Data From SecureStorage >>> ERROR: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+  //#endregion
+
+  //#region Write Rotary Role Enum Data To Secure Storage [WriteToSS]
+  //=============================================================================
+  Future writeRotaryRoleEnumDataToSecureStorage(Constants.RotaryRolesEnum aRotaryRolesEnum) async {
+    try {
+      final secureStorage = new FlutterSecureStorage();
+      await secureStorage.write(key: Constants.rotaryRoleEnum, value: EnumToString.parse(aRotaryRolesEnum));
+    }
+    catch  (e) {
+      await LoggerService.log('<ConnectedUserService> Write Rotary Role Enum Data To SecureStorage >>> ERROR: ${e.toString()}');
+      developer.log(
+        'writeRotaryRoleEnumDataToSecureStorage',
+        name: 'ConnectedUserService',
+        error: 'Write Rotary Role Enum Data To SecureStorage >>> ERROR: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+  //#endregion
+
+  //#endregion
+
+  //#region Clear Data from Secure Storage
 
   //#region Clear Connected User Object Data From SecureStorage
   //=============================================================================
@@ -167,12 +215,13 @@ class ConnectedUserService {
       await secureStorage.delete(key: Constants.rotaryUserPassword);
       await secureStorage.delete(key: Constants.rotaryUserType);
       await secureStorage.delete(key: Constants.rotaryUserStayConnected);
+      await secureStorage.delete(key: Constants.rotaryRoleEnum);
     }
     catch (e){
-      await LoggerService.log('<UserService> Clear Connected User Object Data From SecureStorage >>> ERROR: ${e.toString()}');
+      await LoggerService.log('<ConnectedUserService> Clear Connected User Object Data From SecureStorage >>> ERROR: ${e.toString()}');
       developer.log(
         'clearConnectedUserObjectDataFromSecureStorage',
-        name: 'UserService',
+        name: 'ConnectedUserService',
         error: 'Clear Connected User Object Data From SecureStorage >>> ERROR: ${e.toString()}',
       );
       return null;
@@ -186,12 +235,13 @@ class ConnectedUserService {
     try {
       final secureStorage = new FlutterSecureStorage();
       await secureStorage.delete(key: Constants.rotaryUserStayConnected);
+      await secureStorage.delete(key: Constants.rotaryRoleEnum);
     }
     catch (e){
-      await LoggerService.log('<UserService> Exit From Application Update SecureStorage >>> ERROR: ${e.toString()}');
+      await LoggerService.log('<ConnectedUserService> Exit From Application Update SecureStorage >>> ERROR: ${e.toString()}');
       developer.log(
         'exitFromApplicationUpdateSecureStorage',
-        name: 'UserService',
+        name: 'ConnectedUserService',
         error: 'Exit From Application Update SecureStorage >>> ERROR: ${e.toString()}',
       );
       return null;

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:rotary_net/objects/connected_login_object.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
@@ -11,32 +12,53 @@ class LoginService {
 
   //#region * User Login Confirm At SERVER [POST]
   // ===============================================================
-  Future<ConnectedUserObject> userLoginConfirmAtServer(ConnectedUserObject aConnectedUserObj) async {
+  Future<ConnectedLoginObject> userLoginConfirmAtServer(ConnectedUserObject aConnectedUserObj, {bool withPopulate = false}) async {
     try {
       ConnectedUserObject connectedUserObj;
       // Convert UserObject To Json
       final jsonToPost = aConnectedUserObj.connectedUserToJson(aConnectedUserObj);
 
       // Check If User Login Parameters are OK !!!
-      String _getUrlConnectedUser = GlobalsService.applicationServer + Constants.rotaryUserLoginUrl;
+      String _getUrlConnectedUser;
+      if (withPopulate) _getUrlConnectedUser = GlobalsService.applicationServer + Constants.rotaryUserUrl + "/loginPopulated";
+      else _getUrlConnectedUser = GlobalsService.applicationServer + Constants.rotaryUserUrl + "/login";
+
       Response response = await post(_getUrlConnectedUser, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
         String jsonResponse = response.body;
+        print('------ LoginService / userLoginConfirmAtServer / jsonResponse: $jsonResponse');
 
-        if (jsonResponse != "")
+        if ((jsonResponse != '') && (jsonResponse != null))
         {
-          await LoggerService.log('<RegistrationService> User Login Confirm At SERVER >>> OK\nHeader: $jsonResponse');
+          await LoggerService.log('<LoginService> User Login Confirm At SERVER >>> OK\nHeader: $jsonResponse');
           // Return full UserObject (with User Name) ===>>> if Login Check OK
           var _connectedUser = jsonDecode(jsonResponse);
 
-          connectedUserObj = ConnectedUserObject.fromJson(_connectedUser);
-          return connectedUserObj;
+          connectedUserObj = ConnectedUserObject.fromJson(_connectedUser, withPopulate: withPopulate);
+
+          /// RoleEnum: fetch from json --->>> based on query type (?withPopulate)
+          int _roleEnumValue;
+          Constants.RotaryRolesEnum _roleEnumDisplay;
+          if (withPopulate) {
+            _roleEnumValue = _connectedUser['personCardId']['roleId']["roleEnum"];
+            /// RoleId: Convert [int] to [Enum]
+            Constants.RotaryRolesEnum roleEnum;
+            _roleEnumDisplay = roleEnum.convertToEnum(_roleEnumValue);
+          }
+          else {
+            _roleEnumDisplay = null;
+          }
+
+          return ConnectedLoginObject(
+                connectedUserObject: connectedUserObj,
+                rotaryRoleEnum: _roleEnumDisplay
+          );
         } else {
-          await LoggerService.log('<RegistrationService> User Login Confirm At SERVER >>> Failed');
-          print('<RegistrationService> User Login Confirm At SERVER >>> Failed');
+          await LoggerService.log('<LoginService> User Login Confirm At SERVER >>> Failed');
+          print('<LoginService> User Login Confirm At SERVER >>> Failed');
           // Return Empty UserObject (without User Name)
           return null;  // ===>>> if Login Check Failed
         }

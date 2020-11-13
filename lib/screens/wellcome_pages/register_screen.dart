@@ -120,7 +120,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         var userGlobal = ConnectedUserGlobal();
         userGlobal.setConnectedUserObject(connectedUserObj);
 
-        // openLoginStateMessageScreen();
+        /// 4. App Global: Clear RotaryRoleEnum
+        userGlobal.setRotaryRoleEnum(null);
+
+        /// 5. Open Rotary MainPage Screen();
         openRotaryMainPageScreen();
       }
     }

@@ -5,6 +5,7 @@ import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/objects/user_object.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
+import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/services/user_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:rotary_net/shared/loading.dart';
@@ -127,9 +128,18 @@ class _UserSettingsScreen extends State<UserSettingsScreen> {
     /// 1. Secure Storage: Write to SecureStorage
     await connectedUserService.writeConnectedUserObjectDataToSecureStorage(_newConnectedUserObj);
 
-    /// 2. App Global: Update Global Current Connected User
+    /// 2. Secure Storage: Write RotaryRoleEnum to SecureStorage
+    PersonCardService personCardService = PersonCardService();
+    print('onChangeDropdownUserItem / _newConnectedUserObj.personCardId: ${_newConnectedUserObj.personCardId}');
+    Constants.RotaryRolesEnum _roleEnum = await personCardService.getPersonCardByIdRoleEnum(_newConnectedUserObj.personCardId);
+    await connectedUserService.writeRotaryRoleEnumDataToSecureStorage(_roleEnum);
+
+    /// 3. App Global: Update Global Current Connected User
     var userGlobal = ConnectedUserGlobal();
-    userGlobal.setConnectedUserObject(_newConnectedUserObj);
+    await userGlobal.setConnectedUserObject(_newConnectedUserObj);
+
+    /// 4. App Global: Update RotaryRoleEnum
+    await userGlobal.setRotaryRoleEnum(_roleEnum);
 
     print('LoginScreen / ChangeUserForDebug / NewConnectedUserObj: $_newConnectedUserObj');
   }

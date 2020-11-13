@@ -8,8 +8,8 @@ const String rotaryApplicationName = 'מועדון רוטרי';
 
 //#region Application Parameters: SharedPreferences [Key Name]
 // ==============================================================
-// const String rotaryDebugMode = 'Rotary Debug Mode';
-const String rotaryApplicationMode = 'Rotary Application Mode';
+const String rotaryApplicationRunningMode = 'Rotary Running Mode';
+const String rotaryApplicationType = 'Rotary Application Mode';
 //#endregion
 
 //#region Application parameters [Globals Values]
@@ -36,7 +36,7 @@ const String rotaryPersonCardUrl = '/api/personcard';
 const String rotaryEventUrl = '/api/event';
 const String rotaryMessageUrl = '/api/message';
 
-const String rotaryUserLoginUrl = '/api/user/login';
+// const String rotaryUserLoginUrl = '/api/user/login';
 
 const String rotaryMenuPagesContentUrl = '/api/menupage';
 const String rotaryUtilContentUrl = '/api/util';
@@ -67,6 +67,7 @@ enum SearchTypeEnum{PersonCard, Event}
 
 //#region RotaryRoles [Key Name]+[Enum]
 // ==============================================================
+const String rotaryRoleEnum = 'Rotary Role Enum';
 enum RotaryRolesEnum{RotaryManager, Gizbar, AreaManager, ClusterManager, ClubManager, Member}
 
 extension RotaryRolesEnumExtension on RotaryRolesEnum {

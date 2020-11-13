@@ -4,6 +4,7 @@ import 'package:rotary_net/shared/constants.dart' as Constants;
 class ConnectedUserGlobal {
 
   static ConnectedUserObject currentConnectedUserObject;
+  static Constants.RotaryRolesEnum currentRotaryRoleEnum;
 
   static final ConnectedUserGlobal _connectedUser = ConnectedUserGlobal._internal();
 
@@ -21,5 +22,13 @@ class ConnectedUserGlobal {
 
   setConnectedUserType(Constants.UserTypeEnum aUserType){
     currentConnectedUserObject.userType = aUserType;
+  }
+
+  Constants.RotaryRolesEnum getRotaryRoleEnum(){
+    return currentRotaryRoleEnum;
+  }
+
+  setRotaryRoleEnum(Constants.RotaryRolesEnum aRotaryRolesEnum){
+    currentRotaryRoleEnum = aRotaryRolesEnum;
   }
 }

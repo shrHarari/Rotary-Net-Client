@@ -373,6 +373,57 @@ class PersonCardService {
 
   //#endregion
 
+  //#region * Get Person Card By Id RoleEnum [GET]
+  // =========================================================
+  Future getPersonCardByIdRoleEnum(String aPersonCardId) async {
+    try {
+      /// In case of User (Guest) without PersonCardObject ===>>> return Empty PersonCardObject
+      if (aPersonCardId == null) return null;
+
+      String _getUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId/roleEnum";
+      Response response = await get(_getUrlPersonCard);
+
+      if (response.statusCode <= 300) {
+        String jsonResponse = response.body;
+
+        if (jsonResponse != "")
+        {
+          await LoggerService.log('<PersonCardService> Get PersonCard By Id RoleEnum >>> OK >>> PersonCardFromJSON: $jsonResponse');
+
+          var _personCard = jsonDecode(jsonResponse);
+
+          /// RoleEnum: fetch from json --->>> based on query type (?withPopulate)
+          int _roleEnumValue;
+          Constants.RotaryRolesEnum _roleEnumDisplay;
+          _roleEnumValue = _personCard['roleId']["roleEnum"];
+          /// RoleId: Convert [int] to [Enum]
+          Constants.RotaryRolesEnum roleEnum;
+          _roleEnumDisplay = roleEnum.convertToEnum(_roleEnumValue);
+
+          return _roleEnumDisplay;
+        } else {
+          await LoggerService.log('<PersonCardService> Get PersonCard By Id RoleEnum >>> Failed');
+          print('<PersonCardService>  Get PersonCard By Id RoleEnum >>> Failed');
+          return null;
+        }
+      } else {
+        await LoggerService.log('<PersonCardService> Get PersonCard By Id RoleEnum >>> Failed: ${response.statusCode}');
+        print('<PersonCardService> Get PersonCard By Id RoleEnum >>> Failed: ${response.statusCode}');
+        return null;
+      }
+    }
+    catch (e) {
+      await LoggerService.log('<PersonCardService> Get PersonCard By Id RoleEnum >>> ERROR: ${e.toString()}');
+      developer.log(
+        'getPersonCardByIdRoleEnum',
+        name: 'PersonCardService',
+        error: 'Get PersonCard By Id RoleEnum >>> ERROR: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+  //#endregion
+
   //#region CRUD: Person Card
 
   //#region * Insert PersonCard [WriteToDB]

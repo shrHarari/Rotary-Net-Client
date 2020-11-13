@@ -66,9 +66,9 @@ class ConnectedUserObject {
       '}';
   }
 
-  factory ConnectedUserObject.fromJson(Map<String, dynamic> parsedJson){
+  factory ConnectedUserObject.fromJson(Map<String, dynamic> parsedJson, {bool withPopulate = false}){
     /// Deserialize the parsedJson string to UserObject
-    // UserType: Convert [String] to [Enum]
+    /// UserType: Convert [String] to [Enum]
     Constants.UserTypeEnum _userType;
     _userType = EnumToString.fromString(Constants.UserTypeEnum.values, parsedJson['userType']);
 
@@ -76,10 +76,15 @@ class ConnectedUserObject {
     bool _stayConnected;
     parsedJson['stayConnected'] == 0 ? _stayConnected = false : _stayConnected = true;
 
+    // PersonCardId: fetch from json --->>> depend on query type
+    String _personCardId;
+    if (withPopulate) _personCardId = parsedJson['personCardId']["_id"];
+    else _personCardId = parsedJson['personCardId'];
+
     if (parsedJson['_id'] == null) {
       return ConnectedUserObject(
           userId: '',
-          personCardId: parsedJson['personCardId'],
+          personCardId: _personCardId,
           email: parsedJson['email'],
           firstName : parsedJson['firstName'],
           lastName : parsedJson['lastName'],
@@ -90,7 +95,7 @@ class ConnectedUserObject {
     } else {
       return ConnectedUserObject(
           userId: parsedJson['_id'],
-          personCardId: parsedJson['personCardId'],
+          personCardId: parsedJson['personCardId']["_id"],
           email: parsedJson['email'],
           firstName : parsedJson['firstName'],
           lastName : parsedJson['lastName'],
@@ -115,11 +120,11 @@ class ConnectedUserObject {
 
   factory ConnectedUserObject.fromMap(Map<String, dynamic> jsonFromMap) {
 
-    // UserType: Convert [String] to [Enum]
+    /// UserType: Convert [String] to [Enum]
     Constants.UserTypeEnum _userType;
     _userType = EnumToString.fromString(Constants.UserTypeEnum.values, jsonFromMap['userType']);
 
-    // StayConnected: Convert [int] to [bool]
+    /// StayConnected: Convert [int] to [bool]
     bool _stayConnected;
     jsonFromMap['stayConnected'] == 0 ? _stayConnected = false : _stayConnected = true;
 
@@ -139,26 +144,14 @@ class ConnectedUserObject {
     // UserType: Convert [Enum] to [String]
     String _userType = EnumToString.parse(userType);
 
-    if (userId == null) {
-      return {
-        // '_id': userId,
-        'email': email,
-        'firstName': firstName,
-        'lastName': lastName,
-        'password': password,
-        'userType': _userType,
-        'stayConnected': stayConnected ? 1 : 0,
-      };
-    } else {
-      return {
-        '_id': userId,
-        'email': email,
-        'firstName': firstName,
-        'lastName': lastName,
-        'password': password,
-        'userType': _userType,
-        'stayConnected': stayConnected ? 1 : 0,
-      };
-    }
+    return {
+      if ((userId != null) && (userId != '')) '_id': userId,
+      'email': email,
+      'firstName': firstName,
+      'lastName': lastName,
+      'password': password,
+      'userType': _userType,
+      'stayConnected': stayConnected ? 1 : 0,
+    };
   }
 }

@@ -146,11 +146,6 @@ class PersonCardObject {
   }
 
   factory PersonCardObject.fromMap(Map<String, dynamic> jsonFromMap) {
-
-    // RoleId: Convert [int] to [Enum]
-    // Constants.RotaryRolesEnum _roleEnum;
-    // Constants.RotaryRolesEnum _roleEnumValue = _roleEnum.convertToEnum(jsonFromMap['roleEnum']);
-
     return PersonCardObject(
       // personCardId: jsonFromMap['_id'],
       email: jsonFromMap['email'],
@@ -175,11 +170,6 @@ class PersonCardObject {
   }
 
   Map<String, dynamic> toMap() {
-
-    // // RoleEnum: Convert [Enum] to [int]
-    // Constants.RotaryRolesEnum _roleEnum = roleEnum;
-    // int _roleEnumValue = _roleEnum.value;
-
     return {
       if ((personCardId != null) && (personCardId != '')) '_id': personCardId,
       'email': email,

@@ -11,12 +11,14 @@ import 'package:rotary_net/services/connection_service.dart';
 import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/services/route_generator_service.dart';
+import 'package:rotary_net/shared/constants.dart' as Constants;
 
 void main() => runApp(RotaryNetApp());
 
 class RotaryNetApp extends StatelessWidget {
 
   final ConnectedUserService connectedUserService = ConnectedUserService();
+  final userGlobal = ConnectedUserGlobal();
 
   //#region Get All Required Data For Build
   Future<DataRequiredForBuild> getAllRequiredDataForBuild() async {
@@ -26,23 +28,28 @@ class RotaryNetApp extends StatelessWidget {
     await ConnectionService.checkConnection();
 
     ConnectedUserObject _connectedUserObj = await initializeConnectedUserObject();
+    Constants.RotaryRolesEnum _rotaryRolesEnum = await initializeRotaryRolesEnum();
 
     return DataRequiredForBuild(
-      applicationMode: _applicationMode,
       connectedUserObj: _connectedUserObj,
+      rotaryRolesEnum: _rotaryRolesEnum,
+      applicationMode: _applicationMode,
     );
   }
   //#endregion
 
-  //#region Initialize Global Values [LOGGER, DEBUG Mode]
+  //#region Initialize Global Values [LOGGER, ApplicationType, ApplicationRunningMode]
   Future <bool> initializeGlobalValues() async {
     await LoggerService.initializeLogging();
     await LoggerService.log('<${this.runtimeType}> Logger was initiated');
 
-    bool _applicationMode = await GlobalsService.getApplicationMode();
-    await GlobalsService.setApplicationMode(_applicationMode);
+    bool _applicationType = await GlobalsService.getApplicationType();
+    await GlobalsService.setApplicationType(_applicationType);
 
-    return _applicationMode;
+    bool _applicationRunningMode = await GlobalsService.getApplicationType();
+    await GlobalsService.setApplicationRunningMode(_applicationRunningMode);
+
+    return _applicationRunningMode;
   }
   //#endregion
 
@@ -50,10 +57,19 @@ class RotaryNetApp extends StatelessWidget {
   Future <ConnectedUserObject> initializeConnectedUserObject() async {
     ConnectedUserObject _currentConnectedUserObj = await connectedUserService.readConnectedUserObjectDataFromSecureStorage();
 
-    var userGlobal = ConnectedUserGlobal();
     userGlobal.setConnectedUserObject(_currentConnectedUserObj);
 
     return _currentConnectedUserObj;
+  }
+  //#endregion
+
+  //#region Initialize RotaryRolesEnum [CONNECTED USER]
+  Future <Constants.RotaryRolesEnum> initializeRotaryRolesEnum() async {
+    Constants.RotaryRolesEnum _currentRotaryRolesEnum  = await connectedUserService.readRotaryRoleEnumDataFromSecureStorage();
+
+    userGlobal.setRotaryRoleEnum(_currentRotaryRolesEnum);
+
+    return _currentRotaryRolesEnum;
   }
   //#endregion
 
@@ -125,10 +141,12 @@ class RotaryNetApp extends StatelessWidget {
 
 class DataRequiredForBuild {
   ConnectedUserObject connectedUserObj;
+  Constants.RotaryRolesEnum rotaryRolesEnum;
   bool applicationMode;
 
   DataRequiredForBuild({
     this.connectedUserObj,
+    this.rotaryRolesEnum,
     this.applicationMode,
   });
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rotary_net/objects/connected_login_object.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/screens/rotary_main_pages/rotary_main_page_screen.dart';
@@ -78,10 +79,10 @@ class _LoginScreenState extends State<LoginScreen> {
           Constants.UserTypeEnum.Guest,
           newStayConnected);
 
-      /// Send User Login Request ===>>> Check if Login Parameters are OK
+      /// 1. Send User Login Request ===>>> Check if Login Parameters are OK
       /// Check if user exist by Email & Password
-      ConnectedUserObject currentConnectedUserObj = await loginService.userLoginConfirmAtServer(newConnectedUserObj);
-      if (currentConnectedUserObj == null) {
+      ConnectedLoginObject connectedLoginObj = await loginService.userLoginConfirmAtServer(newConnectedUserObj, withPopulate: true);
+      if ((connectedLoginObj == null) ||(connectedLoginObj.connectedUserObject == null)) {
         setState(() {
           loginConfirmationCheck = false;
           error = 'שגיאה בנתונים, נסה שוב...';
@@ -93,15 +94,22 @@ class _LoginScreenState extends State<LoginScreen> {
           loading = false;
         });
 
-        /// Update ConnectedUserObject.StayConnected
-        await currentConnectedUserObj.setStayConnected(newStayConnected);
+        /// 2. Update ConnectedUserObject.StayConnected
+        await connectedLoginObj.connectedUserObject.setStayConnected(newStayConnected);
 
-        /// Write UserObject with new data [StayConnected] to SecureStorage
-        await connectedUserService.writeConnectedUserObjectDataToSecureStorage(currentConnectedUserObj);
+        /// 3. Secure Storage: Write UserObject with new data [StayConnected] to SecureStorage
+        await connectedUserService.writeConnectedUserObjectDataToSecureStorage(connectedLoginObj.connectedUserObject);
 
-        print('LoginScreen / performLoginProcess / currentConnectedUserObj: $currentConnectedUserObj');
+        /// 4. Secure Storage: Write RotaryRoleEnum to SecureStorage
+        await connectedUserService.writeRotaryRoleEnumDataToSecureStorage(connectedLoginObj.rotaryRoleEnum);
+
+        print('LoginScreen / performLoginProcess / currentConnectedUserObj: ${connectedLoginObj.connectedUserObject}');
+        /// 5. App Global: Update Global Current Connected User
         var userGlobal = ConnectedUserGlobal();
-        userGlobal.setConnectedUserObject(currentConnectedUserObj);
+        await userGlobal.setConnectedUserObject(connectedLoginObj.connectedUserObject);
+
+        /// 4. App Global: Update RotaryRoleEnum
+        await userGlobal.setRotaryRoleEnum(connectedLoginObj.rotaryRoleEnum);
 
         openRotaryMainScreen();
       }

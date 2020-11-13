@@ -12,6 +12,7 @@ import 'package:rotary_net/screens/rotary_users_pages/rotary_users_list_page_scr
 import 'package:rotary_net/screens/settings/user_settings_screen.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
+import 'package:rotary_net/utils/utils_class.dart';
 
 class ApplicationMenuDrawer extends StatefulWidget {
 
@@ -24,33 +25,20 @@ class ApplicationMenuDrawer extends StatefulWidget {
 class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
 
   ConnectedUserObject currentConnectedUserObj;
-  bool userHasPermission = false;
+  Constants.RotaryRolesEnum currentRotaryRolesEnum;
+  bool userHasAdminPermission = false;
+  bool userHasRotaryPermission = false;
   Widget hebrewMessageCreatedTimeLabel;
 
   @override
   void initState() {
     currentConnectedUserObj = ConnectedUserGlobal.currentConnectedUserObject;
-    userHasPermission = getUserPermission();
+    currentRotaryRolesEnum = ConnectedUserGlobal.currentRotaryRoleEnum;
+
+    userHasAdminPermission = Utils.getAdminPermission(currentConnectedUserObj.userType);
+    userHasRotaryPermission = Utils.getRotaryPermission(currentRotaryRolesEnum);
     super.initState();
   }
-
-  //#region Get User Permission
-  bool getUserPermission()  {
-    bool _userHasPermission = false;
-
-    switch (currentConnectedUserObj.userType) {
-      case Constants.UserTypeEnum.SystemAdmin:
-        _userHasPermission = true;
-        break;
-      case  Constants.UserTypeEnum.RotaryMember:
-        _userHasPermission = false;
-        break;
-      case  Constants.UserTypeEnum.Guest:
-        _userHasPermission = false;
-    }
-    return _userHasPermission;
-  }
-  //#endregion
 
   //#region Open Personal Area Screen
   openPersonalAreaScreen() async {
@@ -135,24 +123,10 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
                   title: Text('תנאי שימוש'),
                   onTap: () => {Navigator.of(context).pop()},
                 ),
-                ListTile(
-                  leading: Icon(Icons.settings),
-                  title: Text('הגדרות'),
-                  onTap: () => {
-                    Navigator.of(context).pop(),
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          UserSettingsScreen(),
-                      ),
-                    )
-                  },
-                ),
                 Divider(),
 
-                if (userHasPermission)
+                if (userHasRotaryPermission)
                   ListTile(
                     leading: Icon(Icons.event),
                     title: Text('הוספת אירוע'),
@@ -172,7 +146,7 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
                     },
                   ),
 
-                if (userHasPermission)
+                if (userHasRotaryPermission)
                   ListTile(
                     leading: Icon(Icons.message),
                     title: Text('הוספת הודעה'),
@@ -194,9 +168,25 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
                     },
                   ),
 
-                if (userHasPermission) Divider(),
+                if (userHasRotaryPermission) Divider(),
 
-                if (userHasPermission)
+                ListTile(
+                  leading: Icon(Icons.settings),
+                  title: Text('הגדרות'),
+                  onTap: () => {
+                    Navigator.of(context).pop(),
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            UserSettingsScreen(),
+                      ),
+                    )
+                  },
+                ),
+
+                if (userHasAdminPermission)
                   ListTile(
                     leading: Icon(Icons.verified_user),
                     title: Text('ניהול משתמשים'),
@@ -212,7 +202,7 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
                       ),
                     },
                   ),
-                if (userHasPermission) Divider(),
+                if (userHasAdminPermission) Divider(),
 
                 ListTile(
                   leading: Icon(Icons.exit_to_app),

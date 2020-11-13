@@ -23,7 +23,8 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
   DataRequiredForBuild currentDataRequired;
 
   String appBarTitle = 'Application Settings';
-  bool newApplicationMode;
+  bool newApplicationType;
+  bool newApplicationRunningMode;
   bool isFirst = true;
   bool loading = true;
 
@@ -52,10 +53,17 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
   }
   //#endregion
 
-  //#region Update Application Mode
-  void updateApplicationMode(bool aApplicationMode) {
-    GlobalsService.setApplicationMode(aApplicationMode);
-    GlobalsService.writeApplicationModeToSP(aApplicationMode);
+  //#region Update Application Type
+  void updateApplicationType(bool aApplicationType) {
+    GlobalsService.setApplicationType(aApplicationType);
+    GlobalsService.writeApplicationTypeToSP(aApplicationType);
+  }
+  //#endregion
+
+  //#region Update Application RunningMode
+  void updateApplicationRunningMode(bool aApplicationRunningMode) {
+    GlobalsService.setApplicationRunningMode(aApplicationRunningMode);
+    GlobalsService.writeApplicationRunningModeToSP(aApplicationRunningMode);
   }
   //#endregion
 
@@ -78,7 +86,8 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
 
     // Initial Value
     if (isFirst){
-      newApplicationMode = GlobalsService.applicationMode;
+      newApplicationType = GlobalsService.applicationType;
+      newApplicationRunningMode = GlobalsService.applicationRunningMode;
       isFirst = false;
     }
 
@@ -125,15 +134,13 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
                     await startAllOver();
                   }
               ),
+              SizedBox(height: 40.0,),
 
-              SizedBox(height: 10.0),
-
-              ///============ Application Mode SETTINGS ============
-              SizedBox(height: 30.0,),
+              ///============ Application SETTINGS ============
               Row(
                 children: <Widget>[
                   Expanded(
-                    flex: 5,
+                    flex: 3,
                     child: Divider(
                       color: Colors.grey[600],
                       thickness: 2.0,
@@ -142,7 +149,7 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
                   Expanded(
                     flex: 9,
                     child: Text (
-                      'Application Mode',
+                      'Application Settings',
                       style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 16.0,
@@ -151,7 +158,7 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
                     ),
                   ),
                   Expanded(
-                    flex: 5,
+                    flex: 3,
                     child: Divider(
                       color: Colors.grey[600],
                       thickness: 2.0,
@@ -159,29 +166,105 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 10.0,),
+              SizedBox(height: 20.0,),
 
               Row(
                 children: <Widget>[
                   Expanded(
-                    flex: 8,
+                    flex: 6,
                     child: Text(
-                      'Application Mode\n(ON for SERVER):',
+                      'Application Type:',
+                      style: TextStyle(
+                          color: Colors.blue[800],
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      'Client',
+                      style: TextStyle(
+                          color: Colors.blue[800],
+                          fontSize: 16.0),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 4,
+                    child: Switch(
+                      value: newApplicationType,
+                      onChanged: (bool newValue) {
+                        updateApplicationType(newValue);
+                        setState(() {
+                          newApplicationType = newValue;
+                        });
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      'Network',
                       style: TextStyle(
                           color: Colors.blue[800],
                           fontSize: 16.0),
                     ),
                   ),
+                ],
+              ),
+              SizedBox(height: 20.0,),
+
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 6,
+                    child: Text(
+                      'Application Running Mode:',
+                      style: TextStyle(
+                          color: Colors.blue[800],
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+
+              Row(
+                children: <Widget>[
                   Expanded(
                     flex: 3,
+                    child: Text(
+                      'Debug',
+                      style: TextStyle(
+                          color: Colors.blue[800],
+                          fontSize: 16.0),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 4,
                     child: Switch(
-                      value: newApplicationMode,
+                      value: newApplicationRunningMode,
                       onChanged: (bool newValue) {
-                        updateApplicationMode(newValue);
+                        updateApplicationRunningMode(newValue);
                         setState(() {
-                          newApplicationMode = newValue;
+                          newApplicationRunningMode = newValue;
                         });
                       },
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      'Production',
+                      style: TextStyle(
+                          color: Colors.blue[800],
+                          fontSize: 16.0),
                     ),
                   ),
                 ],

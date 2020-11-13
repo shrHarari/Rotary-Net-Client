@@ -292,4 +292,42 @@ class Utils {
 
   }
 //#endregion
+
+  //#region Get Admin Permission
+  static bool getAdminPermission(Constants.UserTypeEnum aUserTypeEnum)  {
+    bool _hasPermission = false;
+
+    switch (aUserTypeEnum) {
+      case Constants.UserTypeEnum.SystemAdmin:
+        _hasPermission = true;
+        break;
+      case  Constants.UserTypeEnum.RotaryMember:
+        _hasPermission = false;
+        break;
+      case  Constants.UserTypeEnum.Guest:
+        _hasPermission = false;
+    }
+    return _hasPermission;
+  }
+  //#endregion
+
+  //#region Get Rotary Permission
+  static bool getRotaryPermission(Constants.RotaryRolesEnum aRotaryRolesEnum)  {
+    bool _hasPermission = false;
+    switch (aRotaryRolesEnum) {
+      case Constants.RotaryRolesEnum.RotaryManager:
+      case Constants.RotaryRolesEnum.AreaManager:
+      case Constants.RotaryRolesEnum.ClusterManager:
+      case Constants.RotaryRolesEnum.ClubManager:
+        _hasPermission = true;
+        break;
+      case Constants.RotaryRolesEnum.Gizbar:
+      case Constants.RotaryRolesEnum.Member:
+        _hasPermission = false;
+        break;
+    }
+    return _hasPermission;
+  }
+//#endregion
+
 }
