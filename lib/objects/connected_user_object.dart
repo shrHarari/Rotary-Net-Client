@@ -5,7 +5,7 @@ import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class ConnectedUserObject {
   final String userId;
-  final String personCardId;
+  String personCardId;
   final String email;
   final String firstName;
   final String lastName;

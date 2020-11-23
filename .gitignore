@@ -29,6 +29,10 @@
 .pub-cache/
 .pub/
 /build/
+/Database/
+/assets/
+.Database
+.assets
 
 # Web related
 lib/generated_plugin_registrant.dart

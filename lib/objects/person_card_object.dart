@@ -110,9 +110,6 @@ class PersonCardObject {
   }
 
   factory PersonCardObject.fromJson(Map<String, dynamic> parsedJson){
-    // // RoleId: Convert [int] to [Enum]
-    // Constants.RotaryRolesEnum _roleEnum;
-    // Constants.RotaryRolesEnum _roleEnumValue = _roleEnum.convertToEnum(parsedJson['roleId']);
 
     List<dynamic> dynMessagesList = parsedJson['messages'] as List<dynamic>;
     List<String> messagesList;

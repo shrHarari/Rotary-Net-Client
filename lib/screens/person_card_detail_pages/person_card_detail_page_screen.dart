@@ -17,6 +17,7 @@ import 'package:rotary_net/services/rotary_role_service.dart';
 import 'package:rotary_net/shared/bubble_box_person_card.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
+import 'package:rotary_net/shared/person_card_image_avatar.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:rotary_net/utils/utils_class.dart';
@@ -289,13 +290,11 @@ class _PersonCardDetailPageScreenState extends State<PersonCardDetailPageScreen>
           child: Row(
             textDirection: TextDirection.rtl,
             children: <Widget>[
-              (aPersonCardObj.pictureUrl == null) || (aPersonCardObj.pictureUrl == '')
-                ? buildEmptyPersonCardImageIcon(Icons.person)
-                : CircleAvatar(
-                    radius: 30.0,
-                    backgroundColor: Colors.blue[900],
-                    backgroundImage: NetworkImage(aPersonCardObj.pictureUrl),
-                  ),
+              PersonCardImageAvatar(
+                argPersonCardPictureUrl: displayPersonCardObject.pictureUrl,
+                argIcon: Icons.person
+              ),
+
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(right: 20.0),
@@ -376,31 +375,6 @@ class _PersonCardDetailPageScreenState extends State<PersonCardDetailPageScreen>
       ],
     );
   }
-
-  //#region Build Empty PersonCard Image Icon
-  Widget buildEmptyPersonCardImageIcon(IconData aIcon, {Function aFunc}) {
-    return Container(
-        height: 60.0,
-        width: 60.0,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Colors.blue[700],
-            style: BorderStyle.solid,
-            width: 1.0,
-          ),
-        ),
-
-        child: Center(
-          child: Icon(aIcon,
-            size: 30.0,
-            color: Colors.grey[700],
-          ),
-        )
-    );
-  }
-  //#endregion
 
   //#region Build Detail Image Icon
   Row buildDetailImageIcon(IconData aIcon, String aTitle, Function aFunc) {

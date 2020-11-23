@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/objects/person_card_object.dart';
 import 'package:rotary_net/objects/person_card_role_and_hierarchy_object.dart';
@@ -8,6 +9,7 @@ import 'package:rotary_net/objects/rotary_area_object.dart';
 import 'package:rotary_net/objects/rotary_club_object.dart';
 import 'package:rotary_net/objects/rotary_cluster_object.dart';
 import 'package:rotary_net/objects/rotary_role_object.dart';
+import 'package:rotary_net/services/connected_user_service.dart';
 import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/services/rotary_area_service.dart';
 import 'package:rotary_net/services/rotary_club_service.dart';
@@ -17,6 +19,7 @@ import 'package:rotary_net/services/aws_service.dart';
 import 'package:rotary_net/shared/decoration_style.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
+import 'package:rotary_net/shared/person_card_image_avatar.dart';
 import 'package:rotary_net/utils/utils_class.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:path/path.dart' as Path;
@@ -76,8 +79,8 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
 
     if (aPersonCard != null)
     {
-      currentPersonCardImage = aPersonCard.pictureUrl;
       isPersonCardExist = true;   /// If Exist ? Update : Insert(Create PersonCardId in DB)
+      currentPersonCardImage = aPersonCard.pictureUrl;
 
       eMailController = TextEditingController(text: aPersonCard.email);
       firstNameController = TextEditingController(text: aPersonCard.firstName);
@@ -436,7 +439,11 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
 
       /// If Exist ? Update(has PersonCardId) : Insert(Mongoose creates new _id)
       String _personCardId = '';
-      if (isPersonCardExist) _personCardId = widget.argPersonCardObject.personCardId;
+      List<String> _messages = [];
+      if (isPersonCardExist) {
+        _personCardId = widget.argPersonCardObject.personCardId;
+        _messages = widget.argPersonCardObject.messages;
+      }
 
       PersonCardObject newPersonCardObj =
           personCardService.createPersonCardAsObject(
@@ -445,14 +452,29 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
               _phoneNumber, _phoneNumberDialCode, _phoneNumberParse, _phoneNumberCleanLongFormat,
               _pictureUrl, _cardDescription, _internetSiteUrl, _address,
               selectedRotaryAreaObj.areaId, selectedRotaryClusterObj.clusterId, selectedRotaryClubObj.clubId,
-              selectedRotaryRoleObj.roleId,
-              widget.argPersonCardObject.messages);
+              selectedRotaryRoleObj.roleId, _messages);
 
       String returnVal;
       if (isPersonCardExist)
         returnVal = await personCardService.updatePersonCardById(newPersonCardObj);
-      else
-        returnVal = await personCardService.insertPersonCard(widget.argConnectedUserObject.userId, newPersonCardObj);
+      else {
+        /// 1. INSERT: Insert the New PersonCard Data
+        PersonCardObject insertedPersonCardObject =
+                await personCardService.insertPersonCard(widget.argConnectedUserObject.userId, newPersonCardObj);
+
+        if ((insertedPersonCardObject.personCardId != null) && (insertedPersonCardObject.personCardId != ''))
+        {
+          returnVal = insertedPersonCardObject.personCardId;
+
+          /// 2. Secure Storage: Write ConnectedUserObject to storage
+          final ConnectedUserService connectedUserService = ConnectedUserService();
+          await connectedUserService.writeConnectedUserPersonCardIdToSecureStorage(insertedPersonCardObject.personCardId);
+
+          /// 3. App Global: Update Global Current Connected User
+          var userGlobal = ConnectedUserGlobal();
+          userGlobal.setConnectedPersonCardId(insertedPersonCardObject.personCardId);
+        }
+      }
 
       if ((returnVal != null) && (returnVal != '') ){
         Navigator.pop(context);
@@ -571,7 +593,12 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
                 child: Column(
                   children: <Widget>[
                     /// ------------------- Input Text Fields ----------------------
-                    buildPersonCardImage(),
+                    PersonCardImageAvatar(
+                      argPersonCardPictureUrl: currentPersonCardImage,
+                      argIcon: Icons.person_add,
+                      argOnTapFunction: pickImageFile
+                    ),
+
                     buildEnabledDoubleTextInputWithImageIcon(
                         firstNameController, 'שם פרטי',
                         lastNameController, 'שם משפחה',
@@ -607,56 +634,6 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
       ],
     );
   }
-
-  //region PersonCard Image
-
-  //#region Build PersonCard Image
-  Widget buildPersonCardImage(){
-    return InkWell(
-      onTap: () async { await pickImageFile(); },
-      child: (currentPersonCardImage == null) || (currentPersonCardImage == '')
-      ? Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
-          child: buildEmptyPersonCardImageIcon(Icons.person_add)
-      )
-      : Padding(
-        padding: const EdgeInsets.only(bottom: 20.0),
-        child: CircleAvatar(
-          radius: 30.0,
-          backgroundColor: Colors.blue[900],
-          backgroundImage: NetworkImage(currentPersonCardImage),
-        ),
-      ),
-    );
-  }
-  //#endregion
-
-  //#region Build Empty PersonCard Image Icon
-  Widget buildEmptyPersonCardImageIcon(IconData aIcon, {Function aFunc}) {
-    return Container(
-        height: 60.0,
-        width: 60.0,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Color(0xFFF05A22),
-            style: BorderStyle.solid,
-            width: 1.0,
-          ),
-        ),
-
-        child: Center(
-          child: Icon(aIcon,
-            size: 30.0,
-            color: Color(0xFFF05A22),
-          ),
-        )
-    );
-  }
-  //#endregion
-
-  //#endregion
 
   //#region INPUT FIELDS
 

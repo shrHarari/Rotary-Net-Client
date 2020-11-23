@@ -161,6 +161,25 @@ class ConnectedUserService {
   }
   //#endregion
 
+  //#region Write Connected User PersonCardId To Secure Storage [WriteToSS]
+  //=============================================================================
+  Future writeConnectedUserPersonCardIdToSecureStorage(String aPersonCardId) async {
+    try{
+      final secureStorage = new FlutterSecureStorage();
+      await secureStorage.write(key: Constants.rotaryUserPersonCardId, value: aPersonCardId);
+    }
+    catch  (e) {
+      await LoggerService.log('<ConnectedUserService> Write Connected User PersonCardId To SecureStorage >>> ERROR: ${e.toString()}');
+      developer.log(
+        'writeConnectedUserPersonCardIdToSecureStorage',
+        name: 'ConnectedUserService',
+        error: 'Write Connected User PersonCardId To SecureStorage >>> ERROR: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+  //#endregion
+
   //#region Write Connected User Type To Secure Storage [WriteToSS]
   //=============================================================================
   Future writeConnectedUserTypeToSecureStorage(Constants.UserTypeEnum aUserType) async {

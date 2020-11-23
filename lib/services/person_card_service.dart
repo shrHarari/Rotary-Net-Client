@@ -440,8 +440,11 @@ class PersonCardService {
         String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
+        final Map parsedResponse = json.decode(jsonResponse);
+        PersonCardObject insertedPersonCardObject = PersonCardObject.fromJson(parsedResponse);
+
         await LoggerService.log('<PersonCardService> Insert PersonCard By Id >>> OK');
-        return jsonResponse;
+        return insertedPersonCardObject;
       } else {
         await LoggerService.log('<PersonCardService> Insert PersonCard By Id >>> Failed >>> ${response.statusCode}');
         print('<PersonCardService> Insert PersonCard By Id >>> Failed >>> ${response.statusCode}');

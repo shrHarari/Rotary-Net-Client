@@ -18,6 +18,7 @@ import 'package:rotary_net/services/rotary_role_service.dart';
 import 'package:rotary_net/shared/decoration_style.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
+import 'package:rotary_net/shared/person_card_image_avatar.dart';
 import 'package:rotary_net/utils/utils_class.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
@@ -652,7 +653,12 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
                 child: Column(
                   children: <Widget>[
                     /// ------------------- Input Text Fields ----------------------
-                    buildPersonCardImage(),
+                    PersonCardImageAvatar(
+                      argPersonCardPictureUrl: currentPersonCardImage,
+                      argIcon: Icons.person_add,
+                      argOnTapFunction: pickImageFile,
+                    ),
+
                     buildEnabledDoubleTextInputWithImageIcon(
                         firstNameController, 'שם פרטי',
                         lastNameController, 'שם משפחה',
@@ -687,56 +693,6 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
       ],
     );
   }
-
-  //region PersonCard Image
-
-  //#region Build PersonCard Image
-  Widget buildPersonCardImage() {
-    return InkWell(
-      onTap: () async {await pickImageFile();},
-      child: (currentPersonCardImage == null) || (currentPersonCardImage == '')
-        ? Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
-          child: buildEmptyPersonCardImageIcon(Icons.person_add)
-        )
-        : Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
-          child: CircleAvatar(
-              radius: 30.0,
-              backgroundColor: Colors.blue[900],
-              backgroundImage: NetworkImage(currentPersonCardImage),
-          ),
-        ),
-    );
-  }
-  //#endregion
-
-  //#region Build Empty PersonCard Image Icon
-  Widget buildEmptyPersonCardImageIcon(IconData aIcon, {Function aFunc}) {
-    return Container(
-        height: 60.0,
-        width: 60.0,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Color(0xFFF05A22),
-            style: BorderStyle.solid,
-            width: 1.0,
-          ),
-        ),
-
-        child: Center(
-          child: Icon(aIcon,
-            size: 30.0,
-            color: Color(0xFFF05A22),
-          ),
-        )
-    );
-  }
-  //#endregion
-
-  //#endregion
 
   //#region INPUT FIELDS
 

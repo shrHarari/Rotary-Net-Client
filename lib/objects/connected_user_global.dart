@@ -24,6 +24,10 @@ class ConnectedUserGlobal {
     currentConnectedUserObject.userType = aUserType;
   }
 
+  setConnectedPersonCardId(String aPersonCardId){
+    currentConnectedUserObject.personCardId = aPersonCardId;
+  }
+
   Constants.RotaryRolesEnum getRotaryRoleEnum(){
     return currentRotaryRoleEnum;
   }

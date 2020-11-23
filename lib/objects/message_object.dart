@@ -48,7 +48,7 @@ class MessageObject {
   }
 
   factory MessageObject.fromJson(Map<String, dynamic> parsedJson){
-    // DateTime: Convert [String] to [DateTime]
+    /// DateTime: Convert [String] to [DateTime]
     DateTime _messageCreatedDateTime = DateTime.parse(parsedJson['messageCreatedDateTime']);
 
     List<dynamic> dynPersonCardsList = parsedJson['personCards'] as List<dynamic>;
