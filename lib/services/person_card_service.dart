@@ -558,6 +558,42 @@ class PersonCardService {
   }
   //#endregion
 
+  //#region * Update PersonCard Image Url By Id [WriteToDB]
+  //=============================================================================
+  Future updatePersonCardImageUrlById(String aPersonCardId, String aPersonCardImageUrl) async {
+    try {
+      Map bodyParams = {
+        "personCardImageUrl": aPersonCardImageUrl
+      };
+
+      String _updateUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/$aPersonCardId/updateImage";
+
+      Response response = await put(_updateUrlPersonCard, body: bodyParams);
+      if (response.statusCode <= 300) {
+        Map<String, String> headers = response.headers;
+        String contentType = headers['content-type'];
+        String jsonResponse = response.body;
+
+        await LoggerService.log('<PersonCardService> Update PersonCard Image Url By Id >>> OK');
+        return jsonResponse;
+      } else {
+        await LoggerService.log('<PersonCardService> Update PersonCard Image Url By Id >>> Failed >>> ${response.statusCode}');
+        print('<PersonCardService> Update PersonCard Image Url By Id >>> Failed >>> ${response.statusCode}');
+        return null;
+      }
+    }
+    catch (e) {
+      await LoggerService.log('<PersonCardService> Update PersonCard Image Url By Id >>> ERROR: ${e.toString()}');
+      developer.log(
+        'updatePersonCardImageUrlById',
+        name: 'PersonCardService',
+        error: 'Update PersonCard Image Url By Id >>> ERROR: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+  //#endregion
+
   //#region * Delete PersonCard By Id [WriteToDB]
   //=============================================================================
   Future deletePersonCardById(PersonCardObject aPersonCardObj) async {

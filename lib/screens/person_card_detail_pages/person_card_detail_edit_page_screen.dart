@@ -9,6 +9,7 @@ import 'package:rotary_net/objects/rotary_area_object.dart';
 import 'package:rotary_net/objects/rotary_club_object.dart';
 import 'package:rotary_net/objects/rotary_cluster_object.dart';
 import 'package:rotary_net/objects/rotary_role_object.dart';
+import 'package:rotary_net/services/aws_service.dart';
 import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/services/rotary_area_service.dart';
 import 'package:rotary_net/services/rotary_club_service.dart';
@@ -34,15 +35,13 @@ class PersonCardDetailEditPageScreen extends StatefulWidget {
 
 class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPageScreen> {
 
-  final PersonCardService personCardService = PersonCardService();
-
   final formKey = GlobalKey<FormState>();
-
-  Future<PersonCardRoleAndHierarchyListObject> personCardRoleAndHierarchyListObjectForBuild;
-  PersonCardRoleAndHierarchyListObject displayPersonCardRoleAndHierarchyListObject;
+  final PersonCardService personCardService = PersonCardService();
 
   //#region Declare Variables
   String currentPersonCardImage;
+  Future<PersonCardRoleAndHierarchyListObject> personCardRoleAndHierarchyListObjectForBuild;
+  PersonCardRoleAndHierarchyListObject displayPersonCardRoleAndHierarchyListObject;
 
   TextEditingController eMailController;
   TextEditingController firstNameController;
@@ -377,6 +376,10 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
   //#region Update PersonCard
   Future updatePersonCard(PersonCardsListBloc aPersonCardBloc) async {
 
+    setState(() {
+      loading = true;
+    });
+
     bool validationVal = await checkValidation();
 
     if (validationVal){
@@ -395,9 +398,9 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
       String _address = (addressController.text != null) ? (addressController.text) : '';
 
       String _pictureUrl = '';
-      if (currentPersonCardImage != null)
-        _pictureUrl = currentPersonCardImage;
+      if (currentPersonCardImage != null) _pictureUrl = currentPersonCardImage;
 
+      /// No Insert (Exist) ! Only Update(has PersonCardId)
       PersonCardObject _newPersonCardObj = personCardService.createPersonCardAsObject(
           widget.argPersonCardObject.personCardId,
           _email, _firstName, _lastName, _firstNameEng, _lastNameEng,
@@ -414,12 +417,34 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
       await aPersonCardBloc.updatePersonCardById(widget.argPersonCardObject, _newPersonCardObj);
 
       /// Return multiple data using MAP
-      Map<String, dynamic> returnMap = {
+      Map<String, dynamic> returnPersonCardDataMap = {
         "PersonCardObject": _newPersonCardObj,
         "PersonCardHierarchyTitle": _personCardHierarchyTitle
       };
-      Navigator.pop(context, returnMap);
+      FocusScope.of(context).requestFocus(FocusNode());
+      Navigator.pop(context, returnPersonCardDataMap);
     }
+    setState(() {
+      loading = false;
+    });
+  }
+  //#endregion
+
+  //#region Return To PersonCard Page
+  Future returnToPersonCardPage() async {
+    String _pictureUrl = '';
+    if (currentPersonCardImage != null) _pictureUrl = currentPersonCardImage;
+
+    PersonCardObject _newPersonCardObj = widget.argPersonCardObject;
+    _newPersonCardObj.setPictureUrl(_pictureUrl);
+
+    /// Return multiple data using MAP
+    final returnPersonCardDataMap = {
+      "PersonCardObject": _newPersonCardObj,
+      "PersonCardHierarchyTitle": null
+    };
+    FocusScope.of(context).requestFocus(FocusNode());
+    Navigator.pop(context, returnPersonCardDataMap);
   }
   //#endregion
 
@@ -427,36 +452,62 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
   Future <void> pickImageFile() async {
 
     ImagePicker imagePicker = ImagePicker();
-    PickedFile _compressedImage = await imagePicker.getImage(
+    PickedFile compressedPickedFile = await imagePicker.getImage(
         source: ImageSource.gallery,
         imageQuality: 80,
         maxHeight: 800
     );
 
-    if (_compressedImage != null)
+    setState(() {
+      loading = true;
+    });
+
+    String originalImageFileName;
+
+    if (compressedPickedFile != null)
     {
+      /// If currentPersonCardImage Exists on Client --->>> Delete Original file
+      String personCardImagesDirectory = await Utils.createDirectoryInAppDocDir(Constants.rotaryPersonCardImagesFolderName);
       if ((currentPersonCardImage != null) && (currentPersonCardImage != ''))
       {
         File originalImageFile = File(currentPersonCardImage);
-        originalImageFile.delete();
+        originalImageFileName = Path.basename(originalImageFile.path);
+
+        String localFilePath = '$personCardImagesDirectory/$originalImageFileName';
+        File localImageFile = File(localFilePath);
+        localImageFile.delete();
       }
 
-      File _pickedPictureFile = File(_compressedImage.path);
-      String _newPersonCardImagesDirectory = await Utils.createDirectoryInAppDocDir('assets/images/person_card_images');
-      String _newImageFileName =  Path.basename(_pickedPictureFile.path);
+      // copy the New CompressedPickedFile to a new path --->>> On Client
+      File pickedPictureFile = File(compressedPickedFile.path);
+      String copyImageFileName = '${widget.argPersonCardObject.personCardId}_${DateTime.now()}.jpg';
+      String copyFilePath = '$personCardImagesDirectory/$copyImageFileName';
 
-      String _copyFilePath = '$_newPersonCardImagesDirectory/$_newImageFileName';
+      await pickedPictureFile.copy(copyFilePath).then((File newImageFile) async {
+        if (newImageFile != null) {
 
-      // copy the file to a new path
-      await _pickedPictureFile.copy(_copyFilePath).then((File _newImageFile) {
-        if (_newImageFile != null) {
+          /// START Uploading
+          Map<String, dynamic> uploadReturnVal;
 
-          setState(() {
-            currentPersonCardImage = _newImageFile.path;
-          });
+          String fileType = Path.extension(compressedPickedFile.path);      /// <<<---- [.JPG]
+
+          uploadReturnVal = await AwsService.awsUploadImageToServer(
+              widget.argPersonCardObject.personCardId,
+              compressedPickedFile, copyImageFileName, fileType,
+              originalImageFileName, aBucketFolderName: Constants.rotaryPersonCardImagesFolderName);
+
+          if ((uploadReturnVal != null) && (uploadReturnVal["returnCode"] == 200)) {
+            setState(() {
+              currentPersonCardImage = uploadReturnVal["imageUrl"];
+            });
+          }
         }
       });
     }
+
+    setState(() {
+      loading = false;
+    });
   }
   //#endregion
 
@@ -562,8 +613,7 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
                           child: IconButton(
                             icon: Icon(Icons.arrow_forward, color: Colors.white),
                             onPressed: () {
-                              FocusScope.of(context).requestFocus(FocusNode()); // Hide Keyboard
-                              Navigator.pop(context);
+                              returnToPersonCardPage();
                             },
                           ),
                         ),
@@ -640,7 +690,7 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
 
   //region PersonCard Image
 
-  //#region buildPersonCardImage
+  //#region Build PersonCard Image
   Widget buildPersonCardImage() {
     return InkWell(
       onTap: () async {await pickImageFile();},
@@ -654,14 +704,14 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
           child: CircleAvatar(
               radius: 30.0,
               backgroundColor: Colors.blue[900],
-              backgroundImage: FileImage(File(currentPersonCardImage)),
+              backgroundImage: NetworkImage(currentPersonCardImage),
           ),
         ),
     );
   }
   //#endregion
 
-  //#region buildEmptyPersonCardImageIcon
+  //#region Build Empty PersonCard Image Icon
   Widget buildEmptyPersonCardImageIcon(IconData aIcon, {Function aFunc}) {
     return Container(
         height: 60.0,

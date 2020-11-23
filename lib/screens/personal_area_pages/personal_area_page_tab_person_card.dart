@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
@@ -15,13 +13,13 @@ import 'package:rotary_net/services/rotary_area_service.dart';
 import 'package:rotary_net/services/rotary_club_service.dart';
 import 'package:rotary_net/services/rotary_cluster_service.dart';
 import 'package:rotary_net/services/rotary_role_service.dart';
+import 'package:rotary_net/services/aws_service.dart';
 import 'package:rotary_net/shared/decoration_style.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/utils/utils_class.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:path/path.dart' as Path;
-import 'package:http/http.dart' as http;
 
 class PersonalAreaPageTabPersonCard extends StatefulWidget {
   final PersonCardObject argPersonCardObject;
@@ -36,16 +34,13 @@ class PersonalAreaPageTabPersonCard extends StatefulWidget {
 
 class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPersonCard> {
 
-  final PersonCardService personCardService = PersonCardService();
-
   final formKey = GlobalKey<FormState>();
-
-  Future<PersonCardRoleAndHierarchyListObject> personCardRoleAndHierarchyListObjectForBuild;
-  PersonCardRoleAndHierarchyListObject displayPersonCardRoleAndHierarchyListObject;
+  final PersonCardService personCardService = PersonCardService();
 
   //#region Declare Variables
   String currentPersonCardImage;
-  bool isPersonCardExist = false;
+  Future<PersonCardRoleAndHierarchyListObject> personCardRoleAndHierarchyListObjectForBuild;
+  PersonCardRoleAndHierarchyListObject displayPersonCardRoleAndHierarchyListObject;
 
   TextEditingController eMailController;
   TextEditingController firstNameController;
@@ -60,13 +55,12 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
   TextEditingController internetSiteUrlController;
   TextEditingController addressController;
 
+  bool isPersonCardExist = false;
   String error = '';
   bool loading = false;
   bool isPhoneNumberEnteredOK = false;
   String phoneNumberHintText = 'Phone Number';
   //#endregion
-
-  Uint8List currentPersonCardImageBytes;
 
   @override
   void initState() {
@@ -82,16 +76,8 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
 
     if (aPersonCard != null)
     {
-      isPersonCardExist = true;   /// If Exist ? Update : Insert(Create PersonCard in DB)
-
       currentPersonCardImage = aPersonCard.pictureUrl;
-
-      /////////////////////////////
-      // String img = "${Constants.rotaryLocalHost}/PersonCardImages/$currentPersonCardImage";
-      // print('img: $img');
-      // Uint8List currentPersonCardImageBytes = (await http.get(img)).bodyBytes;
-      // print('currentPersonCardImageBytes: $currentPersonCardImageBytes');
-      /////////////////////////////
+      isPersonCardExist = true;   /// If Exist ? Update : Insert(Create PersonCardId in DB)
 
       eMailController = TextEditingController(text: aPersonCard.email);
       firstNameController = TextEditingController(text: aPersonCard.firstName);
@@ -424,6 +410,11 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
 
   //#region Update PersonCard
   Future updatePersonCard() async {
+
+    setState(() {
+      loading = true;
+    });
+
     bool validationVal = await checkValidation();
 
     if (validationVal){
@@ -441,15 +432,11 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
       String _address = (addressController.text != null) ? (addressController.text) : '';
 
       String _pictureUrl = '';
-      if (currentPersonCardImage != null)
-        _pictureUrl = currentPersonCardImage;
+      if (currentPersonCardImage != null) _pictureUrl = currentPersonCardImage;
 
       /// If Exist ? Update(has PersonCardId) : Insert(Mongoose creates new _id)
-      String _personCardId;
-      if (isPersonCardExist)
-        _personCardId = widget.argPersonCardObject.personCardId;
-      else
-        _personCardId = '';
+      String _personCardId = '';
+      if (isPersonCardExist) _personCardId = widget.argPersonCardObject.personCardId;
 
       PersonCardObject newPersonCardObj =
           personCardService.createPersonCardAsObject(
@@ -467,7 +454,7 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
       else
         returnVal = await personCardService.insertPersonCard(widget.argConnectedUserObject.userId, newPersonCardObj);
 
-      if (returnVal != '') {
+      if ((returnVal != null) && (returnVal != '') ){
         Navigator.pop(context);
       } else {
         setState(() {
@@ -475,6 +462,9 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
         });
       }
     }
+    setState(() {
+      loading = false;
+    });
   }
   //#endregion
 
@@ -482,106 +472,62 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
   Future <void> pickImageFile() async {
 
     ImagePicker imagePicker = ImagePicker();
-    PickedFile compressedImage = await imagePicker.getImage(
+    PickedFile compressedPickedFile = await imagePicker.getImage(
         source: ImageSource.gallery,
         imageQuality: 80,
         maxHeight: 800
     );
 
-    if (compressedImage != null)
-    {
-      String personCardImagesDirectory = await Utils.createDirectoryInAppDocDir(Constants.rotaryFolderPersonCardImages);
+    setState(() {
+      loading = true;
+    });
 
+    String originalImageFileName;
+
+    if (compressedPickedFile != null)
+    {
+      /// If currentPersonCardImage Exists on Client --->>> Delete Original file
+      String personCardImagesDirectory = await Utils.createDirectoryInAppDocDir(Constants.rotaryPersonCardImagesFolderName);
       if ((currentPersonCardImage != null) && (currentPersonCardImage != ''))
       {
-        String originalFilePath = '$personCardImagesDirectory/$currentPersonCardImage';
-        File originalImageFile = File(originalFilePath);
-        originalImageFile.delete();
+        File originalImageFile = File(currentPersonCardImage);
+        originalImageFileName = Path.basename(originalImageFile.path);
+
+        String localFilePath = '$personCardImagesDirectory/$originalImageFileName';
+        File localImageFile = File(localFilePath);
+        localImageFile.delete();
       }
 
-      File pickedPictureFile = File(compressedImage.path);
-      String copyImageFileName = '${widget.argPersonCardObject.personCardId}.jpg';
-
+      // copy the New CompressedPickedFile to a new path --->>> On Client
+      File pickedPictureFile = File(compressedPickedFile.path);
+      String copyImageFileName = '${widget.argPersonCardObject.personCardId}_${DateTime.now()}.jpg';
       String copyFilePath = '$personCardImagesDirectory/$copyImageFileName';
 
-      // copy the file to a new path
       await pickedPictureFile.copy(copyFilePath).then((File newImageFile) async {
         if (newImageFile != null) {
 
-          String uploadReturnVal = 'OK';
-          uploadReturnVal = await Utils.uploadImageToServer(copyFilePath);
-          if (uploadReturnVal != null) {
+          /// START Uploading
+          Map<String, dynamic> uploadReturnVal;
+
+          String fileType = Path.extension(compressedPickedFile.path);      /// <<<---- [.JPG]
+
+          uploadReturnVal = await AwsService.awsUploadImageToServer(
+              widget.argPersonCardObject.personCardId,
+              compressedPickedFile, copyImageFileName, fileType,
+              originalImageFileName, aBucketFolderName: Constants.rotaryPersonCardImagesFolderName);
+
+          if ((uploadReturnVal != null) && (uploadReturnVal["returnCode"] == 200)) {
             setState(() {
-              currentPersonCardImage = copyImageFileName;
+              currentPersonCardImage = uploadReturnVal["imageUrl"];
             });
           }
         }
       });
     }
-  }
-  //#endregion
 
-  //#region Pick Image File [OLD - Load Only]
-  Future <void> pickImageFileLoadOnly() async {
-
-    ImagePicker imagePicker = ImagePicker();
-    PickedFile _compressedImage = await imagePicker.getImage(
-        source: ImageSource.gallery,
-        imageQuality: 80,
-        maxHeight: 800
-    );
-
-    String deleteReturnVal = 'OK';
-    String uploadReturnVal = 'OK';
-    if (_compressedImage != null)
-    {
-      // if ((currentPersonCardImage != null) && (currentPersonCardImage != ''))
-        // deleteReturnVal = await Utils.deleteImageFromServer(currentPersonCardImage);
-
-      if (deleteReturnVal != null) {
-        uploadReturnVal = await Utils.uploadImageToServer(_compressedImage.path);
-        if (uploadReturnVal != null) {
-          currentPersonCardImage = Path.basename(_compressedImage.path);
-        }
-      }
-    }
-  }
-  //#endregion
-
-  //#region Pick Image File [OLD - Original]
-  Future <void> pickImageFileOriginal() async {
-
-    ImagePicker imagePicker = ImagePicker();
-    PickedFile _compressedImage = await imagePicker.getImage(
-        source: ImageSource.gallery,
-        imageQuality: 80,
-        maxHeight: 800
-    );
-
-    if (_compressedImage != null)
-    {
-      if ((currentPersonCardImage != null) && (currentPersonCardImage != ''))
-      {
-        File originalImageFile = File(currentPersonCardImage);
-        originalImageFile.delete();
-      }
-
-      File _pickedPictureFile = File(_compressedImage.path);
-      String _newPersonCardImagesDirectory = await Utils.createDirectoryInAppDocDir('assets/images/person_card_images');
-      String _newImageFileName =  Path.basename(_pickedPictureFile.path);
-
-      String _copyFilePath = '$_newPersonCardImagesDirectory/$_newImageFileName';
-
-      // copy the file to a new path
-      await _pickedPictureFile.copy(_copyFilePath).then((File _newImageFile) {
-        if (_newImageFile != null) {
-
-          setState(() {
-            currentPersonCardImage = _newImageFile.path;
-          });
-        }
-      });
-    }
+    setState(() {
+      loading = false;
+    });
   }
   //#endregion
 
@@ -663,47 +609,30 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
   }
 
   //region PersonCard Image
+
+  //#region Build PersonCard Image
   Widget buildPersonCardImage(){
     return InkWell(
-      onTap: () async{await pickImageFile();},
+      onTap: () async { await pickImageFile(); },
       child: (currentPersonCardImage == null) || (currentPersonCardImage == '')
-          ? Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: buildInsertSignImageIcon(Icons.person_add)
-          )
-          : Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child:
-            // Image.memory(currentPersonCardImageBytes),
-            // Image.network('https://picsum.photos/250?image=9'),
-            // Image.network('${Constants.rotaryLocalHost}/PersonCardImages/$currentPersonCardImage'),
-
-        CircleAvatar(
-              radius: 30.0,
-              backgroundColor: Colors.blue[900],
-              // backgroundImage: FileImage(File("${Constants.rotaryLocalHost}/PersonCardImages/$currentPersonCardImage")),
-              backgroundImage: FileImage(File(currentPersonCardImage)),
-            ),
-            // CachedNetworkImage(
-            //   imageUrl: 'https://picsum.photos/250?image=9',
-            //   // imageUrl: "${Constants.rotaryLocalHost}/PersonCardImages/$currentPersonCardImage",
-            //   imageBuilder: (context, imageProvider) => Container(
-            //     decoration: BoxDecoration(
-            //       image: DecorationImage(
-            //           image: imageProvider,
-            //           fit: BoxFit.cover,
-            //           colorFilter:
-            //           ColorFilter.mode(Colors.red, BlendMode.colorBurn)),
-            //     ),
-            //   ),
-            //   placeholder: (context, url) => CircularProgressIndicator(),
-            //   errorWidget: (context, url, error) => Icon(Icons.error),
-            // ),
-          ),
+      ? Padding(
+          padding: const EdgeInsets.only(bottom: 20.0),
+          child: buildEmptyPersonCardImageIcon(Icons.person_add)
+      )
+      : Padding(
+        padding: const EdgeInsets.only(bottom: 20.0),
+        child: CircleAvatar(
+          radius: 30.0,
+          backgroundColor: Colors.blue[900],
+          backgroundImage: NetworkImage(currentPersonCardImage),
+        ),
+      ),
     );
   }
+  //#endregion
 
-  Widget buildInsertSignImageIcon(IconData aIcon, {Function aFunc}) {
+  //#region Build Empty PersonCard Image Icon
+  Widget buildEmptyPersonCardImageIcon(IconData aIcon, {Function aFunc}) {
     return Container(
         height: 60.0,
         width: 60.0,
@@ -725,6 +654,8 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
         )
     );
   }
+  //#endregion
+
   //#endregion
 
   //#region INPUT FIELDS

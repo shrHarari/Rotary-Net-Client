@@ -44,35 +44,43 @@ class PersonCardObject {
   });
 
   //#region Update PersonCard Object with Sets Calls
-  // Set PersonCard Email
+
+  //#region Set PersonCard Email
   Future <void> setEmail(String aEmail) async {
     email = aEmail;
   }
+  //#endregion
 
-  // Set PersonCard PictureUrl
+  //#region Set PersonCard PictureUrl
   Future <void> setPictureUrl(String aPictureUrl) async {
     pictureUrl = aPictureUrl;
   }
+  //#endregion
 
-  // Set PersonCard RoleId
+  //#region Set PersonCard RoleId
   Future <void> setRoleId(String aRoleId) async {
     roleId = aRoleId;
   }
+  //#endregion
 
-  // Set PersonCard AreaId
+  //#region Set PersonCard AreaId
   Future <void> setAreaId(String aAreaId) async {
     areaId = aAreaId;
   }
+  //#endregion
 
-  // Set PersonCard ClusterId
+  //#region Set PersonCard ClusterId
   Future <void> setClusterId(String aClusterId) async {
     clusterId = aClusterId;
   }
+  //#endregion
 
-  // Set PersonCard ClubId
+  //#region Set PersonCard ClubId
   Future <void> setClubId(String aClubId) async {
     clubId = aClubId;
   }
+  //#endregion
+
   //#endregion
 
   @override

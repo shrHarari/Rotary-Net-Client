@@ -6,11 +6,43 @@ import 'package:rotary_net/services/logger_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
-import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid.dart';import 'package:connectivity/connectivity.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'dart:developer' as developer;
 
 class Utils {
+
+  //#region Check Connection
+  // =============================================================================
+  static Future checkConnection() async{
+    ConnectivityResult _connectivity;
+    try {
+      Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+        _connectivity = result;
+      });
+
+      if (_connectivity != ConnectivityResult.none) {
+        print('<Utils> Check Connection >>> OK');
+        await LoggerService.log('<Utils> Check Connection >>> OK');
+        return true;
+      } else {
+        print('<Utils> Check Connection >>> Failed >>> $_connectivity');
+        await LoggerService.log('<Utils> Check Connection >>> Failed >>> $_connectivity');
+        return false;
+      }
+    }
+    catch  (e) {
+      print('<Utils> Check Connection >>> ERROR: ${e.toString()}');
+      await LoggerService.log('<Utils> Check Connection >>> ERROR: ${e.toString()}');
+      developer.log(
+        'checkConnection',
+        name: 'Utils',
+        error: 'Check Connection >>> ERROR: ${e.toString()}',
+      );
+      return false;
+    }
+  }
+  //#endregion
 
   //#region Application Documents Path
   static Future<String> get applicationDocumentsPath async {
@@ -227,72 +259,6 @@ class Utils {
   }
   //#endregion
 
-  //#region Upload Image To Server
-  static Future<String> uploadImageToServer(String aFileName) async {
-    try {
-      String _getUrlUploadImage = GlobalsService.applicationServer + Constants.rotaryUtilContentUrl + "/uploadPersonCardImage";
-      var request = http.MultipartRequest('POST', Uri.parse(_getUrlUploadImage));
-
-      // Map<String, String> bodyFields = {'image': 'TEST.jpg'};
-      // request.fields.addAll(bodyFields);
-      // request.fields['image'] = 'TEST.jpg';
-      request.files.add(await http.MultipartFile.fromPath('personCardImage', aFileName));
-      http.StreamedResponse response = await request.send();
-
-      if (response.statusCode <= 300) {
-        print('Utils / Upload Image To Server / Return Value: ${response.reasonPhrase}');
-        await LoggerService.log('<Utils> Upload Image To Server >>> ${response.reasonPhrase}');
-        return response.reasonPhrase;
-      } else {
-        await LoggerService.log('<Utils> Upload Image To Server >>> Failed: ${response.statusCode}');
-        print('<Utils> Upload Image To Server >>> Failed: ${response.statusCode}');
-        return null;
-      }
-    }
-    catch (e) {
-      await LoggerService.log('<Utils> Upload Image To Server >>> ERROR: ${e.toString()}');
-      developer.log(
-        'uploadImageToServer',
-        name: 'Utils',
-        error: 'Image >>> ERROR: ${e.toString()}',
-      );
-      return null;
-    }
-  }
-  //#endregion
-
-  //#region Delete Image To Server
-  static Future<String> deleteImageFromServer(String aFileName) async {
-    try {
-      String _deleteUrlImage = GlobalsService.applicationServer + Constants.rotaryUtilContentUrl + "/deletePersonCardImage/$aFileName";
-      http.Response response = await http.delete(_deleteUrlImage);
-
-      if (response.statusCode <= 300) {
-        print('Utils / Upload Image To Server / Return Value: ${response.reasonPhrase}');
-        await LoggerService.log('<Utils> Upload Image To Server >>> ${response.reasonPhrase}');
-        return response.reasonPhrase;
-      } else {
-        await LoggerService.log('<Utils> Upload Image To Server >>> Failed: ${response.statusCode}');
-        print('<Utils> Upload Image To Server >>> Failed: ${response.statusCode}');
-        return null;
-      }
-    }
-    catch (e) {
-      await LoggerService.log('<Utils> Upload Image To Server >>> ERROR: ${e.toString()}');
-      developer.log(
-        'uploadImageToServer',
-        name: 'Utils',
-        error: 'Image >>> ERROR: ${e.toString()}',
-      );
-      return null;
-    }
-
-
-
-
-  }
-//#endregion
-
   //#region Get Admin Permission
   static bool getAdminPermission(Constants.UserTypeEnum aUserTypeEnum)  {
     bool _hasPermission = false;
@@ -330,4 +296,81 @@ class Utils {
   }
 //#endregion
 
+  //#region Upload Image To Server
+  static Future<String> uploadImageToServer(String aFileName) async {
+    try {
+      String _getUrlUploadImage = GlobalsService.applicationServer +
+          Constants.rotaryUtilUrl + "/uploadPersonCardImage";
+      var request = http.MultipartRequest(
+          'POST', Uri.parse(_getUrlUploadImage));
+
+      // Map<String, String> bodyFields = {'image': 'TEST.jpg'};
+      // request.fields.addAll(bodyFields);
+      // request.fields['image'] = 'TEST.jpg';
+      request.files.add(
+          await http.MultipartFile.fromPath('personCardImage', aFileName));
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode <= 300) {
+        print('Utils / Upload Image To Server / Return Value: ${response
+            .reasonPhrase}');
+        await LoggerService.log(
+            '<Utils> Upload Image To Server >>> ${response.reasonPhrase}');
+        return response.reasonPhrase;
+      } else {
+        await LoggerService.log(
+            '<Utils> Upload Image To Server >>> Failed: ${response
+                .statusCode}');
+        print('<Utils> Upload Image To Server >>> Failed: ${response
+            .statusCode}');
+        return null;
+      }
+    }
+    catch (e) {
+      await LoggerService.log(
+          '<Utils> Upload Image To Server >>> ERROR: ${e.toString()}');
+      developer.log(
+        'uploadImageToServer',
+        name: 'Utils',
+        error: 'Image >>> ERROR: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+  //#endregion
+
+  //#region Delete Image From Server
+  static Future<String> deleteImageFromServer(String aFileName) async {
+    try {
+      String _deleteUrlImage = GlobalsService.applicationServer +
+          Constants.rotaryUtilUrl + "/deletePersonCardImage/$aFileName";
+      http.Response response = await http.delete(_deleteUrlImage);
+
+      if (response.statusCode <= 300) {
+        print('Utils / Upload Image To Server / Return Value: ${response
+            .reasonPhrase}');
+        await LoggerService.log(
+            '<Utils> Upload Image To Server >>> ${response.reasonPhrase}');
+        return response.reasonPhrase;
+      } else {
+        await LoggerService.log(
+            '<Utils> Upload Image To Server >>> Failed: ${response
+                .statusCode}');
+        print('<Utils> Upload Image To Server >>> Failed: ${response
+            .statusCode}');
+        return null;
+      }
+    }
+    catch (e) {
+      await LoggerService.log(
+          '<Utils> Upload Image To Server >>> ERROR: ${e.toString()}');
+      developer.log(
+        'uploadImageToServer',
+        name: 'Utils',
+        error: 'Image >>> ERROR: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+//#endregion
 }

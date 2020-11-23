@@ -21,28 +21,29 @@ class EventObject {
     this.eventManager,
   });
 
+  //#region Update Event Object with Sets Calls
+
   ///#region Set EventId
-  ///========================================
   Future <void> setEventId(String aEventId) async {
     eventId = aEventId;
   }
   //#endregion
 
   ///#region Set PersonCard Email
-  ///========================================
   Future <void> setEventPictureUrl(String aPictureUrl) async {
     eventPictureUrl = aPictureUrl;
   }
   //#endregion
 
   ///#region Set Event DateTime (Start-End)
-  ///========================================
   Future <void> setStartDateTime(DateTime aStartDateTime) async {
     eventStartDateTime = aStartDateTime;
   }
   Future <void> setEndDateTime(DateTime aEndDateTime) async {
     eventEndDateTime = aEndDateTime;
   }
+  //#endregion
+
   //#endregion
 
   @override

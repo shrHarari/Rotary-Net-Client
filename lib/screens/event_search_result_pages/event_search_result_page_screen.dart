@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:rotary_net/BLoCs/bloc_provider.dart';
 import 'package:rotary_net/BLoCs/events_list_bloc.dart';
 import 'package:rotary_net/objects/event_object.dart';
-import 'package:rotary_net/screens/event_search_result_pages/event_search_result_page_list_tile.dart';
 import 'package:rotary_net/screens/event_search_result_pages/event_search_result_page_header_search_box.dart';
 import 'package:rotary_net/screens/event_search_result_pages/event_search_result_page_header_title.dart';
+import 'package:rotary_net/screens/event_search_result_pages/event_search_result_page_list_tile.dart';
 import 'package:rotary_net/services/event_service.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
+import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
 
 class EventSearchResultPage extends StatefulWidget {
-  static const routeName = '/PersonCardSearchResultPage';
+  static const routeName = '/EventSearchResultPage';
   final String searchText;
 
   EventSearchResultPage({Key key, @required this.searchText}) : super(key: key);
@@ -49,9 +50,9 @@ class _EventSearchResultPageState extends State<EventSearchResultPage> {
       initialData: eventsBloc.eventsList,
       builder: (context, snapshot) {
         List<EventObject> currentEventsList =
-        (snapshot.connectionState == ConnectionState.waiting)
-            ? eventsBloc.eventsList
-            : snapshot.data;
+            (snapshot.connectionState == ConnectionState.waiting)
+                ? eventsBloc.eventsList
+                : snapshot.data;
 
         return Scaffold(
           key: _scaffoldKey,
@@ -104,10 +105,9 @@ class _EventSearchResultPageState extends State<EventSearchResultPage> {
                     (snapshot.hasData) ?
                     SliverFixedExtentList(
                       itemExtent: 200.0,
-                      delegate: SliverChildBuilderDelegate(
-                            (context, index) {
+                      delegate: SliverChildBuilderDelegate((context, index) {
                           return EventSearchResultPageListTile(
-                            argEventObj: currentEventsList[index],
+                            argEventObject: currentEventsList[index],
                           );
                         },
                         childCount: currentEventsList.length,

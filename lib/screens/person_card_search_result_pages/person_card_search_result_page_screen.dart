@@ -3,9 +3,9 @@ import 'package:flutter/rendering.dart';
 import 'package:rotary_net/BLoCs/bloc_provider.dart';
 import 'package:rotary_net/BLoCs/person_cards_list_bloc.dart';
 import 'package:rotary_net/objects/person_card_object.dart';
-import 'package:rotary_net/screens/person_card_search_result_pages/person_card_search_result_page_list_tile.dart';
 import 'package:rotary_net/screens/person_card_search_result_pages/person_card_search_result_page_header_search_box.dart';
 import 'package:rotary_net/screens/person_card_search_result_pages/person_card_search_result_page_header_title.dart';
+import 'package:rotary_net/screens/person_card_search_result_pages/person_card_search_result_page_list_tile.dart';
 import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
@@ -51,9 +51,9 @@ class _PersonCardSearchResultPageState extends State<PersonCardSearchResultPage>
       initialData: personCardsBloc.personCardsList,
       builder: (context, snapshot) {
         List<PersonCardObject> currentPersonCardsList =
-        (snapshot.connectionState == ConnectionState.waiting)
-            ? personCardsBloc.personCardsList
-            : snapshot.data;
+            (snapshot.connectionState == ConnectionState.waiting)
+                ? personCardsBloc.personCardsList
+                : snapshot.data;
 
         return Scaffold(
           key: _scaffoldKey,
@@ -109,7 +109,7 @@ class _PersonCardSearchResultPageState extends State<PersonCardSearchResultPage>
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
                                 return PersonCardSearchResultPageListTile(
-                                  argPersonCardObj: currentPersonCardsList[index],
+                                  argPersonCardObject: currentPersonCardsList[index],
                                 );
                               },
                             childCount: currentPersonCardsList.length,

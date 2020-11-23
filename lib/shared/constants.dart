@@ -15,8 +15,10 @@ const String rotaryApplicationType = 'Rotary Application Mode';
 //#region Application parameters [Globals Values]
 // ==============================================================
 const String rotaryLoggerFileName = 'Rotary_Log.txt';
-const String rotaryFolderPersonCardImages = 'assets/images/person_card_images';
-const String rotaryFolderEventImages = 'assets/images/event_images';
+const String rotaryEventImageDefaultFolder = 'assets/images/event_images';
+const String rotaryPersonCardImageDefaultFolder = 'assets/images/person_card_images';
+const String rotaryPersonCardImagesFolderName = 'PersonCardImages';
+const String rotaryEventImagesFolderName = 'EventImages';
 //#endregion
 
 //#region Server URL
@@ -39,7 +41,8 @@ const String rotaryMessageUrl = '/api/message';
 // const String rotaryUserLoginUrl = '/api/user/login';
 
 const String rotaryMenuPagesContentUrl = '/api/menupage';
-const String rotaryUtilContentUrl = '/api/util';
+const String rotaryUtilUrl = '/api/util';
+const String rotaryAwsUrl = '/api/aws';
 
 //#endregion
 

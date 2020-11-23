@@ -6,9 +6,11 @@ import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
 import 'package:rotary_net/services/globals_service.dart';
+import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/services/rotary_area_service.dart';
 import 'package:rotary_net/services/user_service.dart';
 import 'package:rotary_net/shared/loading.dart';
+import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class ApplicationSettingsScreen extends StatefulWidget {
   static const routeName = '/ApplicationSettingsScreen';
@@ -54,9 +56,31 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
   //#endregion
 
   //#region Update Application Type
-  void updateApplicationType(bool aApplicationType) {
+  updateApplicationType(bool aApplicationType) async {
     GlobalsService.setApplicationType(aApplicationType);
     GlobalsService.writeApplicationTypeToSP(aApplicationType);
+
+    /// Change Current User Data --->>> Write the new ID to Storage
+    /// =============================================================
+    ConnectedUserObject _newConnectedUserObj = await connectedUserService.getConnectedUserByEmail(currentDataRequired.connectedUserObj.email);
+
+    /// SAVE New ConnectedUser:
+    /// 1. Secure Storage: Write to SecureStorage
+    await connectedUserService.writeConnectedUserObjectDataToSecureStorage(_newConnectedUserObj);
+
+    /// 2. Secure Storage: Write RotaryRoleEnum to SecureStorage
+    PersonCardService personCardService = PersonCardService();
+    Constants.RotaryRolesEnum _roleEnum = await personCardService.getPersonCardByIdRoleEnum(_newConnectedUserObj.personCardId);
+    await connectedUserService.writeRotaryRoleEnumDataToSecureStorage(_roleEnum);
+
+    /// 3. App Global: Update Global Current Connected User
+    var userGlobal = ConnectedUserGlobal();
+    await userGlobal.setConnectedUserObject(_newConnectedUserObj);
+
+    /// 4. App Global: Update RotaryRoleEnum
+    await userGlobal.setRotaryRoleEnum(_roleEnum);
+
+    print('ApplicationSettingsScreen / updateApplicationType / NewConnectedUserObj: $_newConnectedUserObj');
   }
   //#endregion
 
@@ -198,7 +222,7 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
                     flex: 4,
                     child: Switch(
                       value: newApplicationType,
-                      onChanged: (bool newValue) {
+                      onChanged: (bool newValue) async  {
                         updateApplicationType(newValue);
                         setState(() {
                           newApplicationType = newValue;

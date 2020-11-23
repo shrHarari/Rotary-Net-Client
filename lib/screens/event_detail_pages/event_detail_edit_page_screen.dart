@@ -1,18 +1,20 @@
 import 'dart:io';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/BLoCs/bloc_provider.dart';
 import 'package:rotary_net/BLoCs/events_list_bloc.dart';
 import 'package:rotary_net/objects/event_object.dart';
 import 'package:rotary_net/screens/event_detail_pages/event_detail_page_widgets.dart';
+import 'package:rotary_net/services/aws_service.dart';
 import 'package:rotary_net/services/event_service.dart';
 import 'package:rotary_net/shared/decoration_style.dart';
 import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/utils/hebrew_syntax_format.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
-import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:rotary_net/widgets/pick_date_time_dialog_widget.dart';
 import 'package:rotary_net/utils/utils_class.dart';
+import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:path/path.dart' as Path;
 
 class EventDetailEditPageScreen extends StatefulWidget {
@@ -28,12 +30,12 @@ class EventDetailEditPageScreen extends StatefulWidget {
 
 class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
-  final EventService eventService = EventService();
-
   final formKey = GlobalKey<FormState>();
+  final EventService eventService = EventService();
 
   //#region Declare Variables
   String currentEventImage;
+  FileInfo currentEventImageFileInfo;
   bool isEventExist = false;
   Widget currentHebrewEventTimeLabel;
 
@@ -57,13 +59,19 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
     super.initState();
   }
 
+  executeAfterBuildComplete(BuildContext context){
+    setState(() {
+      loading = false;
+    });
+  }
+
   //#region Set Event Variables
   Future<void> setEventVariables(EventObject aEvent) async {
-    eventImageDefaultAsset = AssetImage('assets/images/events/EventImageDefaultPicture.jpg');
+    eventImageDefaultAsset = AssetImage('${Constants.rotaryEventImageDefaultFolder}/EventImageDefaultPicture.jpg');
 
     if (aEvent != null)
     {
-      isEventExist = true;   /// If Exist ? Update(has Id) : Insert(copy Guid)
+      isEventExist = true;   /// If Exist ? Update : Insert(Create EventId in DB)
 
       currentEventImage = aEvent.eventPictureUrl;
       currentHebrewEventTimeLabel = widget.argHebrewEventTimeLabel;
@@ -100,13 +108,16 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
       } else
         validationVal = true;
     }
-
     return validationVal;
   }
   //#endregion
 
   //#region Update Event
   Future updateEvent(EventsListBloc aEventBloc) async {
+
+    setState(() {
+      loading = true;
+    });
 
     bool validationVal = await checkValidation();
 
@@ -120,35 +131,52 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
       String _pictureUrl = '';
       if (currentEventImage != null) _pictureUrl = currentEventImage;
 
-      EventObject _newEventObj;
-      if (isEventExist) {
-        _newEventObj = eventService.createEventAsObject(
-            widget.argEventObject.eventId,
-            _eventName, _pictureUrl, _eventDescription,
-            selectedPickStartDateTime, selectedPickEndDateTime,
-            _eventLocation, _eventManager,);
+      /// If Exist ? Update(has eventId) : Insert(Mongoose creates new _id)
+      String _eventId = '';
+      if (isEventExist) _eventId = widget.argEventObject.eventId;
 
+      EventObject _newEventObj =
+          eventService.createEventAsObject(
+              _eventId,
+              _eventName, _pictureUrl, _eventDescription,
+              selectedPickStartDateTime, selectedPickEndDateTime,
+              _eventLocation, _eventManager,);
+
+      if (isEventExist)
         await aEventBloc.updateEvent(widget.argEventObject, _newEventObj);
-      }
-      else {
-        _newEventObj = eventService.createEventAsObject(
-            '',
-            _eventName, _pictureUrl, _eventDescription,
-            selectedPickStartDateTime, selectedPickEndDateTime,
-            _eventLocation, _eventManager,);
-
+      else
         await aEventBloc.insertEvent(_newEventObj);
-      }
 
       /// Return multiple data using MAP
-      final returnDataDateTimeMap = {
+      final returnEventDataMap = {
         "EventObject": _newEventObj,
         "HebrewEventTimeLabel": currentHebrewEventTimeLabel,
       };
       FocusScope.of(context).requestFocus(FocusNode());
-      Navigator.pop(context, returnDataDateTimeMap);
+      Navigator.pop(context, returnEventDataMap);
     }
+    setState(() {
+      loading = false;
+    });
   }
+  //#endregion
+
+  //#region Return To Event Page
+  Future returnToEventPage() async {
+      String _pictureUrl = '';
+      if (currentEventImage != null) _pictureUrl = currentEventImage;
+
+      EventObject _newEventObj = widget.argEventObject;
+      _newEventObj.setEventPictureUrl(_pictureUrl);
+
+      /// Return multiple data using MAP
+      final returnEventDataMap = {
+        "EventObject": _newEventObj,
+        "HebrewEventTimeLabel": null,
+      };
+      FocusScope.of(context).requestFocus(FocusNode());
+      Navigator.pop(context, returnEventDataMap);
+    }
   //#endregion
 
   //#region Pick DateTime Dialog
@@ -192,44 +220,70 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
   //#region Pick Image File
   Future <void> pickImageFile() async {
+
     ImagePicker imagePicker = ImagePicker();
-    PickedFile _compressedImage = await imagePicker.getImage(
+    PickedFile compressedPickedFile = await imagePicker.getImage(
         source: ImageSource.gallery,
         imageQuality: 80,
         maxHeight: 800
     );
 
-    if (_compressedImage != null)
+    setState(() {
+      loading = true;
+    });
+
+    String originalImageFileName;
+
+    if (compressedPickedFile != null)
     {
+      /// If currentEventImage Exists on Client --->>> Delete Original file
+      String eventImagesDirectory = await Utils.createDirectoryInAppDocDir(Constants.rotaryEventImagesFolderName);
       if ((currentEventImage != null) && (currentEventImage != ''))
       {
         File originalImageFile = File(currentEventImage);
-        originalImageFile.delete();
+        originalImageFileName = Path.basename(originalImageFile.path);
+
+        String localFilePath = '$eventImagesDirectory/$originalImageFileName';
+        File localImageFile = File(localFilePath);
+        localImageFile.delete();
       }
 
-      File _pickedPictureFile = File(_compressedImage.path);
-      String _newEventImagesDirectory = await Utils.createDirectoryInAppDocDir('assets/images/event_images');
-      String _newImageFileName =  Path.basename(_pickedPictureFile.path);
+      // copy the New CompressedPickedFile to a new path --->>> On Client
+      File pickedPictureFile = File(compressedPickedFile.path);
+      String copyImageFileName = '${widget.argEventObject.eventId}_${DateTime.now()}.jpg';
+      String copyFilePath = '$eventImagesDirectory/$copyImageFileName';
 
-      String _copyFilePath = '$_newEventImagesDirectory/$_newImageFileName';
+      await pickedPictureFile.copy(copyFilePath).then((File newImageFile) async {
+        if (newImageFile != null) {
 
-      // copy the file to a new path
-      await _pickedPictureFile.copy(_copyFilePath).then((File _newImageFile) {
-        if (_newImageFile != null) {
+          /// START Uploading
+          Map<String, dynamic> uploadReturnVal;
 
-          setState(() {
-            currentEventImage = _newImageFile.path;
-          });
+          String fileType = Path.extension(compressedPickedFile.path);      /// <<<---- [.JPG]
+
+          uploadReturnVal = await AwsService.awsUploadImageToServer(
+              widget.argEventObject.eventId,
+              compressedPickedFile, copyImageFileName, fileType,
+              originalImageFileName, aBucketFolderName: Constants.rotaryEventImagesFolderName);
+
+          if ((uploadReturnVal != null) && (uploadReturnVal["returnCode"] == 200)) {
+            setState(() {
+              currentEventImage = uploadReturnVal["imageUrl"];
+            });
+          }
         }
       });
     }
+
+    setState(() {
+      loading = false;
+    });
   }
   //#endregion
 
   @override
   Widget build(BuildContext context) {
-    return loading ? Loading() :
-    Scaffold(
+    return Scaffold(
       backgroundColor: Colors.blue[50],
 
       drawer: Container(
@@ -308,19 +362,12 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
                             icon: Icon(
                               Icons.close, color: Colors.white, size: 26.0,),
                             onPressed: () {
-                              FocusScope.of(context).requestFocus(FocusNode()); // Hide Keyboard
-                              Navigator.pop(context);
+                              returnToEventPage();
                             },
                           ),
                         ),
                       ],
                     ),
-
-                    // Positioned(
-                    //   left: 20.0,
-                    //   bottom: -25.0,
-                    //   child: buildUpdateCircleButton(updateEvent),
-                    // ),
                   ],
                 ),
               ),
@@ -385,7 +432,8 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
   Widget buildEventImage() {
     return Stack(
       children: <Widget>[
-        Container(
+        loading ? EventImagePickerLoading()
+        : Container(
           height: 200.0,
           width: double.infinity,
           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -393,14 +441,14 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
             image: DecorationImage(
                 image: (currentEventImage == null) || (currentEventImage == '')
                     ? eventImageDefaultAsset
-                    : FileImage(File(currentEventImage)),
+                    : NetworkImage(currentEventImage),
                 fit: BoxFit.cover
             ),
           ),
         ),
         Positioned(
           bottom: 30.0,
-          child: buildUpdateEventImageButton(pickImageFile),
+          child: buildEventImagePickerButton(pickImageFile),
         ),
       ]
     );
@@ -521,8 +569,8 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
   }
   //#endregion
 
-  //#region Build Update Event Image Button
-  Widget buildUpdateEventImageButton(Function aFunc) {
+  //#region Build Event Image Picker Button
+  Widget buildEventImagePickerButton(Function aFunc) {
     return MaterialButton(
       elevation: 0.0,
       onPressed: () async {await aFunc();},

@@ -27,9 +27,11 @@ class EventsListBloc implements BloC {
 
     if (_textToSearch == null || _textToSearch.length == 0)
       clearEventsList();
-    else
-      _eventsList = await eventService.getEventsListBySearchQuery(_textToSearch);
-
+    else {
+      _eventsList =
+      await eventService.getEventsListBySearchQuery(_textToSearch);
+      _eventsList.sort((b, a) => a.eventStartDateTime.compareTo(b.eventStartDateTime));
+    }
     _eventsController.sink.add(_eventsList);
   }
 
@@ -58,7 +60,6 @@ class EventsListBloc implements BloC {
 
   Future<void> updateEvent(EventObject aOldEventObj, EventObject aNewEventObj) async {
     if (_eventsList.contains(aOldEventObj)) {
-
       await eventService.updateEventById(aNewEventObj);
 
       _eventsList.remove(aOldEventObj);

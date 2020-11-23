@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
+import 'package:rotary_net/objects/user_object.dart';
 import 'package:rotary_net/services/logger_service.dart';
+import 'package:rotary_net/services/user_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:developer' as developer;
@@ -45,6 +47,32 @@ class ConnectedUserService {
           password: aPassword,
           userType: aUserType,
           stayConnected: aStayConnected);
+  }
+  //#endregion
+
+  //#region Get ConnectedUserObject By Email
+  // ===============================================================
+  Future<ConnectedUserObject> getConnectedUserByEmail(String aEmail) async {
+    try {
+      UserObject userObj;
+      ConnectedUserObject connectedUserObj;
+      UserService userService = UserService();
+      userObj = await userService.getUserByEmail(aEmail);
+      if (userObj != null) {
+        /// Create Connected User Object
+        connectedUserObj = await ConnectedUserObject.getConnectedUserObjectFromUserObject(userObj);
+      }
+      return connectedUserObj;
+    }
+    catch (e) {
+      await LoggerService.log('<ConnectedUserService> Get Connected User By Email >>> Server ERROR: ${e.toString()}');
+      developer.log(
+        'getConnectedUserByEmail',
+        name: 'ConnectedUserService',
+        error: 'Get Connected User By Email >>> Server ERROR: ${e.toString()}',
+      );
+      return null;
+    }
   }
   //#endregion
 

@@ -33,13 +33,12 @@ class PersonCardDetailPageScreen extends StatefulWidget {
 
 class _PersonCardDetailPageScreenState extends State<PersonCardDetailPageScreen> {
 
-  PersonCardObject displayPersonCardObject;
-
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
 
   Future<PersonCardRoleAndHierarchyObject> personCardRoleAndHierarchyObjectForBuild;
   PersonCardRoleAndHierarchyObject displayPersonCardRoleAndHierarchyObject;
+  PersonCardObject displayPersonCardObject;
   RichText displayPersonCardHierarchyTitle;
 
   bool allowUpdate = false;
@@ -117,7 +116,7 @@ class _PersonCardDetailPageScreenState extends State<PersonCardDetailPageScreen>
 
   //#region Open Person Card Detail Edit Screen
   openPersonCardDetailEditScreen(PersonCardObject aPersonCardObj) async {
-    final resultMap = await Navigator.push(
+    final returnPersonCardDataMap = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PersonCardDetailEditPageScreen(
@@ -126,15 +125,13 @@ class _PersonCardDetailPageScreenState extends State<PersonCardDetailPageScreen>
       ),
     );
 
-    if (resultMap != null) {
-      PersonCardObject _personCardObject = resultMap["PersonCardObject"];
-      // PersonCardRoleAndHierarchyObject _personCardRoleAndHierarchyObject = resultMap["PersonCardRoleAndHierarchyObject"];
-      RichText _personCardHierarchyTitle = resultMap["PersonCardHierarchyTitle"];
+    if (returnPersonCardDataMap != null) {
+      PersonCardObject _personCardObject = returnPersonCardDataMap["PersonCardObject"];
+      RichText _personCardHierarchyTitle = returnPersonCardDataMap["PersonCardHierarchyTitle"];
 
       setState(() {
         displayPersonCardObject = _personCardObject;
-        // currentDataRequired = _personCardRoleAndHierarchyObject;
-        displayPersonCardHierarchyTitle = _personCardHierarchyTitle;
+        if (_personCardHierarchyTitle != null) displayPersonCardHierarchyTitle = _personCardHierarchyTitle;
       });
     }
   }
@@ -142,7 +139,6 @@ class _PersonCardDetailPageScreenState extends State<PersonCardDetailPageScreen>
 
   @override
   Widget build(BuildContext context) {
-
     return loading ? Loading() :
       Scaffold(
         key: _scaffoldKey,
@@ -181,7 +177,6 @@ class _PersonCardDetailPageScreenState extends State<PersonCardDetailPageScreen>
   }
 
   Widget buildMainScaffoldBody() {
-
     return Container(
       width: double.infinity,
       child: Column(
@@ -256,7 +251,11 @@ class _PersonCardDetailPageScreenState extends State<PersonCardDetailPageScreen>
                         child: IconButton(
                           icon: Icon(Icons.arrow_forward, color: Colors.white),
                           onPressed: () {
-                            Navigator.pop(context);
+                            /// Return multiple data using MAP
+                            final returnEventDataMap = {
+                              "PersonCardObject": displayPersonCardObject,
+                            };
+                            Navigator.pop(context, returnEventDataMap);
                           },
                         ),
                       ),
@@ -285,57 +284,45 @@ class _PersonCardDetailPageScreenState extends State<PersonCardDetailPageScreen>
     return Column(
       children: <Widget>[
         /// ------------------- Image + Card Name -------------------------
-        // Stack(
-        //   overflow: Overflow.visible,
-        //   children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, top: 30.0, right: 20.0, bottom: 20.0),
-              child: Row(
-                textDirection: TextDirection.rtl,
-                children: <Widget>[
-                  (aPersonCardObj.pictureUrl == null) || (aPersonCardObj.pictureUrl == '')
-                    ? buildEmptyPersonCardImageIcon(Icons.person)
-                    : CircleAvatar(
-                        radius: 30.0,
-                        backgroundColor: Colors.blue[900],
-                        backgroundImage: FileImage(File('${aPersonCardObj.pictureUrl}')),
-                      ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 20.0),
-                      child: Column(
-                        textDirection: TextDirection.rtl,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Text(
-                              aPersonCardObj.firstName + " " + aPersonCardObj.lastName,
-                              style: TextStyle(color: Colors.grey[900], fontSize: 20.0, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Text(
-                            aPersonCardObj.firstNameEng + " " + aPersonCardObj.lastNameEng,
-                            style: TextStyle(color: Colors.grey[900], fontSize: 16.0, fontWeight: FontWeight.w400),
-                          ),
-                        ],
-                      ),
-                    ),
+        Padding(
+          padding: const EdgeInsets.only(left: 20.0, top: 30.0, right: 20.0, bottom: 20.0),
+          child: Row(
+            textDirection: TextDirection.rtl,
+            children: <Widget>[
+              (aPersonCardObj.pictureUrl == null) || (aPersonCardObj.pictureUrl == '')
+                ? buildEmptyPersonCardImageIcon(Icons.person)
+                : CircleAvatar(
+                    radius: 30.0,
+                    backgroundColor: Colors.blue[900],
+                    backgroundImage: NetworkImage(aPersonCardObj.pictureUrl),
                   ),
-                  if (allowUpdate)
-                    buildEditPersonCardButton(openPersonCardDetailEditScreen, aPersonCardObj),
-                ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: Column(
+                    textDirection: TextDirection.rtl,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          aPersonCardObj.firstName + " " + aPersonCardObj.lastName,
+                          style: TextStyle(color: Colors.grey[900], fontSize: 20.0, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Text(
+                        aPersonCardObj.firstNameEng + " " + aPersonCardObj.lastNameEng,
+                        style: TextStyle(color: Colors.grey[900], fontSize: 16.0, fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-
-            // if (allowUpdate)
-            //   Positioned(
-            //       left: 20.0,
-            //       top: -25.0,
-            //       child: buildEditPersonCardButton(openPersonCardDetailEditScreen, aPersonCardObj)
-            //   ),
-        //   ],
-        // ),
+              if (allowUpdate)
+                buildEditPersonCardButton(openPersonCardDetailEditScreen, aPersonCardObj),
+            ],
+          ),
+        ),
 
         Padding(
           padding: const EdgeInsets.only(left: 0.0, top: 10.0, right: 30.0, bottom: 0.0),

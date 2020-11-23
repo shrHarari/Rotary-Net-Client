@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
@@ -38,7 +37,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
   void initState() {
     displayEventObject = widget.argEventObject;
     hebrewEventTimeLabel = widget.argHebrewEventTimeLabel;
-    eventImageDefaultAsset = AssetImage('assets/images/events/EventImageDefaultPicture.jpg');
+    eventImageDefaultAsset = AssetImage('${Constants.rotaryEventImageDefaultFolder}/EventImageDefaultPicture.jpg');
 
     allowUpdate = getUpdatePermission();
 
@@ -71,7 +70,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
 
   //#region Open Event Detail Edit Screen
   openEventDetailEditScreen(EventObject aEventObj) async {
-    final returnDataMapFromPicker = await Navigator.push(
+    final returnEventDataMap = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EventDetailEditPageScreen(
@@ -81,10 +80,14 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
       ),
     );
 
-    if (returnDataMapFromPicker != null) {
+    if (returnEventDataMap != null) {
+      EventObject _eventObject = returnEventDataMap["EventObject"];
+      Widget _hebrewEventTimeLabel = returnEventDataMap["HebrewEventTimeLabel"];
+
       setState(() {
-        displayEventObject = returnDataMapFromPicker["EventObject"];
-        hebrewEventTimeLabel = returnDataMapFromPicker["HebrewEventTimeLabel"];
+        displayEventObject = _eventObject;
+        if (_hebrewEventTimeLabel != null) hebrewEventTimeLabel = _hebrewEventTimeLabel;
+
       });
     }
   }
@@ -115,19 +118,19 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
   @override
   Widget build(BuildContext context) {
     return loading ? Loading() :
-    Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Colors.blue[50],
+      Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: Colors.blue[50],
 
-      drawer: Container(
-        width: 250,
-        child: Drawer(
-          child: ApplicationMenuDrawer(),
+        drawer: Container(
+          width: 250,
+          child: Drawer(
+            child: ApplicationMenuDrawer(),
+          ),
         ),
-      ),
 
-      body: buildMainScaffoldBody(),
-    );
+        body: buildMainScaffoldBody(),
+      );
   }
 
   Widget buildMainScaffoldBody() {
@@ -201,7 +204,12 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
                           child: IconButton(
                             icon: Icon(Icons.arrow_forward, color: Colors.white),
                             onPressed: () {
-                              Navigator.pop(context);
+                              /// Return multiple data using MAP
+                              final returnEventDataMap = {
+                                "EventObject": displayEventObject,
+                                "HebrewEventTimeLabel": hebrewEventTimeLabel,
+                              };
+                              Navigator.pop(context, returnEventDataMap);
                               },
                           ),
                         ),
@@ -237,7 +245,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
             image: DecorationImage(
                 image: (aEventObj.eventPictureUrl == null) || (aEventObj.eventPictureUrl == '')
                     ? eventImageDefaultAsset
-                    : FileImage(File('${aEventObj.eventPictureUrl}')),
+                    : NetworkImage(aEventObj.eventPictureUrl),
                 fit: BoxFit.cover
             ),
           ),
@@ -268,7 +276,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
             scrollDirection: Axis.vertical,
             child: Container(
               child: Column(
-                children: [
+                children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(left: 20.0, right: 30.0, bottom: 40.0),
                     child: displayEventDescriptionRichText(),

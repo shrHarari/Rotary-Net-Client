@@ -7,11 +7,12 @@ import 'package:rotary_net/BLoCs/rotary_users_list_bloc.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
-import 'package:rotary_net/services/connection_service.dart';
 import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/services/route_generator_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
+import 'package:rotary_net/shared/loading.dart';
+import 'package:rotary_net/utils/utils_class.dart';
 
 void main() => runApp(RotaryNetApp());
 
@@ -24,8 +25,8 @@ class RotaryNetApp extends StatelessWidget {
   Future<DataRequiredForBuild> getAllRequiredDataForBuild() async {
 
     /// Call Global first ===>>> Initiate Logger
-    bool _applicationMode = await initializeGlobalValues();
-    await ConnectionService.checkConnection();
+    await initializeGlobalValues();
+    await Utils.checkConnection();
 
     ConnectedUserObject _connectedUserObj = await initializeConnectedUserObject();
     Constants.RotaryRolesEnum _rotaryRolesEnum = await initializeRotaryRolesEnum();
@@ -33,23 +34,20 @@ class RotaryNetApp extends StatelessWidget {
     return DataRequiredForBuild(
       connectedUserObj: _connectedUserObj,
       rotaryRolesEnum: _rotaryRolesEnum,
-      applicationMode: _applicationMode,
     );
   }
   //#endregion
 
   //#region Initialize Global Values [LOGGER, ApplicationType, ApplicationRunningMode]
-  Future <bool> initializeGlobalValues() async {
+  Future initializeGlobalValues() async {
     await LoggerService.initializeLogging();
     await LoggerService.log('<${this.runtimeType}> Logger was initiated');
 
-    bool _applicationType = await GlobalsService.getApplicationType();
+    bool _applicationType = await GlobalsService.readApplicationTypeFromSP();
     await GlobalsService.setApplicationType(_applicationType);
 
-    bool _applicationRunningMode = await GlobalsService.getApplicationType();
+    bool _applicationRunningMode = await GlobalsService.readApplicationRunningModeFromSP();
     await GlobalsService.setApplicationRunningMode(_applicationRunningMode);
-
-    return _applicationRunningMode;
   }
   //#endregion
 
@@ -147,6 +145,5 @@ class DataRequiredForBuild {
   DataRequiredForBuild({
     this.connectedUserObj,
     this.rotaryRolesEnum,
-    this.applicationMode,
   });
 }

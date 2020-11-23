@@ -18,28 +18,6 @@ class GlobalsService {
     else applicationServer = Constants.CLIENT_HOST_URL;
   }
 
-  //#region Get Application Type
-  // =============================================================================
-  static Future getApplicationType() async {
-    try {
-      bool applicationType = await readApplicationTypeFromSP();
-      if (applicationType == null) {
-        applicationType = false;
-      }
-      return applicationType;
-      }
-      catch (e) {
-        await LoggerService.log('<GlobalsService> Get Application Mode >>> ERROR: ${e.toString()}');
-        developer.log(
-          'getApplicationMode',
-          name: 'GlobalsService',
-          error: 'Get Application Mode >>> ERROR: ${e.toString()}',
-        );
-        return null;
-    }
-  }
-  //#endregion
-
   //#region Read Application Type From Shared Preferences [ReadFromSP]
   // =============================================================================
   static Future readApplicationTypeFromSP() async {
@@ -47,7 +25,7 @@ class GlobalsService {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       bool applicationType = prefs.getBool(Constants.rotaryApplicationType);
 
-      if (applicationType == null) applicationType = true;  // SERVER Type [default]
+      if (applicationType == null) applicationType = true;  // NETWORK Type [default]
       return applicationType;
     }
     catch (e){
@@ -90,28 +68,6 @@ class GlobalsService {
     applicationRunningMode = aApplicationRunningMode;
   }
 
-  //#region Get Application RunningMode
-  // =============================================================================
-  static Future getApplicationRunningMode() async {
-    try {
-      bool applicationType = await readApplicationRunningModeFromSP();
-      if (applicationType == null) {
-        applicationType = false;
-      }
-      return applicationType;
-    }
-    catch (e) {
-      await LoggerService.log('<GlobalsService> Get Application RunningMode >>> ERROR: ${e.toString()}');
-      developer.log(
-        'getApplicationRunningMode',
-        name: 'GlobalsService',
-        error: 'Get Application RunningMode >>> ERROR: ${e.toString()}',
-      );
-      return null;
-    }
-  }
-  //#endregion
-
   //#region Read Application RunningMode From Shared Preferences [ReadFromSP]
   // =============================================================================
   static Future readApplicationRunningModeFromSP() async {
@@ -119,7 +75,7 @@ class GlobalsService {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       bool applicationRunningMode = prefs.getBool(Constants.rotaryApplicationRunningMode);
 
-      if (applicationRunningMode == null) applicationRunningMode = true;  // Production Type [default]
+      if (applicationRunningMode == null) applicationRunningMode = true;  // Production [default]
       return applicationRunningMode;
     }
     catch (e){

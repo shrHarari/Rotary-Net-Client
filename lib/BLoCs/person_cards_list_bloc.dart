@@ -34,8 +34,8 @@ class PersonCardsListBloc implements BloC {
     else
       {
         _personCardsList = await personCardService.getPersonCardsListBySearchQuery(_textToSearch);
+        _personCardsList.sort((a, b) => a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase()));
       }
-
     _personCardsController.sink.add(_personCardsList);
   }
 

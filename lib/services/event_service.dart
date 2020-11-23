@@ -58,7 +58,6 @@ class EventService {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
         String jsonResponse = response.body;
-        print("getEventsListBySearchQuery/ jsonResponse: $jsonResponse");
         await LoggerService.log('<EventService> Get Events List By SearchQuery >>> OK\nHeader: $contentType \nEventsListFromJSON: $jsonResponse');
 
         var eventList = jsonDecode(jsonResponse) as List;    // List of PersonCard to display;
@@ -138,7 +137,6 @@ class EventService {
         Map<String, String> headers = response.headers;
         String contentType = headers['content-type'];
         String jsonResponse = response.body;
-        print ('<EventService> Update Event By Id >>> EventObject / jsonResponse: $jsonResponse');
 
         await LoggerService.log('<EventService> Update Event By Id >>> OK');
         return jsonResponse;
@@ -154,6 +152,42 @@ class EventService {
         'updateEventById',
         name: 'EventService',
         error: 'Update Event By Id >>> ERROR: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+  //#endregion
+
+  //#region * Update Event Image Url By EventId To DataBase [WriteToDB]
+  //=============================================================================
+  Future updateEventImageUrlById(String aEventId, String aEventImageUrl) async {
+    try {
+      Map bodyParams = {
+        "eventImageUrl": aEventImageUrl
+      };
+
+      String _updateUrlEvent = GlobalsService.applicationServer + Constants.rotaryEventUrl + "/$aEventId/updateEventImage";
+      Response response = await put(_updateUrlEvent, body: bodyParams);
+
+      if (response.statusCode <= 300) {
+        Map<String, String> headers = response.headers;
+        String contentType = headers['content-type'];
+        String jsonResponse = response.body;
+
+        await LoggerService.log('<EventService> Update Event Image Url By Id >>> OK');
+        return jsonResponse;
+      } else {
+        await LoggerService.log('<EventService> Update Event Image Url By Id >>> Failed >>> ${response.statusCode}');
+        print('<EventService> Update Event Image Url By Id >>> Failed >>> ${response.statusCode}');
+        return null;
+      }
+    }
+    catch (e) {
+      await LoggerService.log('<EventService> Update Event Image Url By Id >>> ERROR: ${e.toString()}');
+      developer.log(
+        'updateEventImageUrlById',
+        name: 'EventService',
+        error: 'Update Event Image Url By Id >>> ERROR: ${e.toString()}',
       );
       return null;
     }
