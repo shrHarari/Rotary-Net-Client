@@ -7,14 +7,15 @@ import 'package:rotary_net/objects/message_populated_object.dart';
 import 'package:rotary_net/objects/person_card_object.dart';
 import 'package:rotary_net/objects/person_card_populated_object.dart';
 import 'package:rotary_net/objects/person_card_role_and_hierarchy_object.dart';
+import 'package:rotary_net/screens/message_detail_pages/message_composer_detail_section.dart';
 import 'package:rotary_net/screens/person_card_detail_pages/person_card_detail_page_screen.dart';
 import 'package:rotary_net/services/message_service.dart';
 import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/shared/decoration_style.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
-import 'package:rotary_net/shared/constants.dart' as Constants;
-import 'package:rotary_net/utils/utils_class.dart';
+import 'package:rotary_net/shared/page_header_application_menu.dart';
+import 'package:rotary_net/shared/update_button_decoration.dart';
 
 class MessageDetailEditPageScreen extends StatefulWidget {
   static const routeName = '/MessageDetailEditPageScreen';
@@ -178,7 +179,7 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
         /// Using personCardWithDescriptionObject ===>>> Because there is no Current Message (Insert State)
         DateTime _messageCreatedDateTime = DateTime.now();
 
-        List<String> personCardIdList = await getPersonCardListByRoleHierarchyPermission(currentDataRequired.personCardPopulatedObject);
+        List<String> _personCardIdList = await getPersonCardListByRoleHierarchyPermission(currentDataRequired.personCardPopulatedObject);
 
         _newMessagePopulatedObj = messageService.createMessagePopulatedAsObject(
             '',
@@ -200,7 +201,7 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
             currentDataRequired.personCardPopulatedObject.roleId,
             currentDataRequired.personCardPopulatedObject.roleEnum,
             currentDataRequired.personCardPopulatedObject.roleName,
-            personCardIdList,
+            _personCardIdList,
         );
 
         await aMessageBloc.insertMessage(_newMessagePopulatedObj);
@@ -265,81 +266,18 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
       // width: double.infinity,
       child: Column(
           children: <Widget>[
-            /// --------------- Title Area ---------------------
+            /// --------------- Page Header Application Menu Area ---------------------
             Container(
               height: 160,
               color: Colors.lightBlue[400],
-              child: SafeArea(
-                child: Stack(
-                  overflow: Overflow.visible,
-                  children: <Widget>[
-                    /// ----------- Header - First line - Application Logo -----------------
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: MaterialButton(
-                                elevation: 0.0,
-                                onPressed: () {},
-                                color: Colors.lightBlue,
-                                textColor: Colors.white,
-                                child: Icon(
-                                  Icons.account_balance,
-                                  size: 30,
-                                ),
-                                padding: EdgeInsets.all(20),
-                                shape: CircleBorder(side: BorderSide(color: Colors.white)),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Text(Constants.rotaryApplicationName,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.bold
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    /// --------------- Application Menu ---------------------
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        /// Exit Icon --->>> Close Screen
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0, top: 10.0, right: 10.0, bottom: 0.0),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.close, color: Colors.white, size: 26.0,),
-                            onPressed: () {
-                              FocusScope.of(context).requestFocus(FocusNode()); // Hide Keyboard
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // Positioned(
-                    //     left: 20.0,
-                    //     bottom: -25.0,
-                    //     child: buildUpdateButton(updateMessage),
-                    // ),
-                  ],
-                ),
+              child: PageHeaderApplicationMenu(
+                argDisplayTitleLogo: true,
+                argDisplayTitleLabel: false,
+                argTitleLabelText: '',
+                argDisplayApplicationMenu: false,
+                argApplicationMenuFunction: null,
+                argDisplayExit: true,
+                argReturnFunction: null,
               ),
             ),
 
@@ -388,7 +326,7 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
 
         Padding(
           padding: const EdgeInsets.only(bottom: 20.0),
-          child: buildUpdateButtonRectangleWithIcon("עדכן", updateMessage, Icons.update),
+          child: buildUpdateButton("שמירה", Icons.save, updateMessage),
         ),
 
         /// ---------------------- Display Error -----------------------
@@ -432,256 +370,54 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
   }
   //#endregion
 
-  //#region Composer Detail Section
-
   //#region Build Composer Detail Section
   Widget buildComposerDetailSection(PersonCardPopulatedObject aPersonCardPopulatedObj) {
 
-    return Container(
-      // color: Colors.grey[200],
-      padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 10.0),
+    PersonCardRoleAndHierarchyIdPopulatedObject hierarchyPopulatedObject =
+    PersonCardRoleAndHierarchyIdPopulatedObject.createPersonCardRoleAndHierarchyIdAsPopulatedObject(
+        aPersonCardPopulatedObj.personCardId,
+        aPersonCardPopulatedObj.firstName,
+        aPersonCardPopulatedObj.lastName,
+        aPersonCardPopulatedObj.areaId,
+        aPersonCardPopulatedObj.areaName,
+        aPersonCardPopulatedObj.clusterId,
+        aPersonCardPopulatedObj.clusterName,
+        aPersonCardPopulatedObj.clubId,
+        aPersonCardPopulatedObj.clubName,
+        aPersonCardPopulatedObj.clubAddress,
+        aPersonCardPopulatedObj.clubMail,
+        aPersonCardPopulatedObj.roleId,
+        aPersonCardPopulatedObj.roleName);
 
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.amber,
-            width: 2.0,
-          ),
-        ),
-      ),
-
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          textDirection: TextDirection.rtl,
-          children: <Widget>[
-            if (aPersonCardPopulatedObj.firstName != "")
-              buildComposerDetailName(Icons.person, aPersonCardPopulatedObj, openComposerPersonCardDetailScreen),
-
-            if (aPersonCardPopulatedObj.areaName != "")
-              buildComposerDetailAreaClusterClub(Icons.location_on, aPersonCardPopulatedObj, Utils.launchInMapByAddress),
-          ],
-        ),
-      ),
-    );
+    return MessageComposerDetailSection(
+      argHierarchyPopulatedObject: hierarchyPopulatedObject,
+      argOpenComposerPersonCardDetailFunction: openComposerPersonCardDetailScreen,);
   }
   //#endregion
 
-  //#region Build Composer Detail Name
-  Widget buildComposerDetailName(IconData aIcon, PersonCardPopulatedObject aPersonCardPopulatedObj, Function aFunc) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5.0),
-      child: Row(
-          textDirection: TextDirection.rtl,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            MaterialButton(
-              elevation: 0.0,
-              onPressed: () {
-                aFunc(aPersonCardPopulatedObj.personCardId);
-              },
-              color: Colors.blue[10],
-              child:
-              IconTheme(
-                data: IconThemeData(
-                  color: Colors.black,
-                ),
-                child: Icon(
-                  aIcon,
-                  size: 20,
-                ),
-              ),
-              padding: EdgeInsets.all(5),
-              shape: CircleBorder(side: BorderSide(color: Colors.black)),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: Text(
-                aPersonCardPopulatedObj.firstName + ' ' + aPersonCardPopulatedObj.lastName,
-                style: TextStyle(color: Colors.grey[900], fontSize: 18.0, fontWeight: FontWeight.bold),
-              ),
-            ),
-
-            Text(
-              '[${aPersonCardPopulatedObj.roleName}]',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14.0),
-            ),
-          ]
-      ),
-    );
-  }
-  //#endregion
-
-  //#region Build Composer Detail Area Cluster Club
-  Widget buildComposerDetailAreaClusterClub(IconData aIcon, PersonCardPopulatedObject aPersonCardPopulatedObj, Function aFunc) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
-      child: Row(
-          textDirection: TextDirection.rtl,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            MaterialButton(
-              elevation: 0.0,
-              onPressed: () {aFunc(aPersonCardPopulatedObj.clubAddress);},
-              color: Colors.blue[10],
-              child:
-              IconTheme(
-                data: IconThemeData(
-                  color: Colors.black,
-                ),
-                child: Icon(
-                  aIcon,
-                  size: 20,
-                ),
-              ),
-              padding: EdgeInsets.all(5),
-              shape: CircleBorder(side: BorderSide(color: Colors.black)),
-            ),
-
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(left: 5.0),
-                      child: Text(
-                        'מועדון:',
-                        style: TextStyle(color: Colors.grey[900], fontSize: 14.0),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15.0),
-                      child: Text(
-                        '${aPersonCardPopulatedObj.clubName}',
-                        style: TextStyle(color: Colors.grey[900], fontSize: 14.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(left: 5.0),
-                      child: Text(
-                        'אשכול:',
-                        style: TextStyle(color: Colors.grey[900], fontSize: 14.0),
-                      ),
-                    ),
-
-                    Text(
-                      '${aPersonCardPopulatedObj.areaName} / ${aPersonCardPopulatedObj.clusterName}',
-                      style: TextStyle(color: Colors.grey[900], fontSize: 14.0, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: Row(
-                    children: <Widget>[
-                      InkWell(
-                        onTap: () async {
-                          await Utils.sendEmail(aPersonCardPopulatedObj.clubMail);
-                        },
-                        child: Text(
-                          // '${aMessageObj.clubMail}',
-                          '${aPersonCardPopulatedObj.clubMail}',
-                          style: TextStyle(color: Colors.blue,
-                            fontSize: 14.0,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ]
-      ),
-    );
-  }
-  //#endregion
-
-  //#endregion
-
-  //#region Build Update Circle Button
-  Widget buildUpdateCircleButton(Function aFunc) {
-
-    final messagesBloc = BlocProvider.of<MessagesListBloc>(context);
-
-    return StreamBuilder<List<MessagePopulatedObject>>(
-      stream: messagesBloc.messagesPopulatedStream,
-      initialData: messagesBloc.messagesListPopulated,
-      builder: (context, snapshot) {
-        List<MessagePopulatedObject> currentMessagesList =
-        (snapshot.connectionState == ConnectionState.waiting)
-            ? messagesBloc.messagesListPopulated
-            : snapshot.data;
-
-        return MaterialButton(
-          elevation: 0.0,
-          onPressed: () async {
-            aFunc(messagesBloc);
-          },
-          color: Colors.white,
-          padding: EdgeInsets.all(10),
-          shape: CircleBorder(side: BorderSide(color: Colors.blue)),
-          child: IconTheme(
-            data: IconThemeData(
-              color: Colors.black,
-            ),
-            child: Icon(
-              Icons.save,
-              size: 20,
-            ),
-          ),
-        );
-      }
-    );
-  }
-  //#endregion
-
-  //#region Build Update Rectangle Button
-  Widget buildUpdateButtonRectangleWithIcon(String buttonText, Function aFunc, IconData aIcon) {
-
+  //#region Build Update Button
+  Widget buildUpdateButton(String aButtonText, IconData aIcon, Function aFunc) {
     final messagesBloc = BlocProvider.of<MessagesListBloc>(context);
 
     return StreamBuilder<List<MessagePopulatedObject>>(
         stream: messagesBloc.messagesPopulatedStream,
         initialData: messagesBloc.messagesListPopulated,
         builder: (context, snapshot) {
-          List<MessagePopulatedObject> currentMessagesList =
-          (snapshot.connectionState == ConnectionState.waiting)
-              ? messagesBloc.messagesListPopulated
-              : snapshot.data;
+          // List<MessagePopulatedObject> currentMessagesList =
+          // (snapshot.connectionState == ConnectionState.waiting)
+          //     ? messagesBloc.messagesListPopulated
+          //     : snapshot.data;
 
-          return RaisedButton.icon(
-            onPressed: () {
-              aFunc(messagesBloc);
-            },
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5.0))
-            ),
-            label: Text(
-              buttonText,
-              style: TextStyle(
-                  color: Colors.white, fontSize: 16.0
-              ),
-            ),
-            icon: Icon(
-              aIcon,
-              color:Colors.white,
-            ),
-            textColor: Colors.white,
-            color: Colors.blue[400],
+          return Padding(
+            padding: const EdgeInsets.only(top: 10.0, right: 120.0, left: 120.0),
+            child: UpdateButtonDecoration(
+                argButtonType: ButtonType.Decorated,
+                argHeight: 40.0,
+                argButtonText: aButtonText,
+                argIcon: aIcon,
+                onPressed: () {
+                  aFunc(messagesBloc);
+                }),
           );
         }
     );

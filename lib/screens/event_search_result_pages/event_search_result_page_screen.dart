@@ -7,8 +7,9 @@ import 'package:rotary_net/screens/event_search_result_pages/event_search_result
 import 'package:rotary_net/screens/event_search_result_pages/event_search_result_page_list_tile.dart';
 import 'package:rotary_net/services/event_service.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
-import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
+import 'package:rotary_net/shared/page_header_application_menu.dart';
+import 'package:rotary_net/shared/loading.dart';
 
 class EventSearchResultPage extends StatefulWidget {
   static const routeName = '/EventSearchResultPage';
@@ -37,10 +38,17 @@ class _EventSearchResultPageState extends State<EventSearchResultPage> {
     eventsBloc.getEventsListBySearchQuery(searchController.text);
   }
 
+  //#region Open Menu
   Future<void> openMenu() async {
-    // Open Menu from Left side
     _scaffoldKey.currentState.openDrawer();
   }
+  //#endregion
+
+  //#region Exit And Navigate Back
+  Future<void> exitAndNavigateBack() async {
+    Navigator.pop(context, searchController.text);
+  }
+  //#endregion
 
   @override
   Widget build(BuildContext context) {
@@ -120,30 +128,15 @@ class _EventSearchResultPageState extends State<EventSearchResultPage> {
                   ],
                 ),
 
-                /// --------------- Application Menu ---------------------
-                SafeArea(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      /// Menu Icon --->>> Open Drawer Menu
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0, top: 10.0, right: 0.0, bottom: 0.0),
-                        child: IconButton(
-                          icon: Icon(Icons.menu, color: Colors.white),
-                          onPressed: () async {await openMenu();},
-                        ),
-                      ),
-
-                      /// Back Icon --->>> Back to previous screen
-                      Padding(
-                        padding: const EdgeInsets.only(left: 0.0, top: 10.0, right: 10.0, bottom: 0.0),
-                        child: IconButton(
-                          icon: Icon(Icons.arrow_forward, color: Colors.white),
-                          onPressed: () {Navigator.pop(context, searchController.text);},
-                        ),
-                      ),
-                    ],
-                  ),
+                /// --------------- Page Header Application Menu ---------------------
+                PageHeaderApplicationMenu(
+                  argDisplayTitleLogo: false,
+                  argDisplayTitleLabel: false,
+                  argTitleLabelText: '',
+                  argDisplayApplicationMenu: true,
+                  argApplicationMenuFunction: openMenu,
+                  argDisplayExit: false,
+                  argReturnFunction: exitAndNavigateBack,
                 ),
               ],
             ),

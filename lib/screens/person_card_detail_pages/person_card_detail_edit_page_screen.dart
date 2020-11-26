@@ -21,6 +21,8 @@ import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/shared/person_card_image_avatar.dart';
 import 'package:rotary_net/utils/utils_class.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
+import 'package:rotary_net/shared/page_header_application_menu.dart';
+import 'package:rotary_net/shared/update_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:path/path.dart' as Path;
 
@@ -363,6 +365,69 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
 
   //#endregion
 
+  //#region Pick Image File
+  Future <void> pickImageFile() async {
+
+    ImagePicker imagePicker = ImagePicker();
+    PickedFile compressedPickedFile = await imagePicker.getImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+        maxHeight: 800
+    );
+
+    setState(() {
+      loading = true;
+    });
+
+    String originalImageFileName;
+
+    if (compressedPickedFile != null)
+    {
+      /// If currentPersonCardImage Exists on Client --->>> Delete Original file
+      String personCardImagesDirectory = await Utils.createDirectoryInAppDocDir(Constants.rotaryPersonCardImagesFolderName);
+      if ((currentPersonCardImage != null) && (currentPersonCardImage != ''))
+      {
+        File originalImageFile = File(currentPersonCardImage);
+        originalImageFileName = Path.basename(originalImageFile.path);
+
+        String localFilePath = '$personCardImagesDirectory/$originalImageFileName';
+        File localImageFile = File(localFilePath);
+        localImageFile.delete();
+      }
+
+      // copy the New CompressedPickedFile to a new path --->>> On Client
+      File pickedPictureFile = File(compressedPickedFile.path);
+      String copyImageFileName = '${widget.argPersonCardObject.personCardId}_${DateTime.now()}.jpg';
+      String copyFilePath = '$personCardImagesDirectory/$copyImageFileName';
+
+      await pickedPictureFile.copy(copyFilePath).then((File newImageFile) async {
+        if (newImageFile != null) {
+
+          /// START Uploading
+          Map<String, dynamic> uploadReturnVal;
+
+          String fileType = Path.extension(compressedPickedFile.path);      /// <<<---- [.JPG]
+
+          uploadReturnVal = await AwsService.awsUploadImageToServer(
+              widget.argPersonCardObject.personCardId,
+              compressedPickedFile, copyImageFileName, fileType,
+              originalImageFileName, aBucketFolderName: Constants.rotaryPersonCardImagesFolderName);
+
+          if ((uploadReturnVal != null) && (uploadReturnVal["returnCode"] == 200)) {
+            setState(() {
+              currentPersonCardImage = uploadReturnVal["imageUrl"];
+            });
+          }
+        }
+      });
+    }
+
+    setState(() {
+      loading = false;
+    });
+  }
+  //#endregion
+
   //#region Check Validation
   Future<bool> checkValidation() async {
     bool validationVal = false;
@@ -431,8 +496,8 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
   }
   //#endregion
 
-  //#region Return To PersonCard Page
-  Future returnToPersonCardPage() async {
+  //#region Exit And Navigate Back
+  Future exitAndNavigateBack() async {
     String _pictureUrl = '';
     if (currentPersonCardImage != null) _pictureUrl = currentPersonCardImage;
 
@@ -446,69 +511,6 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
     };
     FocusScope.of(context).requestFocus(FocusNode());
     Navigator.pop(context, returnPersonCardDataMap);
-  }
-  //#endregion
-
-  //#region Pick Image File
-  Future <void> pickImageFile() async {
-
-    ImagePicker imagePicker = ImagePicker();
-    PickedFile compressedPickedFile = await imagePicker.getImage(
-        source: ImageSource.gallery,
-        imageQuality: 80,
-        maxHeight: 800
-    );
-
-    setState(() {
-      loading = true;
-    });
-
-    String originalImageFileName;
-
-    if (compressedPickedFile != null)
-    {
-      /// If currentPersonCardImage Exists on Client --->>> Delete Original file
-      String personCardImagesDirectory = await Utils.createDirectoryInAppDocDir(Constants.rotaryPersonCardImagesFolderName);
-      if ((currentPersonCardImage != null) && (currentPersonCardImage != ''))
-      {
-        File originalImageFile = File(currentPersonCardImage);
-        originalImageFileName = Path.basename(originalImageFile.path);
-
-        String localFilePath = '$personCardImagesDirectory/$originalImageFileName';
-        File localImageFile = File(localFilePath);
-        localImageFile.delete();
-      }
-
-      // copy the New CompressedPickedFile to a new path --->>> On Client
-      File pickedPictureFile = File(compressedPickedFile.path);
-      String copyImageFileName = '${widget.argPersonCardObject.personCardId}_${DateTime.now()}.jpg';
-      String copyFilePath = '$personCardImagesDirectory/$copyImageFileName';
-
-      await pickedPictureFile.copy(copyFilePath).then((File newImageFile) async {
-        if (newImageFile != null) {
-
-          /// START Uploading
-          Map<String, dynamic> uploadReturnVal;
-
-          String fileType = Path.extension(compressedPickedFile.path);      /// <<<---- [.JPG]
-
-          uploadReturnVal = await AwsService.awsUploadImageToServer(
-              widget.argPersonCardObject.personCardId,
-              compressedPickedFile, copyImageFileName, fileType,
-              originalImageFileName, aBucketFolderName: Constants.rotaryPersonCardImagesFolderName);
-
-          if ((uploadReturnVal != null) && (uploadReturnVal["returnCode"] == 200)) {
-            setState(() {
-              currentPersonCardImage = uploadReturnVal["imageUrl"];
-            });
-          }
-        }
-      });
-    }
-
-    setState(() {
-      loading = false;
-    });
   }
   //#endregion
 
@@ -555,79 +557,18 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
       // width: double.infinity,
       child: Column(
           children: <Widget>[
-            /// --------------- Title Area ---------------------
+            /// --------------- Page Header Application Menu ---------------------
             Container(
               height: 180,
               color: Colors.lightBlue[400],
-              child: SafeArea(
-                child: Stack(
-                  overflow: Overflow.visible,
-                  children: <Widget>[
-                    /// ----------- Header - First line - Application Logo -----------------
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: MaterialButton(
-                                elevation: 0.0,
-                                onPressed: () {},
-                                color: Colors.lightBlue,
-                                textColor: Colors.white,
-                                child: Icon(
-                                  Icons.account_balance,
-                                  size: 30,
-                                ),
-                                padding: EdgeInsets.all(20),
-                                shape: CircleBorder(side: BorderSide(color: Colors.white)),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Text(Constants.rotaryApplicationName,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.bold
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    /// --------------- Application Menu ---------------------
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        /// Exit Icon --->>> Close Screen
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0, top: 10.0, right: 10.0, bottom: 0.0),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_forward, color: Colors.white),
-                            onPressed: () {
-                              returnToPersonCardPage();
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // Positioned(
-                    //   left: 20.0,
-                    //   bottom: -25.0,
-                    //   child: buildUpdateCircleButton(updatePersonCard),
-                    // ),
-                  ],
-                ),
+              child: PageHeaderApplicationMenu(
+                argDisplayTitleLogo: true,
+                argDisplayTitleLabel: false,
+                argTitleLabelText: '',
+                argDisplayApplicationMenu: false,
+                argApplicationMenuFunction: null,
+                argDisplayExit: false,
+                argReturnFunction: exitAndNavigateBack,
               ),
             ),
 
@@ -681,7 +622,7 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
           ),
         ),
 
-        buildUpdateButtonRectangleWithIcon("עדכן", updatePersonCard, Icons.update),
+        buildUpdateButton("שמירה", Icons.save, updatePersonCard),
 
         /// ---------------------- Display Error -----------------------
         Text(
@@ -973,8 +914,8 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
 
   //#endregion
 
-  //#region UPDATE Button
-  Widget buildUpdateCircleButton(Function aFunc) {
+  //#region Build Update Button
+  Widget buildUpdateButton(String aButtonText, IconData aIcon, Function aFunc) {
 
     final personCardsBloc = BlocProvider.of<PersonCardsListBloc>(context);
 
@@ -982,65 +923,21 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
         stream: personCardsBloc.personCardsStream,
         initialData: personCardsBloc.personCardsList,
         builder: (context, snapshot) {
-          List<PersonCardObject> currentPersonCardsList =
-          (snapshot.connectionState == ConnectionState.waiting)
-              ? personCardsBloc.personCardsList
-              : snapshot.data;
+          // List<PersonCardObject> currentPersonCardsList =
+          // (snapshot.connectionState == ConnectionState.waiting)
+          //     ? personCardsBloc.personCardsList
+          //     : snapshot.data;
 
-          return MaterialButton(
-            elevation: 0.0,
-            onPressed: () async {
-              aFunc(personCardsBloc);
-            },
-            color: Colors.white,
-            padding: EdgeInsets.all(10),
-            shape: CircleBorder(side: BorderSide(color: Colors.blue)),
-            child: IconTheme(
-              data: IconThemeData(
-                color: Colors.black,
-              ),
-              child: Icon(
-                Icons.save,
-                size: 20,
-              ),
-            ),
-          );
-        }
-    );
-  }
-
-  Widget buildUpdateButtonRectangleWithIcon(String buttonText, Function aFunc, IconData aIcon) {
-
-    final personCardsBloc = BlocProvider.of<PersonCardsListBloc>(context);
-
-    return StreamBuilder<List<PersonCardObject>>(
-        stream: personCardsBloc.personCardsStream,
-        initialData: personCardsBloc.personCardsList,
-        builder: (context, snapshot) {
-          List<PersonCardObject> currentPersonCardsList =
-          (snapshot.connectionState == ConnectionState.waiting)
-              ? personCardsBloc.personCardsList
-              : snapshot.data;
-
-          return RaisedButton.icon(
-            onPressed: () {
-              aFunc(personCardsBloc);
-            },
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5.0))
-            ),
-            label: Text(
-              buttonText,
-              style: TextStyle(
-                  color: Colors.white,fontSize: 16.0
-              ),
-            ),
-            icon: Icon(
-              aIcon,
-              color:Colors.white,
-            ),
-            textColor: Colors.white,
-            color: Colors.blue[400],
+          return Padding(
+            padding: const EdgeInsets.only(top: 10.0, right: 120.0, left: 120.0),
+            child: UpdateButtonDecoration(
+                argButtonType: ButtonType.Decorated,
+                argHeight: 40.0,
+                argButtonText: aButtonText,
+                argIcon: aIcon,
+                onPressed: () {
+                aFunc(personCardsBloc);
+              }),
           );
         }
     );

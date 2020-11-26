@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:rotary_net/BLoCs/bloc_provider.dart';
 import 'package:rotary_net/BLoCs/rotary_users_list_bloc.dart';
 import 'package:rotary_net/objects/user_object.dart';
+import 'package:rotary_net/utils/utils_class.dart';
 import 'package:rotary_net/screens/rotary_user_detail_pages/rotary_user_detail_edit_page_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
+import 'package:rotary_net/shared/page_header_application_menu.dart';
+import 'package:rotary_net/shared/update_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
-import 'package:rotary_net/utils/utils_class.dart';
 
 class RotaryUserDetailPageScreen extends StatefulWidget {
   static const routeName = '/RotaryUserDetailPageScreen';
@@ -51,6 +53,13 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
   }
   //endregion
 
+  //#region Delete User
+  Future deleteUser(RotaryUsersListBloc aUserBloc) async {
+    aUserBloc.deleteUserById(displayUserObject);
+    Navigator.pop(context);
+  }
+  //#endregion
+
   @override
   Widget build(BuildContext context) {
     return loading ? Loading() :
@@ -74,69 +83,14 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
             Container(
               height: 160,
               color: Colors.lightBlue[400],
-              child: SafeArea(
-                child: Stack(
-                  children: <Widget>[
-                    /// ----------- Header - First line - Application Logo -----------------
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: MaterialButton(
-                                elevation: 0.0,
-                                onPressed: () {},
-                                color: Colors.lightBlue,
-                                textColor: Colors.white,
-                                child: Icon(
-                                  Icons.account_balance,
-                                  size: 30,
-                                ),
-                                padding: EdgeInsets.all(20),
-                                shape: CircleBorder(side: BorderSide(color: Colors.white)),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Text(Constants.rotaryApplicationName,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.bold
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    /// --------------- Application Menu ---------------------
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        /// Exit Icon --->>> Close Screen
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0, top: 10.0, right: 10.0, bottom: 0.0),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.close, color: Colors.white, size: 26.0,),
-                              onPressed: () {
-                                Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              child: PageHeaderApplicationMenu(
+                argDisplayTitleLogo: true,
+                argDisplayTitleLabel: false,
+                argTitleLabelText: '',
+                argDisplayApplicationMenu: false,
+                argApplicationMenuFunction: null,
+                argDisplayExit: true,
+                argReturnFunction: null,
               ),
             ),
 
@@ -162,8 +116,10 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
           padding: const EdgeInsets.only(bottom: 20.0),
           child: Row(
             textDirection: TextDirection.rtl,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
+                flex: 10,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 20.0),
                   child: Column(
@@ -181,14 +137,10 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 0.0, top: 0.0, right: 10.0, bottom: 0.0),
-                child: IconButton(
-                  icon: Icon(Icons.mode_edit, color: Colors.grey[900]),
-                  onPressed: () {
-                    openUserDetailEditScreen(aUserObj);
-                  },
-                ),
+
+              Expanded(
+                  flex: 2,
+                  child: buildEditEventButton(openUserDetailEditScreen, aUserObj)
               ),
             ],
           ),
@@ -205,7 +157,6 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
                   Column(
                     textDirection: TextDirection.rtl,
                     children: <Widget>[
-                      buildDetailImageIcon(Icons.language, aUserObj.userId),
                       buildDetailImageIcon(Icons.mail_outline, aUserObj.email, aFunc: Utils.sendEmail),
                       buildDetailImageIcon(Icons.lock, aUserObj.password),
                       buildStayConnectedCheckBox(),
@@ -218,12 +169,36 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
           ),
         ),
 
-        _buildDeleteUserButton('מחק משתמש', Icons.delete_sweep),
+        buildDeleteUserButton('הסרת משתמש', Icons.delete_sweep, deleteUser),
 
       ],
     );
   }
 
+  //#region Build Edit Event Button
+  Widget buildEditEventButton(Function aFunc, UserObject aUserObj) {
+    return MaterialButton(
+      elevation: 0.0,
+      onPressed: () async {
+        await aFunc(aUserObj);
+      },
+      color: Colors.white,
+      padding: EdgeInsets.all(10),
+      shape: CircleBorder(side: BorderSide(color: Colors.blue)),
+      child: IconTheme(
+        data: IconThemeData(
+          color: Colors.black,
+        ),
+        child: Icon(
+          Icons.edit,
+          size: 20,
+        ),
+      ),
+    );
+  }
+  //#endregion
+
+  //#region Build Detail Image Icon
   Row buildDetailImageIcon(IconData aIcon, String aTitle, {Function aFunc}) {
     return Row(
         textDirection: TextDirection.rtl,
@@ -265,7 +240,9 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
         ]
     );
   }
+  //#endregion
 
+  //#region Build Stay Connected CheckBox
   Widget buildStayConnectedCheckBox() {
     return Padding(
       padding: const EdgeInsets.only(top: 30.0),
@@ -299,7 +276,9 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
       ),
     );
   }
+  //#endregion
 
+  //#region Build UserType Radio Button
   Widget buildUserTypeRadioButton() {
     String userTypeTitle;
     switch (displayUserObject.userType) {
@@ -352,8 +331,10 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
       ),
     );
   }
+  //#endregion
 
-  Widget _buildDeleteUserButton(String buttonText, IconData aIcon) {
+  //#region Build DeleteUser Button
+  Widget buildDeleteUserButton(String aButtonText, IconData aIcon, Function aFunc) {
 
     final usersBloc = BlocProvider.of<RotaryUsersListBloc>(context);
 
@@ -361,33 +342,24 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
         stream: usersBloc.usersStream,
         initialData: usersBloc.usersList,
         builder: (context, snapshot) {
-          List<UserObject> currentUsersList =
-          (snapshot.connectionState == ConnectionState.waiting)
-              ? usersBloc.usersList
-              : snapshot.data;
+          // List<UserObject> currentUsersList =
+          // (snapshot.connectionState == ConnectionState.waiting)
+          //     ? usersBloc.usersList
+          //     : snapshot.data;
 
-          return RaisedButton.icon(
-            onPressed: () {
-              usersBloc.deleteUserById(displayUserObject);
-              Navigator.pop(context);
-            },
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5.0))
-            ),
-            label: Text(
-              buttonText,
-              style: TextStyle(
-                  color: Colors.white,fontSize: 16.0
-              ),
-            ),
-            icon: Icon(
-              aIcon,
-              color:Colors.white,
-            ),
-            textColor: Colors.white,
-            color: Colors.blue[400],
+          return Padding(
+            padding: const EdgeInsets.only(right: 70.0, left: 70.0),
+            child: UpdateButtonDecoration(
+                argButtonType: ButtonType.Decorated,
+                argHeight: 40.0,
+                argButtonText: aButtonText,
+                argIcon: aIcon,
+                onPressed: () {
+                  aFunc(usersBloc);
+                }),
           );
         }
     );
   }
+  //#endregion
 }

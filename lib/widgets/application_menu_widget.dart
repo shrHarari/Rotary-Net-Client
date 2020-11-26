@@ -118,11 +118,6 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
                     )
                   },
                 ),
-                ListTile(
-                  leading: Icon(Icons.receipt),
-                  title: Text('תנאי שימוש'),
-                  onTap: () => {Navigator.of(context).pop()},
-                ),
 
                 Divider(),
 

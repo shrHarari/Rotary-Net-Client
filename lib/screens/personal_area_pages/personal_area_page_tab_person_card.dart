@@ -21,6 +21,7 @@ import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/shared/person_card_image_avatar.dart';
 import 'package:rotary_net/utils/utils_class.dart';
+import 'package:rotary_net/shared/update_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:path/path.dart' as Path;
 
@@ -621,7 +622,7 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
           ),
         ),
 
-        buildUpdateImageButton('עדכון', updatePersonCard, Icons.update),
+        buildUpdateButton('שמירה', Icons.save, updatePersonCard),
 
         /// ---------------------- Display Error -----------------------
         Text(
@@ -915,26 +916,19 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
 
   //#endregion
 
-  //#region UPDATE Button
-  Widget buildUpdateImageButton(String buttonText, Function aFunc, IconData aIcon) {
-    return RaisedButton.icon(
-      onPressed: () {aFunc();},
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(5.0))
-      ),
-      label: Text(
-        buttonText,
-        style: TextStyle(
-            color: Colors.white,fontSize: 16.0
-        ),
-      ),
-      icon: Icon(
-        aIcon,
-        color:Colors.white,
-      ),
-      textColor: Colors.white,
-      splashColor: Colors.red,
-      color: Colors.blue[400],
+  //#region Build Update Button
+  Widget buildUpdateButton(String aButtonText, IconData aIcon, Function aFunc) {
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0, right: 120.0, left: 120.0),
+      child: UpdateButtonDecoration(
+          argButtonType: ButtonType.Decorated,
+          argHeight: 35.0,
+          argButtonText: aButtonText,
+          argIcon: aIcon,
+          onPressed: () {
+            aFunc();
+          }),
     );
   }
   //#endregion

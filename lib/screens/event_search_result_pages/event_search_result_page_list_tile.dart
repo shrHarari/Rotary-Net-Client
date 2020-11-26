@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/BLoCs/bloc_provider.dart';
 import 'package:rotary_net/BLoCs/events_list_bloc.dart';
+import 'package:rotary_net/objects/connected_user_global.dart';
+import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/objects/event_object.dart';
 import 'package:rotary_net/screens/event_detail_pages/event_detail_page_screen.dart';
 import 'package:rotary_net/screens/event_detail_pages/event_detail_page_widgets.dart';
@@ -22,11 +24,11 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
 
   AssetImage eventImageDefaultAsset;
   EventObject displayEventObject;
+  bool allowDeleteEvent = false;
   bool loading = true;
 
   @override
   void initState() {
-    displayEventObject = widget.argEventObject;
     eventImageDefaultAsset = AssetImage('${Constants.rotaryEventImageDefaultFolder}/EventImageDefaultPicture.jpg');
 
     super.initState();
@@ -44,6 +46,28 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
       loading = false;
     });
   }
+
+  //#region Get Update Permission
+  bool getDeleteEventPermission()  {
+    ConnectedUserObject _connectedUserObj = ConnectedUserGlobal.currentConnectedUserObject;
+    bool _allowDeleteEvent = false;
+
+    switch (_connectedUserObj.userType) {
+      case Constants.UserTypeEnum.SystemAdmin:
+        _allowDeleteEvent = true;
+        break;
+      case  Constants.UserTypeEnum.RotaryMember:
+        /// Check if the ConnectedUser is the Event Composer
+        if ((displayEventObject.eventComposerId != null) && (displayEventObject.eventComposerId == _connectedUserObj.personCardId))
+          _allowDeleteEvent = true;
+        break;
+
+      case  Constants.UserTypeEnum.Guest:
+        _allowDeleteEvent = false;
+    }
+    return _allowDeleteEvent;
+  }
+  //#endregion
 
   //#region Open Event Detail Screen
   openEventDetailScreen(BuildContext context) async {
@@ -70,6 +94,9 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
 
   @override
   Widget build(BuildContext context) {
+    displayEventObject = widget.argEventObject;
+    allowDeleteEvent = getDeleteEventPermission();
+
     return loading ? EventImageTileLoading()
       : Padding(
         padding: const EdgeInsets.only(left: 20.0, top: 10.0, right: 20.0, bottom: 5.0),
@@ -135,10 +162,12 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
                   ],
                 ),
               ),
-              Positioned(
-                  bottom: 10.0,
-                  child: _buildDeleteEventButton(context)
-              ),
+
+              if (allowDeleteEvent)
+                Positioned(
+                    bottom: 10.0,
+                    child: _buildDeleteEventButton(context)
+                ),
             ],
           ),
           onTap: ()

@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:rotary_net/objects/event_object.dart';
 import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
+import 'package:rotary_net/services/aws_service.dart';
+import 'package:rotary_net/utils/utils_class.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
+import 'package:path/path.dart' as Path;
 import 'dart:developer' as developer;
 
 class EventService {
@@ -20,6 +24,7 @@ class EventService {
       DateTime aEventEndDateTime,
       String aEventLocation,
       String aEventManager,
+      String aEventComposerId,
       )
   {
     if (aEventId == null)
@@ -32,17 +37,19 @@ class EventService {
           eventEndDateTime: null,
           eventLocation: '',
           eventManager: '',
+          eventComposerId: ''
       );
     else
       return EventObject(
-        eventId: aEventId,
-        eventName: aEventName,
-        eventPictureUrl: aEventPictureUrl,
-        eventDescription: aEventDescription,
-        eventStartDateTime: aEventStartDateTime,
-        eventEndDateTime: aEventEndDateTime,
-        eventLocation: aEventLocation,
-        eventManager: aEventManager,
+          eventId: aEventId,
+          eventName: aEventName,
+          eventPictureUrl: aEventPictureUrl,
+          eventDescription: aEventDescription,
+          eventStartDateTime: aEventStartDateTime,
+          eventEndDateTime: aEventEndDateTime,
+          eventLocation: aEventLocation,
+          eventManager: aEventManager,
+          eventComposerId: aEventComposerId,
       );
   }
   //#endregion
@@ -123,7 +130,7 @@ class EventService {
   }
   //#endregion
 
-  //#region * Update Event By EventId To DataBase [WriteToDB]
+  //#region * Update Event By Id [WriteToDB]
   //=============================================================================
   Future updateEventById(EventObject aEventObj) async {
     try {
@@ -158,7 +165,7 @@ class EventService {
   }
   //#endregion
 
-  //#region * Update Event Image Url By EventId To DataBase [WriteToDB]
+  //#region * Update Event Image Url By Id [WriteToDB]
   //=============================================================================
   Future updateEventImageUrlById(String aEventId, String aEventImageUrl) async {
     try {
@@ -194,10 +201,11 @@ class EventService {
   }
   //#endregion
 
-  //#region * Delete Event By EventId From DataBase [WriteToDB]
+  //#region * Delete Event By Id [WriteToDB]
   //=============================================================================
   Future deleteEventById(EventObject aEventObj) async {
     try {
+      /// 1. DELETE Event from DataBase
       String _deleteUrlEvent = GlobalsService.applicationServer + Constants.rotaryEventUrl + "/${aEventObj.eventId}";
       Response response = await delete(_deleteUrlEvent, headers: Constants.rotaryUrlHeader);
 
@@ -209,12 +217,30 @@ class EventService {
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';
         if (returnVal) {
-          await LoggerService.log(
-              '<EventService> Delete Event By Id >>> OK');
+          /// 2. DELETE EventImage
+          String originalImageFileName;
+          /// If aEventObj.eventPictureUrl Exists on Client
+          String eventImagesDirectory = await Utils.createDirectoryInAppDocDir(Constants.rotaryEventImagesFolderName);
+          if ((aEventObj.eventPictureUrl != null) && (aEventObj.eventPictureUrl != ''))
+          {
+            /// 2.1. --->>> Delete Original file From CLIENT
+            File originalImageFile = File(aEventObj.eventPictureUrl);
+            originalImageFileName = Path.basename(originalImageFile.path);
+
+            String localFilePath = '$eventImagesDirectory/$originalImageFileName';
+            File localImageFile = File(localFilePath);
+            localImageFile.delete();
+
+            /// 2.2. --->>> Delete Original file From AWS
+            AwsDeleteFileService deleteAwsFileService = AwsDeleteFileService();
+            await deleteAwsFileService.delete(
+                originalImageFileName, aBucketFolderName: Constants.rotaryEventImagesFolderName);
+          }
+
+          await LoggerService.log('<EventService> Delete Event By Id >>> OK');
           return returnVal;
         } else {
-          await LoggerService.log(
-              '<EventService> Delete Event By Id >>> Failed');
+          await LoggerService.log('<EventService> Delete Event By Id >>> Failed');
           print('<EventService> Delete Event By Id >>> Failed');
           return null;
         }

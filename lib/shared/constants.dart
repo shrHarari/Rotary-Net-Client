@@ -1,9 +1,9 @@
 
 //#region Application Global Parameters
 // ==============================================================
-import 'package:rotary_net/services/globals_service.dart';
 
 const String rotaryApplicationName = 'מועדון רוטרי';
+const String rotaryApplicationLogo = 'assets/app_icon/RotaryNetLogo.png';
 //#endregion
 
 //#region Application Parameters: SharedPreferences [Key Name]

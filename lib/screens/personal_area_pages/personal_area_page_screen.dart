@@ -95,8 +95,8 @@ class _PersonalAreaScreenState extends State<PersonalAreaScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
 
-                /// --------------- Screen Header Area ---------------------
-                BuildPersonalAreaPageHeader(),
+                /// --------------- Page Header Application Menu ---------------------
+                PersonalAreaPageHeader(),
 
                 (snapshot.connectionState == ConnectionState.waiting) ?
                   Container(child: Loading()) :

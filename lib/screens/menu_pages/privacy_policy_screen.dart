@@ -1,11 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:rotary_net/services/menu_pages_service.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/utils/utils_class.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:rotary_net/shared/page_header_application_menu.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
   static const routeName = '/PrivacyPolicyScreen';
@@ -178,35 +179,14 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     Container(
       height: 120,
       color: Colors.lightBlue[400],
-      child: SafeArea(
-        child: Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                'מדיניות הפרטיות',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0),
-              ),
-            ),
-
-            /// Menu Icon
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10.0, 10.0),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.close, color: Colors.white, size: 26.0,),
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ),
-            ),
-          ]
-        )
+      child: PageHeaderApplicationMenu(
+        argDisplayTitleLogo: false,
+        argDisplayTitleLabel: true,
+        argTitleLabelText: 'מדיניות הפרטיות',
+        argDisplayApplicationMenu: false,
+        argDisplayExit: true,
+        argApplicationMenuFunction: null,
+        argReturnFunction: null,
       ),
     );
   }

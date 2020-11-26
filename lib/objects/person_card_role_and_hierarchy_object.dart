@@ -134,7 +134,90 @@ class PersonCardRoleAndHierarchyIdObject {
       );
   }
   //#endregion
-
 }
 
+class PersonCardRoleAndHierarchyIdPopulatedObject {
+  String personCardId;
+  String firstName;
+  String lastName;
+  String areaId;
+  String areaName;
+  String clusterId;
+  String clusterName;
+  String clubId;
+  String clubName;
+  String clubAddress;
+  String clubMail;
+  String roleId;
+  String roleName;
+
+  PersonCardRoleAndHierarchyIdPopulatedObject({
+    this.personCardId,
+    this.firstName,
+    this.lastName,
+    this.areaId,
+    this.areaName,
+    this.clusterId,
+    this.clusterName,
+    this.clubId,
+    this.clubName,
+    this.clubAddress,
+    this.clubMail,
+    this.roleId,
+    this.roleName,
+  });
+
+  //#region Create RoleAndHierarchyId As Populated Object
+  //=============================================================================
+  static PersonCardRoleAndHierarchyIdPopulatedObject createPersonCardRoleAndHierarchyIdAsPopulatedObject(
+      String aPersonCardId,
+      String aFirstName,
+      String aLastName,
+      String aAreaId,
+      String areaName,
+      String aClusterId,
+      String aClusterName,
+      String aClubId,
+      String aClubName,
+      String aClubAddress,
+      String aClubMail,
+      String aRoleId,
+      String aRoleName,
+      )
+  {
+    if (aPersonCardId == null)
+      return PersonCardRoleAndHierarchyIdPopulatedObject(
+        personCardId: null,
+        firstName: null,
+        lastName: null,
+        areaId: null,
+        areaName: null,
+        clusterId: null,
+        clusterName: null,
+        clubId: null,
+        clubName: null,
+        clubAddress: null,
+        clubMail: null,
+        roleId: null,
+        roleName: null,
+      );
+    else
+      return PersonCardRoleAndHierarchyIdPopulatedObject(
+        personCardId: aPersonCardId,
+        firstName: aFirstName,
+        lastName: aLastName,
+        areaId: aAreaId,
+        areaName: areaName,
+        clusterId: aClusterId,
+        clusterName: aClusterName,
+        clubId: aClubId,
+        clubName: aClubName,
+        clubAddress: aClubAddress,
+        clubMail: aClubMail,
+        roleId: aRoleId,
+        roleName: aRoleName,
+      );
+  }
+//#endregion
+}
 

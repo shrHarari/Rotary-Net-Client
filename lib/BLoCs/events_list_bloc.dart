@@ -27,11 +27,10 @@ class EventsListBloc implements BloC {
 
     if (_textToSearch == null || _textToSearch.length == 0)
       clearEventsList();
-    else {
-      _eventsList =
-      await eventService.getEventsListBySearchQuery(_textToSearch);
-      _eventsList.sort((b, a) => a.eventStartDateTime.compareTo(b.eventStartDateTime));
-    }
+    else
+      _eventsList = await eventService.getEventsListBySearchQuery(_textToSearch);
+
+    _eventsList.sort((b, a) => a.eventStartDateTime.compareTo(b.eventStartDateTime));
     _eventsController.sink.add(_eventsList);
   }
 

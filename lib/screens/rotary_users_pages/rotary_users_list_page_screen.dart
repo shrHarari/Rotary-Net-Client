@@ -6,6 +6,7 @@ import 'package:rotary_net/objects/user_object.dart';
 import 'package:rotary_net/screens/rotary_users_pages/rotary_users_list_page_header_search_box.dart';
 import 'package:rotary_net/screens/rotary_users_pages/rotary_users_list_page_header_title.dart';
 import 'package:rotary_net/screens/rotary_users_pages/rotary_users_list_page_tile.dart';
+import 'package:rotary_net/shared/page_header_application_menu.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 
 class RotaryUsersListPageScreen extends StatefulWidget {
@@ -110,23 +111,14 @@ class _RotaryUsersListPageScreenState extends State<RotaryUsersListPageScreen> {
                 ),
 
                 /// --------------- Application Menu ---------------------
-                SafeArea(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      /// Exit Icon --->>> Close Screen
-                      Padding(
-                        padding: const EdgeInsets.only(left: 0.0, top: 10.0, right: 10.0, bottom: 0.0),
-                        child: IconButton(
-                          icon: Icon(Icons.close, color: Colors.white, size: 26.0,),
-                          onPressed: () {
-                            usersBloc.clearUsersList();
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                PageHeaderApplicationMenu(
+                  argDisplayTitleLogo: false,
+                  argDisplayTitleLabel: false,
+                  argTitleLabelText: '',
+                  argDisplayApplicationMenu: false,
+                  argApplicationMenuFunction: null,
+                  argDisplayExit: true,
+                  argReturnFunction: null,
                 ),
               ],
             ),

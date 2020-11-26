@@ -234,16 +234,15 @@ class _RotaryMainPageScreenState extends State<RotaryMainPageScreen> {
             ),
           ),
 
-          body:
-          Container(
+          body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
                     image: AssetImage("assets/background/main_screen.jpg"),
                     fit: BoxFit.cover
                 )
             ),
-            child:
-            Column(
+
+            child: Column(
               children: <Widget>[
                 Container(
                   child: Stack(

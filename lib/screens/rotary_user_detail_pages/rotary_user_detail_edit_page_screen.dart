@@ -10,8 +10,10 @@ import 'package:rotary_net/services/connected_user_service.dart';
 import 'package:rotary_net/services/user_service.dart';
 import 'package:rotary_net/shared/decoration_style.dart';
 import 'package:rotary_net/shared/loading.dart';
-import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:rotary_net/shared/user_type_label_radio.dart';
+import 'package:rotary_net/shared/page_header_application_menu.dart';
+import 'package:rotary_net/shared/update_button_decoration.dart';
+import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class UserDetailEditPageScreen extends StatefulWidget {
   static const routeName = '/UserDetailEditPageScreen';
@@ -136,70 +138,14 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
             Container(
               height: 180,
               color: Colors.lightBlue[400],
-              child: SafeArea(
-                child: Stack(
-                  children: <Widget>[
-                    /// ----------- Header - First line - Application Logo -----------------
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: MaterialButton(
-                                elevation: 0.0,
-                                onPressed: () {},
-                                color: Colors.lightBlue,
-                                textColor: Colors.white,
-                                child: Icon(
-                                  Icons.account_balance,
-                                  size: 30,
-                                ),
-                                padding: EdgeInsets.all(20),
-                                shape: CircleBorder(side: BorderSide(color: Colors.white)),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Text(Constants.rotaryApplicationName,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.bold
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    /// --------------- Application Menu ---------------------
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        /// Exit Icon --->>> Close Screen
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0, top: 10.0, right: 10.0, bottom: 0.0),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.close, color: Colors.white, size: 26.0,),
-                            onPressed: () {
-                              FocusScope.of(context).requestFocus(FocusNode()); // Hide Keyboard
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              child: PageHeaderApplicationMenu(
+                argDisplayTitleLogo: true,
+                argDisplayTitleLabel: false,
+                argTitleLabelText: '',
+                argDisplayApplicationMenu: false,
+                argApplicationMenuFunction: null,
+                argDisplayExit: true,
+                argReturnFunction: null,
               ),
             ),
 
@@ -246,7 +192,7 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
           ),
         ),
 
-        buildUpdateImageButton('עדכון', updateUser, Icons.update),
+        buildUpdateButton('שמירה', Icons.save, updateUser),
         /// ---------------------- Display Error -----------------------
         Text(
           error,
@@ -258,6 +204,7 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
     );
   }
 
+  //#region Build Enabled TextInput With ImageIcon
   Widget buildEnabledTextInputWithImageIcon(
       TextEditingController aController, String textInputName, IconData aIcon,
       {bool aMultiLine = false, bool aEnabled = true}) {
@@ -283,7 +230,9 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
       ),
     );
   }
+  //#endregion
 
+  //#region Build Enabled Double TextInput With ImageIcon
   Widget buildEnabledDoubleTextInputWithImageIcon(
       TextEditingController aController1, String textInputName1,
       TextEditingController aController2, String textInputName2,
@@ -324,7 +273,9 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
       ),
     );
   }
+  //#endregion
 
+  //#region Build Image Icon For Text Field
   MaterialButton buildImageIconForTextField(IconData aIcon) {
     return MaterialButton(
       elevation: 0.0,
@@ -347,7 +298,9 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
       ),
     );
   }
+  //#endregion
 
+  //#region Build Text Form Field
   TextFormField buildTextFormField(
       TextEditingController aController,
       String textInputName,
@@ -365,7 +318,9 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
       enabled: aEnabled,
     );
   }
+  //#endregion
 
+  //#region Build UserType Radio Button
   Widget buildUserTypeRadioButton() {
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -428,7 +383,9 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
       ),
     );
   }
+  //#endregion
 
+  //#region Build Stay Connected CheckBox
   Widget buildStayConnectedCheckBox() {
     return InkWell(
       onTap: () {
@@ -469,8 +426,10 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
       ),
     );
   }
+  //#endregion
 
-  Widget buildUpdateImageButton(String buttonText, Function aFunc, IconData aIcon) {
+  //#region Build Update Button
+  Widget buildUpdateButton(String aButtonText, IconData aIcon, Function aFunc) {
 
     final usersBloc = BlocProvider.of<RotaryUsersListBloc>(context);
 
@@ -478,32 +437,24 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
       stream: usersBloc.usersStream,
       initialData: usersBloc.usersList,
       builder: (context, snapshot) {
-        List<UserObject> currentUsersList =
-        (snapshot.connectionState == ConnectionState.waiting)
-            ? usersBloc.usersList
-            : snapshot.data;
+        // List<UserObject> currentUsersList =
+        // (snapshot.connectionState == ConnectionState.waiting)
+        //     ? usersBloc.usersList
+        //     : snapshot.data;
 
-        return RaisedButton.icon(
-          onPressed: () {
-            aFunc(usersBloc);
-          },
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(5.0))
-          ),
-          label: Text(
-            buttonText,
-            style: TextStyle(
-                color: Colors.white,fontSize: 16.0
-            ),
-          ),
-          icon: Icon(
-            aIcon,
-            color:Colors.white,
-          ),
-          textColor: Colors.white,
-          color: Colors.blue[400],
+        return Padding(
+          padding: const EdgeInsets.only(right: 120.0, left: 120.0),
+          child: UpdateButtonDecoration(
+              argButtonType: ButtonType.Decorated,
+              argHeight: 40.0,
+              argButtonText: aButtonText,
+              argIcon: aIcon,
+              onPressed: () {
+                aFunc(usersBloc);
+              }),
         );
       }
     );
   }
+  //#endregion
 }

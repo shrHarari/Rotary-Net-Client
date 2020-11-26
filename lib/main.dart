@@ -11,7 +11,6 @@ import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/services/route_generator_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
-import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/utils/utils_class.dart';
 
 void main() => runApp(RotaryNetApp());

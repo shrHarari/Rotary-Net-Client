@@ -33,14 +33,17 @@ class PersonCardSearchResultPageHeaderSearchBox implements SliverPersistentHeade
                 height: 0.8,
                 color: Colors.black
             ),
-            // onSubmitted: (searchText) {bloc.getPersonCardsListBySearchQuery(searchText);},
-            onChanged: (searchText) {personCardsBloc.getPersonCardsListBySearchQuery(searchText);},
+            onSubmitted: (searchText) {
+              personCardsBloc.getPersonCardsListBySearchQuery(searchText);
+              },
+            // onChanged: (searchText) {personCardsBloc.getPersonCardsListBySearchQuery(searchText);},
             decoration: InputDecoration(
                 prefixIcon: IconButton(
                   color: Colors.blue,
                   icon: Icon(Icons.search),
                   onPressed: () async {
                     personCardsBloc.getPersonCardsListBySearchQuery(searchController.text);
+                    FocusScope.of(context).requestFocus(FocusNode());
                   },
                 ),
                 border: new OutlineInputBorder(

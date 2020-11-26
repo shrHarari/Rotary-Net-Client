@@ -9,6 +9,7 @@ class EventObject {
   DateTime eventEndDateTime;
   String eventLocation;
   final String eventManager;
+  final String eventComposerId;
 
   EventObject({
     this.eventId,
@@ -19,6 +20,7 @@ class EventObject {
     this.eventEndDateTime,
     this.eventLocation,
     this.eventManager,
+    this.eventComposerId,
   });
 
   //#region Update Event Object with Sets Calls
@@ -57,6 +59,7 @@ class EventObject {
         ' ${this.eventEndDateTime},'
         ' ${this.eventLocation},'
         ' ${this.eventManager},'
+        ' ${this.eventComposerId},'
         ' }';
   }
 
@@ -71,7 +74,8 @@ class EventObject {
           eventStartDateTime : DateTime.parse(parsedJson['eventStartDateTime']),
           eventEndDateTime : DateTime.parse(parsedJson['eventEndDateTime']),
           eventLocation : parsedJson['eventLocation'],
-          eventManager : parsedJson['eventManager']
+          eventManager : parsedJson['eventManager'],
+          eventComposerId : parsedJson['eventComposerId']
       );
     } else {
       return EventObject(
@@ -82,7 +86,8 @@ class EventObject {
           eventStartDateTime : DateTime.parse(parsedJson['eventStartDateTime']),
           eventEndDateTime : DateTime.parse(parsedJson['eventEndDateTime']),
           eventLocation : parsedJson['eventLocation'],
-          eventManager : parsedJson['eventManager']
+          eventManager : parsedJson['eventManager'],
+          eventComposerId : parsedJson['eventComposerId']
       );
     }
   }
@@ -113,7 +118,8 @@ class EventObject {
           eventStartDateTime : _eventStartDateTime,
           eventEndDateTime : _eventEndDateTime,
           eventLocation : jsonFromMap['eventLocation'],
-          eventManager : jsonFromMap['eventManager']
+          eventManager : jsonFromMap['eventManager'],
+          eventComposerId : jsonFromMap['eventComposerId']
       );
   }
 
@@ -132,6 +138,7 @@ class EventObject {
       'eventEndDateTime': _eventEndDateTime,
       'eventLocation': eventLocation,
       'eventManager': eventManager,
+      'eventComposerId': eventComposerId,
     };
   }
 }

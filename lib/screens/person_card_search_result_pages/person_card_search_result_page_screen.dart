@@ -9,6 +9,7 @@ import 'package:rotary_net/screens/person_card_search_result_pages/person_card_s
 import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
+import 'package:rotary_net/shared/page_header_application_menu.dart';
 
 class PersonCardSearchResultPage extends StatefulWidget {
   static const routeName = '/PersonCardSearchResultPage';
@@ -38,10 +39,18 @@ class _PersonCardSearchResultPageState extends State<PersonCardSearchResultPage>
     personCardsBloc.getPersonCardsListBySearchQuery(searchController.text);
   }
 
+  //#region Open Menu
   Future<void> openMenu() async {
     // Open Menu from Left side
     _scaffoldKey.currentState.openDrawer();
   }
+  //#endregion
+
+  //#region Exit And Navigate Back
+  Future<void> exitAndNavigateBack() async {
+    Navigator.pop(context, searchController.text);
+  }
+  //#endregion
 
   @override
   Widget build(BuildContext context) {
@@ -122,30 +131,15 @@ class _PersonCardSearchResultPageState extends State<PersonCardSearchResultPage>
                   ],
                 ),
 
-                /// --------------- Application Menu ---------------------
-                SafeArea(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      /// Menu Icon --->>> Open Drawer Menu
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0, top: 10.0, right: 0.0, bottom: 0.0),
-                        child: IconButton(
-                          icon: Icon(Icons.menu, color: Colors.white),
-                          onPressed: () async {await openMenu();},
-                        ),
-                      ),
-
-                      /// Back Icon --->>> Back to previous screen
-                      Padding(
-                        padding: const EdgeInsets.only(left: 0.0, top: 10.0, right: 10.0, bottom: 0.0),
-                        child: IconButton(
-                          icon: Icon(Icons.arrow_forward, color: Colors.white),
-                          onPressed: () {Navigator.pop(context, searchController.text);},
-                        ),
-                      ),
-                    ],
-                  ),
+                /// --------------- Page Header Application Menu ---------------------
+                PageHeaderApplicationMenu(
+                  argDisplayTitleLogo: false,
+                  argDisplayTitleLabel: false,
+                  argTitleLabelText: '',
+                  argDisplayApplicationMenu: true,
+                  argApplicationMenuFunction: openMenu,
+                  argDisplayExit: false,
+                  argReturnFunction: exitAndNavigateBack,
                 ),
               ],
             ),

@@ -22,7 +22,7 @@ class _PersonCardSearchResultPageListTileState extends State<PersonCardSearchRes
 
   @override
   void initState() {
-    displayPersonCardObject = widget.argPersonCardObject;
+    // displayPersonCardObject = widget.argPersonCardObject;
 
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => executeAfterBuildComplete(context));
@@ -61,6 +61,7 @@ class _PersonCardSearchResultPageListTileState extends State<PersonCardSearchRes
 
   @override
   Widget build(BuildContext context) {
+    displayPersonCardObject = widget.argPersonCardObject;
     return loading ? PersonCardImageTileLoading()
       : Padding(
         padding: const EdgeInsets.only(left: 15.0, top: 0.0, right: 15.0, bottom: 5.0),

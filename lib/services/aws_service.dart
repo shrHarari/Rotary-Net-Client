@@ -36,10 +36,10 @@ class AwsService {
           };
       }
 
-      AwsUploadFile uploadAwsFile = AwsUploadFile();
-      await uploadAwsFile.upload(uploadUrl, aPickedFile);
+      AwsUploadFileService uploadAwsFileService = AwsUploadFileService();
+      await uploadAwsFileService.upload(uploadUrl, aPickedFile);
 
-      if (uploadAwsFile.isUploaded != null && uploadAwsFile.isUploaded) {
+      if (uploadAwsFileService.isUploaded != null && uploadAwsFileService.isUploaded) {
         bool isSaved = await onSaveImage(aObjectId, aBucketFolderName, generateAwsImageUrl.downloadImageUrl);
         if (isSaved) {
           onImageSuccessfullySaved(aOldFileName, aBucketFolderName);
@@ -58,7 +58,7 @@ class AwsService {
       } else {
         return {
           "returnCode" : 303,
-          "message" : uploadAwsFile.message,
+          "message" : uploadAwsFileService.message,
           "imageUrl" : null
         };
       }
@@ -77,8 +77,8 @@ class AwsService {
 
   //#region On Save Image
   static Future <bool> onSaveImage(String aObjectId, String aBucketFolderName, String aImageUrl) async {
-    /// Callback called when image is successfully uploaded to upload url
-    /// and now you can save the url somewhere like a database.
+    /// Callback called when image is successfully uploaded to AWS upload url
+    /// and now has to save the url to the database.
     /// If saving to database is successful return true, else false
 
     switch (aBucketFolderName) {
@@ -92,7 +92,6 @@ class AwsService {
         break;
       default:
     }
-    // print('AwsService / onSaveImage / aImageUrl: $aImageUrl');
     return true;
   }
   //#endregion
@@ -101,9 +100,10 @@ class AwsService {
   static Future <bool> onImageSuccessfullySaved(String aFileNameToDelete, String aBucketFolderName) async {
     /// Callback called when image is successfully saved to database
     /// and you return true in onSaveImage
-    AwsDeleteFile deleteAwsFile = AwsDeleteFile();
-    await deleteAwsFile.delete(aFileNameToDelete, aBucketFolderName);
-    if (deleteAwsFile.isDeleted != null && deleteAwsFile.isDeleted) {
+    /// --->>> Delete the old Image from AWS
+    AwsDeleteFileService deleteAwsFileService = AwsDeleteFileService();
+    await deleteAwsFileService.delete(aFileNameToDelete, aBucketFolderName: aBucketFolderName);
+    if (deleteAwsFileService.isDeleted != null && deleteAwsFileService.isDeleted) {
       return true;
     } else {
       return false;
@@ -162,8 +162,8 @@ class AwsGenerateImageUrl {
 }
 //#endregion
 
-//#region CLASS Upload AWS File
-class AwsUploadFile {
+//#region CLASS Upload AWS File Service
+class AwsUploadFileService {
   // bool success;
   String message;
 
@@ -185,15 +185,15 @@ class AwsUploadFile {
 }
 //#endregion
 
-//#region CLASS Delete AWS File
-class AwsDeleteFile {
+//#region CLASS Delete AWS File Service
+class AwsDeleteFileService {
   bool success;
   String message;
 
   bool isDeleted;
   String deletedData;
 
-  Future<void> delete(String aFileName, String aBucketFolderName) async {
+  Future<void> delete(String aFileName, {String aBucketFolderName = ''}) async {
     try {
       /// Check: Is there any File to delete ?
       if ((aFileName == null) || (aFileName == ''))

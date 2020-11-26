@@ -5,9 +5,10 @@ import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/objects/event_object.dart';
 import 'package:rotary_net/screens/event_detail_pages/event_detail_edit_page_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
-import 'package:rotary_net/widgets/application_menu_widget.dart';
-import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:rotary_net/utils/utils_class.dart';
+import 'package:rotary_net/widgets/application_menu_widget.dart';
+import 'package:rotary_net/shared/page_header_application_menu.dart';
+import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class EventDetailPageScreen extends StatefulWidget {
   static const routeName = '/EventDetailPageScreen';
@@ -54,7 +55,11 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
         _allowUpdate = true;
         break;
       case  Constants.UserTypeEnum.RotaryMember:
-        _allowUpdate = true;
+        print('displayEventObject.eventComposerId: ${displayEventObject.eventComposerId}');
+        print('_connectedUserObj.personCardId: ${_connectedUserObj.personCardId}');
+        /// Check if the ConnectedUser is the Event Composer
+        if ((displayEventObject.eventComposerId != null) && (displayEventObject.eventComposerId == _connectedUserObj.personCardId))
+          _allowUpdate = true;
         break;
       case  Constants.UserTypeEnum.Guest:
         _allowUpdate = false;
@@ -63,10 +68,12 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
   }
   //#endregion
 
+  //#region Open Menu
   Future<void> openMenu() async {
     // Open Menu from Left side
     _scaffoldKey.currentState.openDrawer();
   }
+  //#endregion
 
   //#region Open Event Detail Edit Screen
   openEventDetailEditScreen(EventObject aEventObj) async {
@@ -90,6 +97,17 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
 
       });
     }
+  }
+  //#endregion
+
+  //#region Exit And Navigate Back
+  Future<void> exitAndNavigateBack() async {
+    /// Return multiple data using MAP
+    final returnEventDataMap = {
+      "EventObject": displayEventObject,
+      "HebrewEventTimeLabel": hebrewEventTimeLabel,
+    };
+    Navigator.pop(context, returnEventDataMap);
   }
   //#endregion
 
@@ -138,85 +156,18 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
       width: double.infinity,
       child: Column(
           children: [
-            /// --------------- Title Area ---------------------
+            /// --------------- Page Header Application Menu ---------------------
             Container(
               height: 160,
               color: Colors.lightBlue[400],
-              child: SafeArea(
-                child: Stack(
-                  children: <Widget>[
-                    /// ----------- Header - First line - Application Logo -----------------
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: MaterialButton(
-                                elevation: 0.0,
-                                onPressed: () {},
-                                color: Colors.lightBlue,
-                                textColor: Colors.white,
-                                child: Icon(
-                                  Icons.account_balance,
-                                  size: 30,
-                                ),
-                                padding: EdgeInsets.all(20),
-                                shape: CircleBorder(side: BorderSide(color: Colors.white)),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Text(Constants.rotaryApplicationName,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.bold
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    /// --------------- Application Menu ---------------------
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        /// Menu Icon
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10.0, top: 10.0, right: 0.0, bottom: 0.0),
-                          child: IconButton(
-                            icon: Icon(Icons.menu, color: Colors.white),
-                            onPressed: () async {await openMenu();},
-                          ),
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0, top: 10.0, right: 10.0, bottom: 0.0),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_forward, color: Colors.white),
-                            onPressed: () {
-                              /// Return multiple data using MAP
-                              final returnEventDataMap = {
-                                "EventObject": displayEventObject,
-                                "HebrewEventTimeLabel": hebrewEventTimeLabel,
-                              };
-                              Navigator.pop(context, returnEventDataMap);
-                              },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              child: PageHeaderApplicationMenu(
+                argDisplayTitleLogo: true,
+                argDisplayTitleLabel: false,
+                argTitleLabelText: '',
+                argDisplayApplicationMenu: true,
+                argApplicationMenuFunction: openMenu,
+                argDisplayExit: false,
+                argReturnFunction: exitAndNavigateBack,
               ),
             ),
 
@@ -258,14 +209,20 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
             textDirection: TextDirection.rtl,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text(
-
-                aEventObj.eventName,
-                style: TextStyle(color: Colors.grey[900], fontSize: 20.0, fontWeight: FontWeight.bold),
+              Expanded(
+                flex: 10,
+                child: Text(
+                  aEventObj.eventName,
+                  textAlign: TextAlign.right,
+                  style: TextStyle(color: Colors.grey[900], fontSize: 20.0, fontWeight: FontWeight.bold),
+                ),
               ),
 
               if (allowUpdate)
-                buildEditEventButton(openEventDetailEditScreen, aEventObj),
+                Expanded(
+                    flex: 2,
+                    child: buildEditEventButton(openEventDetailEditScreen, aEventObj)
+                ),
             ],
           ),
         ),

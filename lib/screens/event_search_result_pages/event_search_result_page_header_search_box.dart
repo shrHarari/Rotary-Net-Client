@@ -38,13 +38,13 @@ class EventSearchResultPageHeaderSearchBox implements SliverPersistentHeaderDele
       child: SafeArea(
         child: Stack(
           children: [
-            Positioned(
-                left: -20.0,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  child: buildInsertEventImageButton(context, openEventDetailEditScreen),
-                )
-            ),
+            // Positioned(
+            //     left: -20.0,
+            //     child: Padding(
+            //       padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+            //       child: buildInsertEventImageButton(context, openEventDetailEditScreen),
+            //     )
+            // ),
             Padding(
               padding: const EdgeInsets.only(left: 50.0, top: 10.0, right: 50.0, bottom: 10.0),
               child: TextField(
@@ -57,14 +57,17 @@ class EventSearchResultPageHeaderSearchBox implements SliverPersistentHeaderDele
                     height: 0.8,
                     color: Colors.black
                 ),
-                //onSubmitted: (value) async {await executeSearch(value);},
-                onChanged: (searchText) {eventsBloc.getEventsListBySearchQuery(searchText);},
+                onSubmitted: (searchText) async {
+                  eventsBloc.getEventsListBySearchQuery(searchText);
+                  },
+                // onChanged: (searchText) {eventsBloc.getEventsListBySearchQuery(searchText);},
                 decoration: InputDecoration(
                     prefixIcon: IconButton(
                       color: Colors.blue,
                       icon: Icon(Icons.search),
                       onPressed: () async {
                         eventsBloc.getEventsListBySearchQuery(searchController.text);
+                        FocusScope.of(context).requestFocus(FocusNode());
                       },
                     ),
                     border: new OutlineInputBorder(

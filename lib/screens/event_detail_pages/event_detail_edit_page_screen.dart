@@ -4,6 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/BLoCs/bloc_provider.dart';
 import 'package:rotary_net/BLoCs/events_list_bloc.dart';
+import 'package:rotary_net/objects/connected_user_global.dart';
+import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/objects/event_object.dart';
 import 'package:rotary_net/screens/event_detail_pages/event_detail_page_widgets.dart';
 import 'package:rotary_net/services/aws_service.dart';
@@ -14,6 +16,8 @@ import 'package:rotary_net/utils/hebrew_syntax_format.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
 import 'package:rotary_net/widgets/pick_date_time_dialog_widget.dart';
 import 'package:rotary_net/utils/utils_class.dart';
+import 'package:rotary_net/shared/page_header_application_menu.dart';
+import 'package:rotary_net/shared/update_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:path/path.dart' as Path;
 
@@ -35,6 +39,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
   //#region Declare Variables
   String currentEventImage;
+  ConnectedUserObject currentConnectedUserObj;
   FileInfo currentEventImageFileInfo;
   bool isEventExist = false;
   Widget currentHebrewEventTimeLabel;
@@ -68,6 +73,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
   //#region Set Event Variables
   Future<void> setEventVariables(EventObject aEvent) async {
     eventImageDefaultAsset = AssetImage('${Constants.rotaryEventImageDefaultFolder}/EventImageDefaultPicture.jpg');
+    currentConnectedUserObj = ConnectedUserGlobal.currentConnectedUserObject;
 
     if (aEvent != null)
     {
@@ -89,94 +95,9 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
       eventNameController = TextEditingController(text: '');
       eventDescriptionController = TextEditingController(text: '');
       eventLocationController = TextEditingController(text: '');
-      eventManagerController = TextEditingController(text: '');
+      eventManagerController = TextEditingController(text: '${currentConnectedUserObj.firstName} ${currentConnectedUserObj.lastName}');
     }
   }
-  //#endregion
-
-  //#region Check Validation
-  Future<bool> checkValidation() async {
-    bool validationVal = false;
-
-    if (formKey.currentState.validate()){
-      if (selectedPickStartDateTime == null)
-      {
-        validationVal = false;
-        setState(() {
-          error = "יש להגדיר מועד ושעה לאירוע";
-        });
-      } else
-        validationVal = true;
-    }
-    return validationVal;
-  }
-  //#endregion
-
-  //#region Update Event
-  Future updateEvent(EventsListBloc aEventBloc) async {
-
-    setState(() {
-      loading = true;
-    });
-
-    bool validationVal = await checkValidation();
-
-    if (validationVal){
-
-      String _eventName = (eventNameController.text != null) ? (eventNameController.text) : '';
-      String _eventDescription = (eventDescriptionController.text != null) ? (eventDescriptionController.text) : '';
-      String _eventLocation = (eventLocationController.text != null) ? (eventLocationController.text) : '';
-      String _eventManager = (eventManagerController.text != null) ? (eventManagerController.text) : '';
-
-      String _pictureUrl = '';
-      if (currentEventImage != null) _pictureUrl = currentEventImage;
-
-      /// If Exist ? Update(has eventId) : Insert(Mongoose creates new _id)
-      String _eventId = '';
-      if (isEventExist) _eventId = widget.argEventObject.eventId;
-
-      EventObject _newEventObj =
-          eventService.createEventAsObject(
-              _eventId,
-              _eventName, _pictureUrl, _eventDescription,
-              selectedPickStartDateTime, selectedPickEndDateTime,
-              _eventLocation, _eventManager,);
-
-      if (isEventExist)
-        await aEventBloc.updateEvent(widget.argEventObject, _newEventObj);
-      else
-        await aEventBloc.insertEvent(_newEventObj);
-
-      /// Return multiple data using MAP
-      final returnEventDataMap = {
-        "EventObject": _newEventObj,
-        "HebrewEventTimeLabel": currentHebrewEventTimeLabel,
-      };
-      FocusScope.of(context).requestFocus(FocusNode());
-      Navigator.pop(context, returnEventDataMap);
-    }
-    setState(() {
-      loading = false;
-    });
-  }
-  //#endregion
-
-  //#region Return To Event Page
-  Future returnToEventPage() async {
-      String _pictureUrl = '';
-      if (currentEventImage != null) _pictureUrl = currentEventImage;
-
-      EventObject _newEventObj = widget.argEventObject;
-      _newEventObj.setEventPictureUrl(_pictureUrl);
-
-      /// Return multiple data using MAP
-      final returnEventDataMap = {
-        "EventObject": _newEventObj,
-        "HebrewEventTimeLabel": null,
-      };
-      FocusScope.of(context).requestFocus(FocusNode());
-      Navigator.pop(context, returnEventDataMap);
-    }
   //#endregion
 
   //#region Pick DateTime Dialog
@@ -281,6 +202,104 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
   }
   //#endregion
 
+  //#region Check Validation
+  Future<bool> checkValidation() async {
+    bool validationVal = false;
+
+    if (formKey.currentState.validate()){
+      if (selectedPickStartDateTime == null)
+      {
+        validationVal = false;
+        setState(() {
+          error = "יש להגדיר מועד ושעה לאירוע";
+        });
+      } else
+        validationVal = true;
+    }
+    return validationVal;
+  }
+  //#endregion
+
+  //#region Update Event
+  Future updateEvent(EventsListBloc aEventBloc) async {
+
+    setState(() {
+      loading = true;
+    });
+
+    bool validationVal = await checkValidation();
+
+    if (validationVal){
+
+      String _eventName = (eventNameController.text != null) ? (eventNameController.text) : '';
+      String _eventDescription = (eventDescriptionController.text != null) ? (eventDescriptionController.text) : '';
+      String _eventLocation = (eventLocationController.text != null) ? (eventLocationController.text) : '';
+      String _eventManager = (eventManagerController.text != null) ? (eventManagerController.text) : '';
+
+      String _pictureUrl = '';
+      if (currentEventImage != null) _pictureUrl = currentEventImage;
+
+      String _eventId;
+      String _eventComposerId;
+      if (isEventExist)
+      {
+        _eventId = widget.argEventObject.eventId;
+        _eventComposerId = widget.argEventObject.eventComposerId;
+      }
+      else {
+        _eventId = '';
+        _eventComposerId = currentConnectedUserObj.personCardId;
+      }
+
+      EventObject _newEventObj =
+          eventService.createEventAsObject(
+              _eventId,
+              _eventName, _pictureUrl, _eventDescription,
+              selectedPickStartDateTime, selectedPickEndDateTime,
+              _eventLocation, _eventManager, _eventComposerId);
+
+      /// If Exist ? Update(has eventId) : Insert(Mongoose creates new _id)
+      if (isEventExist)
+        await aEventBloc.updateEvent(widget.argEventObject, _newEventObj);
+      else
+        await aEventBloc.insertEvent(_newEventObj);
+
+      /// Return multiple data using MAP
+      final returnEventDataMap = {
+        "EventObject": _newEventObj,
+        "HebrewEventTimeLabel": currentHebrewEventTimeLabel,
+      };
+      FocusScope.of(context).requestFocus(FocusNode());
+      Navigator.pop(context, returnEventDataMap);
+    }
+    setState(() {
+      loading = false;
+    });
+  }
+  //#endregion
+
+  //#region Exit And Navigate Back
+  Future exitAndNavigateBack() async {
+    String _pictureUrl = '';
+
+    if (widget.argEventObject == null) {
+      Navigator.pop(context);
+    } else {
+      if (currentEventImage != null) _pictureUrl = currentEventImage;
+      EventObject _newEventObj = widget.argEventObject;
+      _newEventObj.setEventPictureUrl(_pictureUrl);
+
+      /// Return multiple data using MAP
+      final returnEventDataMap = {
+        "EventObject": _newEventObj,
+        "HebrewEventTimeLabel": null,
+      };
+      FocusScope.of(context).requestFocus(FocusNode());
+      Navigator.pop(context, returnEventDataMap);
+    }
+  }
+  //#endregion
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -302,74 +321,18 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
       // width: double.infinity,
       child: Column(
           children: <Widget>[
-            /// --------------- Title Area ---------------------
+            /// --------------- Page Header Application Menu ---------------------
             Container(
               height: 160,
               color: Colors.lightBlue[400],
-              child: SafeArea(
-                child: Stack(
-                  overflow: Overflow.visible,
-                  children: <Widget>[
-                    /// ----------- Header - First line - Application Logo -----------------
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: MaterialButton(
-                                elevation: 0.0,
-                                onPressed: () {},
-                                color: Colors.lightBlue,
-                                textColor: Colors.white,
-                                child: Icon(
-                                  Icons.account_balance,
-                                  size: 30,
-                                ),
-                                padding: EdgeInsets.all(20),
-                                shape: CircleBorder(side: BorderSide(color: Colors.white)),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Text(Constants.rotaryApplicationName,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.bold
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    /// --------------- Application Menu ---------------------
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        /// Exit Icon --->>> Close Screen
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0, top: 10.0, right: 10.0, bottom: 0.0),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.close, color: Colors.white, size: 26.0,),
-                            onPressed: () {
-                              returnToEventPage();
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              child: PageHeaderApplicationMenu(
+                argDisplayTitleLogo: true,
+                argDisplayTitleLabel: false,
+                argTitleLabelText: '',
+                argDisplayApplicationMenu: false,
+                argApplicationMenuFunction: null,
+                argDisplayExit: false,
+                argReturnFunction: exitAndNavigateBack,
               ),
             ),
 
@@ -415,7 +378,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
           ),
         ),
 
-        buildUpdateButtonRectangleWithIcon("עדכן", updateEvent, Icons.update),
+        buildUpdateButton("שמירה", Icons.save, updateEvent),
 
         /// ---------------------- Display Error -----------------------
         Text(
@@ -612,8 +575,8 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
   }
   //#endregion
 
-  //#region Build Update Circle Button
-  Widget buildUpdateCircleButton(Function aFunc) {
+  //#region Build Update Button
+  Widget buildUpdateButton(String aButtonText, IconData aIcon, Function aFunc) {
 
     final eventsBloc = BlocProvider.of<EventsListBloc>(context);
 
@@ -621,67 +584,21 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
         stream: eventsBloc.eventsStream,
         initialData: eventsBloc.eventsList,
         builder: (context, snapshot) {
-          List<EventObject> currentEventsList =
-          (snapshot.connectionState == ConnectionState.waiting)
-              ? eventsBloc.eventsList
-              : snapshot.data;
+          // List<EventObject> currentEventsList =
+          // (snapshot.connectionState == ConnectionState.waiting)
+          //     ? eventsBloc.eventsList
+          //     : snapshot.data;
 
-          return MaterialButton(
-            elevation: 0.0,
-            onPressed: () async {
-              aFunc(eventsBloc);
-            },
-            color: Colors.white,
-            padding: EdgeInsets.all(10),
-            shape: CircleBorder(side: BorderSide(color: Colors.blue)),
-            child: IconTheme(
-              data: IconThemeData(
-                color: Colors.black,
-              ),
-              child: Icon(
-                Icons.save,
-                size: 20,
-              ),
-            ),
-          );
-        }
-    );
-  }
-  //#endregion
-
-  //#region Build Update Rectangle Button
-  Widget buildUpdateButtonRectangleWithIcon(String buttonText, Function aFunc, IconData aIcon) {
-
-    final eventsBloc = BlocProvider.of<EventsListBloc>(context);
-
-    return StreamBuilder<List<EventObject>>(
-        stream: eventsBloc.eventsStream,
-        initialData: eventsBloc.eventsList,
-        builder: (context, snapshot) {
-          List<EventObject> currentEventsList =
-          (snapshot.connectionState == ConnectionState.waiting)
-              ? eventsBloc.eventsList
-              : snapshot.data;
-
-        return RaisedButton.icon(
-          onPressed: () {
-            aFunc(eventsBloc);
-          },
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(5.0))
-          ),
-          label: Text(
-            buttonText,
-            style: TextStyle(
-                color: Colors.white, fontSize: 16.0
-            ),
-          ),
-          icon: Icon(
-            aIcon,
-            color:Colors.white,
-          ),
-          textColor: Colors.white,
-          color: Colors.blue[400],
+          return Padding(
+            padding: const EdgeInsets.only(right: 120.0, left: 120.0),
+            child: UpdateButtonDecoration(
+                argButtonType: ButtonType.Decorated,
+                argHeight: 40.0,
+                argButtonText: aButtonText,
+                argIcon: aIcon,
+                onPressed: () {
+                aFunc(eventsBloc);
+              }),
         );
       }
     );

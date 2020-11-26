@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:rotary_net/shared/constants.dart' as Constants;
+import 'package:rotary_net/shared/page_header_title_logo.dart';
 
 class RotaryUsersListPageHeaderTitle implements SliverPersistentHeaderDelegate {
   final double minExtent;
@@ -22,53 +22,12 @@ class RotaryUsersListPageHeaderTitle implements SliverPersistentHeaderDelegate {
             /// ----------- Header - First line - Application Logo -----------------
             Align(
               alignment: Alignment.center,
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: MaterialButton(
-                      elevation: 0.0,
-                      onPressed: () {},
-                      color: Colors.lightBlue.withOpacity(headerOpacity(shrinkOffset)),
-                      textColor: Colors.white.withOpacity(headerOpacity(shrinkOffset)),
-                      child: Icon(
-                        Icons.account_balance,
-                        size: 30,
-                      ),
-                      padding: EdgeInsets.all(20),
-                      shape: CircleBorder(
-                          side: BorderSide(
-                            color: Colors.white.withOpacity(headerOpacity(shrinkOffset)),
-                          )
-                      ),
-                    ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Text(Constants.rotaryApplicationName,
-                      style: TextStyle(
-                          color: Colors.white.withOpacity(headerOpacity(shrinkOffset)),
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.bold
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              child: PageHeaderTitleLogo(),
             ),
           ],
         ),
       ),
     );
-  }
-
-  double headerOpacity(double shrinkOffset) {
-    // simple formula: fade out text as soon as shrinkOffset > 0
-//    return 1.0 - max(0.0, shrinkOffset) / maxExtent;
-    return max(0.0, (minExtent-shrinkOffset)) / minExtent;
-    // more complex formula: starts fading out text when shrinkOffset > minExtent
-    //return 1.0 - max(0.0, (shrinkOffset - minExtent)) / (maxExtent - minExtent);
   }
 
   @override

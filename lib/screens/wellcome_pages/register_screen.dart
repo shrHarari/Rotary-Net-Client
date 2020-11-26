@@ -187,7 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
             ),
-            Positioned(top: 40, left: 20, child: openApplicationButton()),
+            Positioned(top: 40, left: 20, child: openApplicationSettingsButton()),
             Positioned(top: 40, right: 20, child: exitButton()),
           ],
         ),
@@ -196,8 +196,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   ///------>> Build All Page Widgets
-  ///==============================================================================
-  Widget openApplicationButton() {
+  ///==========================================================================
+
+  //#region Open Application Settings Button
+  Widget openApplicationSettingsButton() {
     return InkWell(
       onTap: () async{await openApplicationSettingsScreen();},
       child: Container(
@@ -213,7 +215,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+  //#endregion
 
+  //#region Exit Button
   Widget exitButton() {
     return InkWell(
       onTap: () {exit(0);},
@@ -232,7 +236,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+  //#endregion
 
+  //#region Email Password Widget
   Widget emailPasswordWidget() {
     return Form(
       key: formKey,
@@ -246,7 +252,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+  //#endregion
 
+  //#region Build Enabled TextEdit Field
   Widget buildEnabledTextEditField(TextEditingController aController, String title, TextDirection aTextDirection, Function setValFunc, {bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -285,7 +293,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+  //#endregion
 
+  //#region Build StayConnected CheckBox
   Widget buildStayConnectedCheckBox() {
     return InkWell(
       onTap: () {
@@ -325,9 +335,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+  //#endregion
 
-  ///------>> Build ActionButton: SignUp [הירשם כעת]
-  ///------------------------------------------------------------------------------
+  //#region Build ActionButton: SignUp [הירשם כעת]
   Widget buildActionButton(String label, Function aButtonFunc) {
     return GestureDetector(
       child: Container(
@@ -343,7 +353,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       onTap: () => aButtonFunc(),
     );
   }
+  //#endregion
 
+  //#region Build Registration Failed Error Message
   Widget buildRegistrationFailedErrorMessage(String errorMessage, bool aLoginConfirmationCheck) {
     return aLoginConfirmationCheck ? Container() :
     Directionality(
@@ -361,7 +373,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+  //#endregion
 
+  //#region Create Account Label
   Widget createAccountLabel() {
     return InkWell(
       onTap: () {
@@ -393,4 +407,5 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+  //#endregion
 }
