@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:rotary_net/objects/event_populated_object.dart';
 
 class EventObject {
   String eventId;
@@ -31,7 +32,7 @@ class EventObject {
   }
   //#endregion
 
-  ///#region Set PersonCard Email
+  ///#region Set EventPicture Url
   Future <void> setEventPictureUrl(String aPictureUrl) async {
     eventPictureUrl = aPictureUrl;
   }
@@ -47,6 +48,22 @@ class EventObject {
   //#endregion
 
   //#endregion
+
+  // Get EventObject From EventPopulatedObject
+  //=======================================================
+  static Future <EventObject> getEventObjectFromEventPopulatedObject(EventPopulatedObject aEventPopulatedObject) async {
+    return EventObject(
+      eventId: aEventPopulatedObject.eventId,
+      eventName: aEventPopulatedObject.eventName,
+      eventPictureUrl: aEventPopulatedObject.eventPictureUrl,
+      eventDescription: aEventPopulatedObject.eventDescription,
+      eventStartDateTime: aEventPopulatedObject.eventStartDateTime,
+      eventEndDateTime: aEventPopulatedObject.eventEndDateTime,
+      eventLocation: aEventPopulatedObject.eventLocation,
+      eventManager: aEventPopulatedObject.eventManager,
+      eventComposerId: aEventPopulatedObject.eventComposerId,
+    );
+  }
 
   @override
   String toString() {

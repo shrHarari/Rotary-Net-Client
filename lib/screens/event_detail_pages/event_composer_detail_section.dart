@@ -5,10 +5,10 @@ import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/screens/person_card_detail_pages/person_card_detail_page_screen.dart';
 import 'package:rotary_net/utils/utils_class.dart';
 
-class MessageComposerDetailSection extends StatelessWidget {
+class EventComposerDetailSection extends StatelessWidget {
   final PersonCardRoleAndHierarchyIdPopulatedObject argHierarchyPopulatedObject;
 
-  MessageComposerDetailSection({
+  EventComposerDetailSection({
     @required this.argHierarchyPopulatedObject,
   });
 
@@ -37,7 +37,7 @@ class MessageComposerDetailSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.grey[200],
         border: Border(
-          bottom: BorderSide(
+          top: BorderSide(
             color: Colors.amber,
             width: 2.0,
           ),
@@ -158,21 +158,21 @@ class MessageComposerDetailSection extends StatelessWidget {
                   ],
                 ),
 
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10.0),
-                          child: Text(
-                            'אשכול:',
-                            style: TextStyle(color: Colors.grey[900], fontSize: 14.0),
-                          ),
-                        ),
-                        Text(
-                          '${argHierarchyPopulatedObject.areaName} / ${argHierarchyPopulatedObject.clusterName}',
-                          style: TextStyle(color: Colors.grey[900], fontSize: 14.0, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10.0),
+                      child: Text(
+                        'אשכול:',
+                        style: TextStyle(color: Colors.grey[900], fontSize: 14.0),
+                      ),
                     ),
+                    Text(
+                      '${argHierarchyPopulatedObject.areaName} / ${argHierarchyPopulatedObject.clusterName}',
+                      style: TextStyle(color: Colors.grey[900], fontSize: 14.0, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
 
 
                 Padding(

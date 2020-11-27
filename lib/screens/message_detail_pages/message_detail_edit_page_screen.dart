@@ -15,7 +15,7 @@ import 'package:rotary_net/shared/decoration_style.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/shared/page_header_application_menu.dart';
-import 'package:rotary_net/shared/update_button_decoration.dart';
+import 'package:rotary_net/shared/action_button_decoration.dart';
 
 class MessageDetailEditPageScreen extends StatefulWidget {
   static const routeName = '/MessageDetailEditPageScreen';
@@ -213,23 +213,6 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
   }
   //#endregion
 
-  //#region Open Composer Person Card Detail Screen
-  openComposerPersonCardDetailScreen(String aComposerId) async {
-
-    PersonCardService _personCardService = PersonCardService();
-    PersonCardObject _personCardObj = await _personCardService.getPersonCardByPersonId(aComposerId);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PersonCardDetailPageScreen(
-            argPersonCardObject: _personCardObj
-        ),
-      ),
-    );
-  }
-  //#endregion
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -390,8 +373,7 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
         aPersonCardPopulatedObj.roleName);
 
     return MessageComposerDetailSection(
-      argHierarchyPopulatedObject: hierarchyPopulatedObject,
-      argOpenComposerPersonCardDetailFunction: openComposerPersonCardDetailScreen,);
+      argHierarchyPopulatedObject: hierarchyPopulatedObject);
   }
   //#endregion
 
@@ -410,7 +392,7 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
 
           return Padding(
             padding: const EdgeInsets.only(top: 10.0, right: 120.0, left: 120.0),
-            child: UpdateButtonDecoration(
+            child: ActionButtonDecoration(
                 argButtonType: ButtonType.Decorated,
                 argHeight: 40.0,
                 argButtonText: aButtonText,

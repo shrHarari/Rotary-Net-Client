@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:rotary_net/objects/event_object.dart';
+import 'package:rotary_net/objects/event_populated_object.dart';
 import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:rotary_net/services/aws_service.dart';
@@ -54,6 +55,92 @@ class EventService {
   }
   //#endregion
 
+  //#region Create Event Populated As Object
+  //=============================================================================
+  EventPopulatedObject createEventPopulatedAsObject(
+      String aEventId,
+      String aEventName,
+      String aEventPictureUrl,
+      String aEventDescription,
+      DateTime aEventStartDateTime,
+      DateTime aEventEndDateTime,
+      String aEventLocation,
+      String aEventManager,
+      String aEventComposerId,
+      String aComposerFirstName,
+      String aComposerLastName,
+      String aComposerEmail,
+      String aAreaId,
+      String aAreaName,
+      String aClusterId,
+      String aClusterName,
+      String aClubId,
+      String aClubName,
+      String aClubAddress,
+      String aClubMail,
+      String aClubManagerId,
+      String aRoleId,
+      int aRoleEnum,
+      String aRoleName
+      )
+  {
+    if (aEventId == null)
+      return EventPopulatedObject(
+          eventId: '',
+          eventName: '',
+          eventPictureUrl: '',
+          eventDescription: '',
+          eventStartDateTime: null,
+          eventEndDateTime: null,
+          eventLocation: '',
+          eventManager: '',
+          eventComposerId: '',
+          composerFirstName: '',
+          composerLastName: '',
+          composerEmail: '',
+          areaId: null,
+          areaName: '',
+          clusterId: null,
+          clusterName: '',
+          clubId: null,
+          clubName: '',
+          clubAddress: '',
+          clubMail: '',
+          clubManagerId: '',
+          roleId: '',
+          roleEnum: null,
+          roleName: ''
+      );
+    else
+      return EventPopulatedObject(
+          eventId: aEventId,
+          eventName: aEventName,
+          eventPictureUrl: aEventPictureUrl,
+          eventDescription: aEventDescription,
+          eventStartDateTime: aEventStartDateTime,
+          eventEndDateTime: aEventEndDateTime,
+          eventLocation: aEventLocation,
+          eventManager: aEventManager,
+          eventComposerId: aEventComposerId,
+          composerFirstName: aComposerFirstName,
+          composerLastName: aComposerLastName,
+          composerEmail: aComposerEmail,
+          areaId: aAreaId,
+          areaName: aAreaName,
+          clusterId: aClusterId,
+          clusterName: aClusterName,
+          clubId: aClubId,
+          clubName: aClubName,
+          clubAddress: aClubAddress,
+          clubMail: aClubMail,
+          clubManagerId: aClubManagerId,
+          roleId: aRoleId,
+          roleEnum: aRoleEnum,
+          roleName: aRoleName
+      );
+  }
+  //#endregion
+
   //#region * Get Events List By Search Query [GET]
   // =========================================================
   Future getEventsListBySearchQuery(String aValueToSearch) async {
@@ -70,8 +157,6 @@ class EventService {
         var eventList = jsonDecode(jsonResponse) as List;    // List of PersonCard to display;
         List<EventObject> eventObjList = eventList.map((eventJson) => EventObject.fromJson(eventJson)).toList();
 
-        eventObjList.sort((a, b) => a.eventName.toLowerCase().compareTo(b.eventName.toLowerCase()));
-
         return eventObjList;
       } else {
         await LoggerService.log('<EventService> Get Events List By SearchQuery >>> Failed: ${response.statusCode}');
@@ -85,6 +170,41 @@ class EventService {
         'getEventsListBySearchQuery',
         name: 'EventService',
         error: 'Get Events List By SearchQuery >>> ERROR: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+  //#endregion
+
+  //#region * Get Events List Populated By Search Query [GET]
+  // =========================================================
+  Future getEventsListPopulatedBySearchQuery(String aValueToSearch) async {
+    try {
+      String _getUrlEvent = GlobalsService.applicationServer + Constants.rotaryEventUrl + "/query/$aValueToSearch/populated";
+      Response response = await get(_getUrlEvent);
+
+      if (response.statusCode <= 300) {
+        Map<String, String> headers = response.headers;
+        String contentType = headers['content-type'];
+        String jsonResponse = response.body;
+        await LoggerService.log('<EventService> Get Events List Populated By Search Query >>> OK\nHeader: $contentType \nEventsListFromJSON: $jsonResponse');
+
+        var eventList = jsonDecode(jsonResponse) as List;    // List of PersonCard to display;
+        List<EventPopulatedObject> eventObjList = eventList.map((eventJson) => EventPopulatedObject.fromJsonAllPopulated(eventJson)).toList();
+
+        return eventObjList;
+      } else {
+        await LoggerService.log('<EventService> Get Events List Populated By Search Query >>> Failed: ${response.statusCode}');
+        print('<EventService> Get Events List Populated By Search Query >>> Failed: ${response.statusCode}');
+        return null;
+      }
+    }
+    catch (e) {
+      await LoggerService.log('<EventService> Get Events List Populated By Search Query >>> ERROR: ${e.toString()}');
+      developer.log(
+        'getEventsListPopulatedBySearchQuery',
+        name: 'EventService',
+        error: 'Get Events List Populated By Search Query >>> ERROR: ${e.toString()}',
       );
       return null;
     }
@@ -207,6 +327,7 @@ class EventService {
     try {
       /// 1. DELETE Event from DataBase
       String _deleteUrlEvent = GlobalsService.applicationServer + Constants.rotaryEventUrl + "/${aEventObj.eventId}";
+      print('deleteEventById / _deleteUrlEvent: $_deleteUrlEvent');
       Response response = await delete(_deleteUrlEvent, headers: Constants.rotaryUrlHeader);
 
       if (response.statusCode <= 300) {

@@ -19,7 +19,7 @@ import 'package:rotary_net/widgets/application_menu_widget.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class RotaryMainPageScreen extends StatefulWidget {
-  static const routeName = '/RotaryMainPage';
+  static const routeName = '/RotaryMainPageScreen';
 
   @override
   _RotaryMainPageScreenState createState() => _RotaryMainPageScreenState();
@@ -92,7 +92,7 @@ class _RotaryMainPageScreenState extends State<RotaryMainPageScreen> {
         _userHasPermission = true;
         break;
       case  Constants.UserTypeEnum.RotaryMember:
-        _userHasPermission = true;
+        _userHasPermission = false;
         break;
       case  Constants.UserTypeEnum.Guest:
         _userHasPermission = false;
@@ -213,6 +213,8 @@ class _RotaryMainPageScreenState extends State<RotaryMainPageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    userHasPermission = getUserPermission();
+
     return loading ? Loading() :
     StreamBuilder<List<MessagePopulatedObject>>(
       stream: messagesBloc.messagesPopulatedStream,
@@ -329,7 +331,7 @@ class _RotaryMainPageScreenState extends State<RotaryMainPageScreen> {
         children: <Widget>[
           /// Menu Icon --->>> Open Drawer Menu
           Padding(
-            padding: const EdgeInsets.only(left: 10.0, top: 10.0, right: 0.0, bottom: 0.0),
+            padding: const EdgeInsets.only(left: 10.0, top: 20.0, right: 0.0, bottom: 0.0),
             child: IconButton(
               icon: Icon(Icons.menu, color: Colors.white),
               onPressed: () async {await openMenu();},
@@ -337,15 +339,16 @@ class _RotaryMainPageScreenState extends State<RotaryMainPageScreen> {
           ),
 
           /// Back Icon --->>> Back to previous screen
-          Padding(
-            padding: const EdgeInsets.only(left: 0.0, top: 10.0, right: 10.0, bottom: 0.0),
-            child: IconButton(
-              icon: Icon(Icons.build, color: Colors.white),
-              onPressed: () async {
-                await openApplicationSettings();
-                },
+          if (userHasPermission)
+            Padding(
+              padding: const EdgeInsets.only(left: 0.0, top: 20.0, right: 10.0, bottom: 0.0),
+              child: IconButton(
+                icon: Icon(Icons.build, color: Colors.white),
+                onPressed: () async {
+                  await openApplicationSettings();
+                  },
+              ),
             ),
-          ),
         ],
       ),
     );

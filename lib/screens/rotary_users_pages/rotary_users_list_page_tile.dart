@@ -3,6 +3,7 @@ import 'package:rotary_net/BLoCs/bloc_provider.dart';
 import 'package:rotary_net/BLoCs/rotary_users_list_bloc.dart';
 import 'package:rotary_net/objects/user_object.dart';
 import 'package:rotary_net/screens/rotary_user_detail_pages/rotary_user_detail_page_screen.dart';
+import 'package:rotary_net/shared/action_button_decoration.dart';
 
 class RotaryUsersListPageTile extends StatelessWidget {
   final UserObject argUserObj;
@@ -137,28 +138,20 @@ class RotaryUsersListPageTile extends StatelessWidget {
       stream: bloc.usersStream,
       initialData: bloc.usersList,
       builder: (context, snapshot) {
-        List<UserObject> currentUsersList =
-        (snapshot.connectionState == ConnectionState.waiting)
-            ? bloc.usersList
-            : snapshot.data;
+        // List<UserObject> currentUsersList =
+        // (snapshot.connectionState == ConnectionState.waiting)
+        //     ? bloc.usersList
+        //     : snapshot.data;
 
-        return MaterialButton(
+      return ActionButtonDecoration(
+          argButtonType: ButtonType.Circle,
+          argHeight: null,
+          argButtonText: '',
+          argIcon: Icons.delete,
+          argIconSize: 20.0,
           onPressed: () async {
             await bloc.deleteUserById(argUserObj);
-          },
-          color: Colors.white,
-          shape: CircleBorder(side: BorderSide(color: Colors.blue)),
-          child:
-          IconTheme(
-            data: IconThemeData(
-              color: Colors.black,
-            ),
-            child: Icon(
-              Icons.delete,
-              size: 20,
-            ),
-          ),
-        );
+          });
       },
     );
   }

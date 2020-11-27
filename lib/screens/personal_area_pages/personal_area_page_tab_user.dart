@@ -6,7 +6,7 @@ import 'package:rotary_net/objects/user_object.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
 import 'package:rotary_net/services/user_service.dart';
 import 'package:rotary_net/shared/decoration_style.dart';
-import 'package:rotary_net/shared/update_button_decoration.dart';
+import 'package:rotary_net/shared/action_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class PersonalAreaPageTabUser extends StatefulWidget {
@@ -364,7 +364,7 @@ class _PersonalAreaPageTabUserState extends State<PersonalAreaPageTabUser> {
 
     return Padding(
       padding: const EdgeInsets.only(top: 10.0, right: 120.0, left: 120.0),
-      child: UpdateButtonDecoration(
+      child: ActionButtonDecoration(
           argButtonType: ButtonType.Decorated,
           argHeight: 35.0,
           argButtonText: aButtonText,

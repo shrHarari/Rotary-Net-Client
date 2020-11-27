@@ -22,7 +22,7 @@ import 'package:rotary_net/shared/person_card_image_avatar.dart';
 import 'package:rotary_net/utils/utils_class.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
 import 'package:rotary_net/shared/page_header_application_menu.dart';
-import 'package:rotary_net/shared/update_button_decoration.dart';
+import 'package:rotary_net/shared/action_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:path/path.dart' as Path;
 
@@ -930,7 +930,7 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
 
           return Padding(
             padding: const EdgeInsets.only(top: 10.0, right: 120.0, left: 120.0),
-            child: UpdateButtonDecoration(
+            child: ActionButtonDecoration(
                 argButtonType: ButtonType.Decorated,
                 argHeight: 40.0,
                 argButtonText: aButtonText,

@@ -6,18 +6,20 @@ enum ButtonType {
   Circle
 }
 
-class UpdateButtonDecoration extends StatelessWidget {
+class ActionButtonDecoration extends StatelessWidget {
   final ButtonType argButtonType;
   final double argHeight;
   final String argButtonText;
   final IconData argIcon;
+  final double argIconSize;
   final VoidCallback onPressed;
 
-  const UpdateButtonDecoration({
+  const ActionButtonDecoration({
     @required this.argButtonType,
     this.argHeight,
     this.argButtonText,
     this.argIcon,
+    this.argIconSize,
     @required this.onPressed,
   });
 
@@ -107,7 +109,7 @@ class UpdateButtonDecoration extends StatelessWidget {
         ),
         child: Icon(
           argIcon,
-          size: 20,
+          size: argIconSize,
         ),
       ),
     );

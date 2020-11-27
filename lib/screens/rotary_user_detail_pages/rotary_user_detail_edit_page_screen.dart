@@ -12,7 +12,7 @@ import 'package:rotary_net/shared/decoration_style.dart';
 import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/shared/user_type_label_radio.dart';
 import 'package:rotary_net/shared/page_header_application_menu.dart';
-import 'package:rotary_net/shared/update_button_decoration.dart';
+import 'package:rotary_net/shared/action_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class UserDetailEditPageScreen extends StatefulWidget {
@@ -444,7 +444,7 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
 
         return Padding(
           padding: const EdgeInsets.only(right: 120.0, left: 120.0),
-          child: UpdateButtonDecoration(
+          child: ActionButtonDecoration(
               argButtonType: ButtonType.Decorated,
               argHeight: 40.0,
               argButtonText: aButtonText,

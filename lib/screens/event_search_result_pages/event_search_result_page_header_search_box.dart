@@ -22,7 +22,7 @@ class EventSearchResultPageHeaderSearchBox implements SliverPersistentHeaderDele
       context,
       MaterialPageRoute(
         builder: (context) => EventDetailEditPageScreen(
-            argEventObject: null,
+            argEventPopulatedObject: null,
             argHebrewEventTimeLabel: null
         ),
       ),
@@ -58,7 +58,7 @@ class EventSearchResultPageHeaderSearchBox implements SliverPersistentHeaderDele
                     color: Colors.black
                 ),
                 onSubmitted: (searchText) async {
-                  eventsBloc.getEventsListBySearchQuery(searchText);
+                  eventsBloc.getEventsListPopulatedBySearchQuery(searchText);
                   },
                 // onChanged: (searchText) {eventsBloc.getEventsListBySearchQuery(searchText);},
                 decoration: InputDecoration(
@@ -66,7 +66,7 @@ class EventSearchResultPageHeaderSearchBox implements SliverPersistentHeaderDele
                       color: Colors.blue,
                       icon: Icon(Icons.search),
                       onPressed: () async {
-                        eventsBloc.getEventsListBySearchQuery(searchController.text);
+                        eventsBloc.getEventsListPopulatedBySearchQuery(searchController.text);
                         FocusScope.of(context).requestFocus(FocusNode());
                       },
                     ),

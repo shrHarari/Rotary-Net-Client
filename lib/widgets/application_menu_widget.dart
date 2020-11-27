@@ -134,7 +134,7 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
                         MaterialPageRoute(
                             builder: (context) =>
                                 EventDetailEditPageScreen(
-                                  argEventObject: null,
+                                  argEventPopulatedObject: null,
                                   argHebrewEventTimeLabel: null)
                         ),
                       ),

@@ -11,6 +11,7 @@ import 'package:rotary_net/screens/person_card_detail_pages/person_card_detail_p
 import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/shared/page_header_application_menu.dart';
+import 'package:rotary_net/shared/action_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class MessageDetailPageScreen extends StatefulWidget {
@@ -81,45 +82,6 @@ class _MessageDetailPageScreenState extends State<MessageDetailPageScreen> {
         displayMessagePopulatedObject = result;
       });
     }
-  }
-  //#endregion
-
-  //#region Display Message Rich Text
-  RichText displayMessageContentRichText () {
-
-    return RichText(
-      textDirection: TextDirection.rtl,
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: '${displayMessagePopulatedObject.messageText} ',
-            style: TextStyle(
-                fontFamily: 'Heebo-Light',
-                fontSize: 20.0,
-                height: 1.5,
-                color: Colors.black87
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  //#endregion
-
-  //#region Open Composer Person Card Detail Screen
-  openComposerPersonCardDetailScreen(String aComposerId) async {
-
-    PersonCardService _personCardService = PersonCardService();
-    PersonCardObject _personCardObj = await _personCardService.getPersonCardByPersonId(aComposerId);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PersonCardDetailPageScreen(
-            argPersonCardObject: _personCardObj
-        ),
-      ),
-    );
   }
   //#endregion
 
@@ -203,6 +165,28 @@ class _MessageDetailPageScreenState extends State<MessageDetailPageScreen> {
     );
   }
 
+  //#region Display Message Rich Text
+  RichText displayMessageContentRichText () {
+
+    return RichText(
+      textDirection: TextDirection.rtl,
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: '${displayMessagePopulatedObject.messageText} ',
+            style: TextStyle(
+                fontFamily: 'Heebo-Light',
+                fontSize: 20.0,
+                height: 1.5,
+                color: Colors.black87
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  //#endregion
+
   //#region Build Composer Detail Section
   Widget buildComposerDetailSection(MessagePopulatedObject aMessagePopulatedObj) {
 
@@ -223,31 +207,21 @@ class _MessageDetailPageScreenState extends State<MessageDetailPageScreen> {
           aMessagePopulatedObj.roleName);
 
     return MessageComposerDetailSection(
-      argHierarchyPopulatedObject: hierarchyPopulatedObject,
-      argOpenComposerPersonCardDetailFunction: openComposerPersonCardDetailScreen,);
+      argHierarchyPopulatedObject: hierarchyPopulatedObject);
   }
   //#endregion
 
   //#region Build Edit Message Circle Button
   Widget buildEditMessageCircleButton(Function aFunc) {
-    return MaterialButton(
-      elevation: 0.0,
-      onPressed: () async {
-        await aFunc(widget.argMessagePopulatedObject);
-      },
-      color: Colors.white,
-      padding: EdgeInsets.all(10),
-      shape: CircleBorder(side: BorderSide(color: Colors.blue)),
-      child: IconTheme(
-        data: IconThemeData(
-          color: Colors.black,
-        ),
-        child: Icon(
-          Icons.edit,
-          size: 20,
-        ),
-      ),
-    );
+    return ActionButtonDecoration(
+        argButtonType: ButtonType.Circle,
+        argHeight: null,
+        argButtonText: '',
+        argIcon: Icons.edit,
+        argIconSize: 20.0,
+        onPressed: () async {
+          await aFunc(widget.argMessagePopulatedObject);
+        });
   }
   //#endregion
 }

@@ -21,7 +21,7 @@ import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/shared/person_card_image_avatar.dart';
 import 'package:rotary_net/utils/utils_class.dart';
-import 'package:rotary_net/shared/update_button_decoration.dart';
+import 'package:rotary_net/shared/action_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:path/path.dart' as Path;
 
@@ -921,7 +921,7 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
 
     return Padding(
       padding: const EdgeInsets.only(top: 10.0, right: 120.0, left: 120.0),
-      child: UpdateButtonDecoration(
+      child: ActionButtonDecoration(
           argButtonType: ButtonType.Decorated,
           argHeight: 35.0,
           argButtonText: aButtonText,

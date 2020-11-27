@@ -133,13 +133,15 @@ class Utils {
   //#endregion
 
   //#region Send Email
-  static Future<void> sendEmail(String aMail) async {
+  static Future<void> sendEmail(String aMailTo) async {
     try {
+      String subjectText = 'Please enter a Subject and a Content ...';
+
       final Uri _emailLaunchUri = Uri(
           scheme: 'mailto',
-          path: aMail,
+          path: aMailTo,
           queryParameters: {
-            'subject': 'Enter Subject...'
+            'subject': '$subjectText'
           }
       );
       launch(_emailLaunchUri.toString());

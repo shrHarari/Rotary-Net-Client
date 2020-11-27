@@ -4,17 +4,18 @@ import 'package:rotary_net/BLoCs/bloc_provider.dart';
 import 'package:rotary_net/BLoCs/events_list_bloc.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
-import 'package:rotary_net/objects/event_object.dart';
+import 'package:rotary_net/objects/event_populated_object.dart';
 import 'package:rotary_net/screens/event_detail_pages/event_detail_page_screen.dart';
 import 'package:rotary_net/screens/event_detail_pages/event_detail_page_widgets.dart';
+import 'package:rotary_net/shared/action_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:rotary_net/shared/loading.dart';
 
 class EventSearchResultPageListTile extends StatefulWidget {
   static const routeName = '/EventSearchResultPageListTile';
-  final EventObject argEventObject;
+  final EventPopulatedObject argEventPopulatedObject;
 
-  EventSearchResultPageListTile({Key key, @required this.argEventObject}) : super(key: key);
+  EventSearchResultPageListTile({Key key, @required this.argEventPopulatedObject}) : super(key: key);
 
   @override
   _EventSearchResultPageListTileState createState() => _EventSearchResultPageListTileState();
@@ -23,7 +24,7 @@ class EventSearchResultPageListTile extends StatefulWidget {
 class _EventSearchResultPageListTileState extends State<EventSearchResultPageListTile> {
 
   AssetImage eventImageDefaultAsset;
-  EventObject displayEventObject;
+  EventPopulatedObject displayEventPopulatedObject;
   bool allowDeleteEvent = false;
   bool loading = true;
 
@@ -58,7 +59,7 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
         break;
       case  Constants.UserTypeEnum.RotaryMember:
         /// Check if the ConnectedUser is the Event Composer
-        if ((displayEventObject.eventComposerId != null) && (displayEventObject.eventComposerId == _connectedUserObj.personCardId))
+        if ((displayEventPopulatedObject.eventComposerId != null) && (displayEventPopulatedObject.eventComposerId == _connectedUserObj.personCardId))
           _allowDeleteEvent = true;
         break;
 
@@ -71,13 +72,15 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
 
   //#region Open Event Detail Screen
   openEventDetailScreen(BuildContext context) async {
-    Widget hebrewEventTimeLabel = await EventDetailWidgets.buildEventDateTimeLabel(displayEventObject.eventStartDateTime, displayEventObject.eventEndDateTime);
+    Widget hebrewEventTimeLabel = await EventDetailWidgets.buildEventDateTimeLabel(
+        displayEventPopulatedObject.eventStartDateTime,
+        displayEventPopulatedObject.eventEndDateTime);
 
     final returnEventDataMap = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EventDetailPageScreen(
-          argEventObject: widget.argEventObject,
+          argEventPopulatedObject: widget.argEventPopulatedObject,
           argHebrewEventTimeLabel: hebrewEventTimeLabel,
         ),
       ),
@@ -85,7 +88,7 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
 
     if (returnEventDataMap != null) {
       setState(() {
-        displayEventObject = returnEventDataMap["EventObject"];
+        displayEventPopulatedObject = returnEventDataMap["EventPopulatedObject"];
         hebrewEventTimeLabel = returnEventDataMap["HebrewEventTimeLabel"];
       });
     }
@@ -94,7 +97,7 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
 
   @override
   Widget build(BuildContext context) {
-    displayEventObject = widget.argEventObject;
+    displayEventPopulatedObject = widget.argEventPopulatedObject;
     allowDeleteEvent = getDeleteEventPermission();
 
     return loading ? EventImageTileLoading()
@@ -111,9 +114,9 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
                     color: Colors.blue,
                   ),
                   image: DecorationImage(
-                      image: (displayEventObject.eventPictureUrl == null) || (displayEventObject.eventPictureUrl == '')
+                      image: (displayEventPopulatedObject.eventPictureUrl == null) || (displayEventPopulatedObject.eventPictureUrl == '')
                           ? eventImageDefaultAsset
-                          : NetworkImage(displayEventObject.eventPictureUrl),
+                          : NetworkImage(displayEventPopulatedObject.eventPictureUrl),
                       fit: BoxFit.cover
                   ),
                 ),
@@ -131,42 +134,42 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
               ),
 
               Container(
-                child: Row(
-                  textDirection: TextDirection.rtl,
-                  children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top:15.0, right: 20.0, left: 20.0),
-                        child: Column(
-                          textDirection: TextDirection.rtl,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 15.0),
-                              child: Text(
-                                displayEventObject.eventName,
-                                style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
-                              ),
+                child: Padding(
+                  padding: const EdgeInsets.only(top:15.0, right: 20.0, left: 20.0),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 15.0),
+                            child: Text(
+                              displayEventPopulatedObject.eventName,
+                              style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Text(
-                                displayEventObject.eventLocation,
-                                style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.w700),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Text(
+                            displayEventPopulatedObject.eventLocation,
+                            style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
 
               if (allowDeleteEvent)
                 Positioned(
                     bottom: 10.0,
-                    child: _buildDeleteEventButton(context)
+                    child: buildDeleteEventButton(context)
                 ),
             ],
           ),
@@ -181,34 +184,26 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
   }
 
   //#region Build Delete Event Button
-  Widget _buildDeleteEventButton(BuildContext context) {
+  Widget buildDeleteEventButton(BuildContext context) {
     final bloc = BlocProvider.of<EventsListBloc>(context);
-    return StreamBuilder<List<EventObject>>(
-      stream: bloc.eventsStream,
-      initialData: bloc.eventsList,
+    return StreamBuilder<List<EventPopulatedObject>>(
+      stream: bloc.eventsPopulatedStream,
+      initialData: bloc.eventsListPopulated,
       builder: (context, snapshot) {
-        List<EventObject> currentUsersList =
-        (snapshot.connectionState == ConnectionState.waiting)
-            ? bloc.eventsList
-            : snapshot.data;
+        // List<EventPopulatedObject> currentUsersList =
+        // (snapshot.connectionState == ConnectionState.waiting)
+        //     ? bloc.eventsListPopulated
+        //     : snapshot.data;
 
-        return MaterialButton(
-          onPressed: () async {
-            await bloc.deleteEventByEventId(displayEventObject);
-          },
-          color: Colors.white,
-          shape: CircleBorder(side: BorderSide(color: Colors.blue)),
-          child:
-          IconTheme(
-            data: IconThemeData(
-              color: Colors.black,
-            ),
-            child: Icon(
-              Icons.delete,
-              size: 20,
-            ),
-          ),
-        );
+      return ActionButtonDecoration(
+            argButtonType: ButtonType.Circle,
+            argHeight: null,
+            argButtonText: '',
+            argIcon: Icons.delete,
+            argIconSize: 20.0,
+            onPressed: () async {
+              await bloc.deleteEventByEventId(displayEventPopulatedObject);
+            });
       },
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rotary_net/BLoCs/bloc_provider.dart';
 import 'package:rotary_net/BLoCs/events_list_bloc.dart';
-import 'package:rotary_net/objects/event_object.dart';
+import 'package:rotary_net/objects/event_populated_object.dart';
 import 'package:rotary_net/screens/event_search_result_pages/event_search_result_page_header_search_box.dart';
 import 'package:rotary_net/screens/event_search_result_pages/event_search_result_page_header_title.dart';
 import 'package:rotary_net/screens/event_search_result_pages/event_search_result_page_list_tile.dart';
@@ -35,7 +35,7 @@ class _EventSearchResultPageState extends State<EventSearchResultPage> {
     searchController = TextEditingController(text: widget.searchText);
 
     eventsBloc = BlocProvider.of<EventsListBloc>(context);
-    eventsBloc.getEventsListBySearchQuery(searchController.text);
+    eventsBloc.getEventsListPopulatedBySearchQuery(searchController.text);
   }
 
   //#region Open Menu
@@ -53,13 +53,13 @@ class _EventSearchResultPageState extends State<EventSearchResultPage> {
   @override
   Widget build(BuildContext context) {
 
-    return StreamBuilder<List<EventObject>>(
-      stream: eventsBloc.eventsStream,
-      initialData: eventsBloc.eventsList,
+    return StreamBuilder<List<EventPopulatedObject>>(
+      stream: eventsBloc.eventsPopulatedStream,
+      initialData: eventsBloc.eventsListPopulated,
       builder: (context, snapshot) {
-        List<EventObject> currentEventsList =
+        List<EventPopulatedObject> currentEventsList =
             (snapshot.connectionState == ConnectionState.waiting)
-                ? eventsBloc.eventsList
+                ? eventsBloc.eventsListPopulated
                 : snapshot.data;
 
         return Scaffold(
@@ -115,7 +115,7 @@ class _EventSearchResultPageState extends State<EventSearchResultPage> {
                       itemExtent: 200.0,
                       delegate: SliverChildBuilderDelegate((context, index) {
                           return EventSearchResultPageListTile(
-                            argEventObject: currentEventsList[index],
+                            argEventPopulatedObject: currentEventsList[index],
                           );
                         },
                         childCount: currentEventsList.length,

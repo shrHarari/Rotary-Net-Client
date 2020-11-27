@@ -149,8 +149,8 @@ class MessagePopulatedObject {
     return MessagePopulatedObject.fromMap(jsonData);
   }
 
-  String messageObjectToJson(MessagePopulatedObject aMessageObject) {
-    final dyn = aMessageObject.toMap();
+  String messageObjectToJson(MessagePopulatedObject aMessagePopulatedObject) {
+    final dyn = aMessagePopulatedObject.toMap();
     return json.encode(dyn);
   }
 

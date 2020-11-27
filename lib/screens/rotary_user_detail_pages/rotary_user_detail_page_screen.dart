@@ -7,7 +7,7 @@ import 'package:rotary_net/utils/utils_class.dart';
 import 'package:rotary_net/screens/rotary_user_detail_pages/rotary_user_detail_edit_page_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/shared/page_header_application_menu.dart';
-import 'package:rotary_net/shared/update_button_decoration.dart';
+import 'package:rotary_net/shared/action_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class RotaryUserDetailPageScreen extends StatefulWidget {
@@ -177,24 +177,15 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
 
   //#region Build Edit Event Button
   Widget buildEditEventButton(Function aFunc, UserObject aUserObj) {
-    return MaterialButton(
-      elevation: 0.0,
-      onPressed: () async {
-        await aFunc(aUserObj);
-      },
-      color: Colors.white,
-      padding: EdgeInsets.all(10),
-      shape: CircleBorder(side: BorderSide(color: Colors.blue)),
-      child: IconTheme(
-        data: IconThemeData(
-          color: Colors.black,
-        ),
-        child: Icon(
-          Icons.edit,
-          size: 20,
-        ),
-      ),
-    );
+    return ActionButtonDecoration(
+        argButtonType: ButtonType.Circle,
+        argHeight: null,
+        argButtonText: '',
+        argIcon: Icons.edit,
+        argIconSize: 20.0,
+        onPressed: () async {
+          await aFunc(aUserObj);
+        });
   }
   //#endregion
 
@@ -349,7 +340,7 @@ class _RotaryUserDetailPageScreenState extends State<RotaryUserDetailPageScreen>
 
           return Padding(
             padding: const EdgeInsets.only(right: 70.0, left: 70.0),
-            child: UpdateButtonDecoration(
+            child: ActionButtonDecoration(
                 argButtonType: ButtonType.Decorated,
                 argHeight: 40.0,
                 argButtonText: aButtonText,

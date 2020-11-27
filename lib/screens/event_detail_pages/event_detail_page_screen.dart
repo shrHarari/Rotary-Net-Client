@@ -2,20 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
-import 'package:rotary_net/objects/event_object.dart';
+import 'package:rotary_net/objects/event_populated_object.dart';
+import 'package:rotary_net/objects/person_card_role_and_hierarchy_object.dart';
 import 'package:rotary_net/screens/event_detail_pages/event_detail_edit_page_screen.dart';
+import 'package:rotary_net/screens/event_detail_pages/event_composer_detail_section.dart';
 import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/utils/utils_class.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
 import 'package:rotary_net/shared/page_header_application_menu.dart';
+import 'package:rotary_net/shared/action_button_decoration.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class EventDetailPageScreen extends StatefulWidget {
   static const routeName = '/EventDetailPageScreen';
-  final EventObject argEventObject;
+  final EventPopulatedObject argEventPopulatedObject;
   final Widget argHebrewEventTimeLabel;
 
-  EventDetailPageScreen({Key key, @required this.argEventObject, @required this.argHebrewEventTimeLabel}) : super(key: key);
+  EventDetailPageScreen({Key key, @required this.argEventPopulatedObject, @required this.argHebrewEventTimeLabel}) : super(key: key);
 
   @override
   _EventDetailPageScreenState createState() => _EventDetailPageScreenState();
@@ -26,7 +29,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
 
-  EventObject displayEventObject;
+  EventPopulatedObject displayEventPopulatedObject;
   Widget hebrewEventTimeLabel;
   AssetImage eventImageDefaultAsset;
 
@@ -36,7 +39,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
 
   @override
   void initState() {
-    displayEventObject = widget.argEventObject;
+    displayEventPopulatedObject = widget.argEventPopulatedObject;
     hebrewEventTimeLabel = widget.argHebrewEventTimeLabel;
     eventImageDefaultAsset = AssetImage('${Constants.rotaryEventImageDefaultFolder}/EventImageDefaultPicture.jpg');
 
@@ -55,10 +58,8 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
         _allowUpdate = true;
         break;
       case  Constants.UserTypeEnum.RotaryMember:
-        print('displayEventObject.eventComposerId: ${displayEventObject.eventComposerId}');
-        print('_connectedUserObj.personCardId: ${_connectedUserObj.personCardId}');
         /// Check if the ConnectedUser is the Event Composer
-        if ((displayEventObject.eventComposerId != null) && (displayEventObject.eventComposerId == _connectedUserObj.personCardId))
+        if ((displayEventPopulatedObject.eventComposerId != null) && (displayEventPopulatedObject.eventComposerId == _connectedUserObj.personCardId))
           _allowUpdate = true;
         break;
       case  Constants.UserTypeEnum.Guest:
@@ -76,23 +77,23 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
   //#endregion
 
   //#region Open Event Detail Edit Screen
-  openEventDetailEditScreen(EventObject aEventObj) async {
+  openEventDetailEditScreen(EventPopulatedObject aEventPopulatedObj) async {
     final returnEventDataMap = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EventDetailEditPageScreen(
-            argEventObject: displayEventObject,
+            argEventPopulatedObject: displayEventPopulatedObject,
             argHebrewEventTimeLabel: hebrewEventTimeLabel
         ),
       ),
     );
 
     if (returnEventDataMap != null) {
-      EventObject _eventObject = returnEventDataMap["EventObject"];
+      EventPopulatedObject _eventPopulatedObject = returnEventDataMap["EventPopulatedObject"];
       Widget _hebrewEventTimeLabel = returnEventDataMap["HebrewEventTimeLabel"];
 
       setState(() {
-        displayEventObject = _eventObject;
+        displayEventPopulatedObject = _eventPopulatedObject;
         if (_hebrewEventTimeLabel != null) hebrewEventTimeLabel = _hebrewEventTimeLabel;
 
       });
@@ -104,34 +105,29 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
   Future<void> exitAndNavigateBack() async {
     /// Return multiple data using MAP
     final returnEventDataMap = {
-      "EventObject": displayEventObject,
+      "EventPopulatedObject": displayEventPopulatedObject,
       "HebrewEventTimeLabel": hebrewEventTimeLabel,
     };
     Navigator.pop(context, returnEventDataMap);
   }
   //#endregion
 
-  //#region Display Event Description Rich Text
-  RichText displayEventDescriptionRichText () {
-
-    return RichText(
-      textDirection: TextDirection.rtl,
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: '${displayEventObject.eventDescription} ',
-            style: TextStyle(
-                fontFamily: 'Heebo-Light',
-                fontSize: 20.0,
-                height: 1.5,
-                color: Colors.black87
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  //#endregion
+  // //#region Open Composer Person Card Detail Screen
+  // openComposerPersonCardDetailScreen(String aComposerId) async {
+  //
+  //   PersonCardService _personCardService = PersonCardService();
+  //   PersonCardObject _personCardObj = await _personCardService.getPersonCardByPersonId(aComposerId);
+  //
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => PersonCardDetailPageScreen(
+  //           argPersonCardObject: _personCardObj
+  //       ),
+  //     ),
+  //   );
+  // }
+  // //#endregion
 
   @override
   Widget build(BuildContext context) {
@@ -174,7 +170,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
             Expanded(
               child: Container(
                 width: double.infinity,
-                child: buildEventDetailDisplay(displayEventObject),
+                child: buildEventDetailDisplay(displayEventPopulatedObject),
               ),
             ),
           ]
@@ -183,7 +179,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
   }
 
   /// ====================== Event All Fields ==========================
-  Widget buildEventDetailDisplay(EventObject aEventObj) {
+  Widget buildEventDetailDisplay(EventPopulatedObject aEventPopulatedObj) {
 
     return Column(
       children: <Widget>[
@@ -194,25 +190,26 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
           // clipBehavior: Clip.antiAliasWithSaveLayer,
           decoration: BoxDecoration(
             image: DecorationImage(
-                image: (aEventObj.eventPictureUrl == null) || (aEventObj.eventPictureUrl == '')
+                image: (aEventPopulatedObj.eventPictureUrl == null) || (aEventPopulatedObj.eventPictureUrl == '')
                     ? eventImageDefaultAsset
-                    : NetworkImage(aEventObj.eventPictureUrl),
+                    : NetworkImage(aEventPopulatedObj.eventPictureUrl),
                 fit: BoxFit.cover
             ),
           ),
         ),
 
-        /// ------------------- Image + Event Name -------------------------
+        /// ---------------------- Event Name -------------------------
         Padding(
           padding: const EdgeInsets.only(left: 20.0, top: 20.0, right: 30.0, bottom: 20.0),
-          child: Row(
+          child:
+          Row(
             textDirection: TextDirection.rtl,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
                 flex: 10,
                 child: Text(
-                  aEventObj.eventName,
+                  aEventPopulatedObj.eventName,
                   textAlign: TextAlign.right,
                   style: TextStyle(color: Colors.grey[900], fontSize: 20.0, fontWeight: FontWeight.bold),
                 ),
@@ -221,7 +218,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
               if (allowUpdate)
                 Expanded(
                     flex: 2,
-                    child: buildEditEventButton(openEventDetailEditScreen, aEventObj)
+                    child: buildEditEventButton(openEventDetailEditScreen, aEventPopulatedObj)
                 ),
             ],
           ),
@@ -234,26 +231,34 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
             child: Container(
               child: Column(
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 30.0, bottom: 40.0),
-                    child: displayEventDescriptionRichText(),
+
+                  /// ------------------ Event Description ---------------------
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 50.0, right: 50.0, bottom: 20.0),
+                      child: displayEventDescriptionRichText(),
+                    ),
                   ),
 
-                  /// ---------------- Card Details (Icon Images) --------------------
+                  /// -------------- Event Details (Icon Images) ---------------
                   Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
+                    padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
                     child: Directionality(
                       textDirection: TextDirection.rtl,
                       child: Column(
                         textDirection: TextDirection.rtl,
                         children: <Widget>[
-                          if (aEventObj.eventLocation != "") buildDetailImageIcon(Icons.location_on, aEventObj.eventLocation, Utils.launchInMapByAddress),
-                          if (aEventObj.eventManager != "") buildDetailImageIcon(Icons.person, aEventObj.eventManager, Utils.sendEmail),
-                          if (aEventObj.eventStartDateTime != null) buildEventDetailImageIcon(Icons.event_available, aEventObj, Utils.addEventToCalendar),
+                          if (aEventPopulatedObj.eventLocation != "") buildDetailImageIcon(Icons.location_on, aEventPopulatedObj.eventLocation, Utils.launchInMapByAddress),
+                          if (aEventPopulatedObj.eventManager != "") buildDetailImageIcon(Icons.person, aEventPopulatedObj.eventManager, Utils.sendEmail),
+                          if (aEventPopulatedObj.eventStartDateTime != null) buildEventDetailImageIcon(Icons.event_available, aEventPopulatedObj, Utils.addEventToCalendar),
                         ],
                       ),
                     ),
                   ),
+
+                  /// -------------- Composer Detail Section -------------------
+                  buildComposerDetailSection(aEventPopulatedObj),
                 ],
               ),
             ),
@@ -263,10 +268,32 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
     );
   }
 
+  //#region Display Event Description Rich Text
+  RichText displayEventDescriptionRichText () {
+
+    return RichText(
+      textDirection: TextDirection.rtl,
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: '${displayEventPopulatedObject.eventDescription} ',
+            style: TextStyle(
+                fontFamily: 'Heebo-Light',
+                fontSize: 20.0,
+                height: 1.5,
+                color: Colors.black87
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  //#endregion
+
   //#region Build Detail Image Icon
   Widget buildDetailImageIcon(IconData aIcon, String aTitle, Function aFunc) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
+      padding: const EdgeInsets.only(bottom: 10.0),
       child: Row(
           textDirection: TextDirection.rtl,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -283,7 +310,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
                 ),
                 child: Icon(
                   aIcon,
-                  size: 30,
+                  size: 20,
                 ),
               ),
               padding: EdgeInsets.all(10),
@@ -308,7 +335,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
   //#endregion
 
   //#region Build Event Detail Image Icon
-  Widget buildEventDetailImageIcon(IconData aIcon, EventObject aEventObj, Function aFunc) {
+  Widget buildEventDetailImageIcon(IconData aIcon, EventPopulatedObject aEventPopulatedObj, Function aFunc) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: Row(
@@ -320,8 +347,8 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
               elevation: 0.0,
               onPressed: () {
                 aFunc(
-                    aEventObj.eventName, aEventObj.eventDescription, aEventObj.eventLocation,
-                    aEventObj.eventStartDateTime, aEventObj.eventEndDateTime);
+                    aEventPopulatedObj.eventName, aEventPopulatedObj.eventDescription, aEventPopulatedObj.eventLocation,
+                    aEventPopulatedObj.eventStartDateTime, aEventPopulatedObj.eventEndDateTime);
               },
               color: Colors.blue[10],
               child: IconTheme(
@@ -330,7 +357,7 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
                   ),
                   child: Icon(
                     aIcon,
-                    size: 30,
+                    size: 20,
                   ),
                 ),
               padding: EdgeInsets.all(10),
@@ -349,26 +376,41 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
   }
   //#endregion
 
+  //#region Build Composer Detail Section
+  Widget buildComposerDetailSection(EventPopulatedObject aEventPopulatedObj) {
+
+    PersonCardRoleAndHierarchyIdPopulatedObject hierarchyPopulatedObject =
+      PersonCardRoleAndHierarchyIdPopulatedObject.createPersonCardRoleAndHierarchyIdAsPopulatedObject(
+          aEventPopulatedObj.eventComposerId,
+          aEventPopulatedObj.composerFirstName,
+          aEventPopulatedObj.composerLastName,
+          aEventPopulatedObj.areaId,
+          aEventPopulatedObj.areaName,
+          aEventPopulatedObj.clusterId,
+          aEventPopulatedObj.clusterName,
+          aEventPopulatedObj.clubId,
+          aEventPopulatedObj.clubName,
+          aEventPopulatedObj.clubAddress,
+          aEventPopulatedObj.clubMail,
+          aEventPopulatedObj.roleId,
+          aEventPopulatedObj.roleName);
+
+    return EventComposerDetailSection(
+      argHierarchyPopulatedObject: hierarchyPopulatedObject);
+  }
+  //#endregion
+
   //#region Build Edit Event Button
-  Widget buildEditEventButton(Function aFunc, EventObject aEventObj) {
-    return MaterialButton(
-      elevation: 0.0,
-      onPressed: () async {
-        await aFunc(aEventObj);
-      },
-      color: Colors.white,
-      padding: EdgeInsets.all(10),
-      shape: CircleBorder(side: BorderSide(color: Colors.blue)),
-      child: IconTheme(
-        data: IconThemeData(
-          color: Colors.black,
-        ),
-        child: Icon(
-          Icons.edit,
-          size: 20,
-        ),
-      ),
-    );
+  Widget buildEditEventButton(Function aFunc, EventPopulatedObject aEventPopulatedObj) {
+    return ActionButtonDecoration(
+        argButtonType: ButtonType.Circle,
+        argHeight: null,
+        argButtonText: '',
+        argIcon: Icons.edit,
+        argIconSize: 20.0,
+        onPressed: () async {
+          await aFunc(aEventPopulatedObj);
+        });
   }
   //#endregion
 }
