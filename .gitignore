@@ -31,7 +31,7 @@
 /build/
 Database/
 assets/
-/android/shahar.txt
+/android/shahar.js
 
 # Web related
 lib/generated_plugin_registrant.dart
