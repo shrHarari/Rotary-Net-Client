@@ -1,73 +1,105 @@
 import 'package:flutter/material.dart';
 
 class BubblesBoxPersonCard extends StatelessWidget {
-
-  final String aText;
-  final Color bubbleColor;
+  final String argText;
+  final Color argBubbleBackgroundColor;
+  final Color argBubbleBackgroundColorDark;
+  final Color argBubbleBorderColor;
   final bool isWithShadow;
   final bool isWithGradient;
+  final bool displayPin;
 
-  const BubblesBoxPersonCard({Key key, this.bubbleColor, this.aText, this.isWithShadow, this.isWithGradient});
+  const BubblesBoxPersonCard({
+    Key key,
+    @required this.argText,
+    @required this.argBubbleBackgroundColor,
+    this.argBubbleBackgroundColorDark,
+    @required this.argBubbleBorderColor,
+    this.isWithShadow = false,
+    this.isWithGradient = false,
+    this.displayPin = true});
 
   @override
   Widget build(BuildContext context) {
 
-    return Expanded(
-      child: Stack(
-        alignment: Alignment.topRight,
-        children: <Widget>[
-          DecoratedBox(
-            decoration: BoxDecoration(
-                color: Colors.blue[100],
+    return Stack(
+      alignment: Alignment.topRight,
+      children: <Widget>[
+        Card(
+          shape: RoundedRectangleBorder(
+              side: BorderSide(color: argBubbleBorderColor, width: 2.0),
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8.0),
-                  bottomLeft: Radius.circular(8.0),
-                  bottomRight: Radius.circular(8.0),
+                  topLeft: Radius.circular(4.0),
+                  bottomLeft: Radius.circular(4.0),
+                  bottomRight: Radius.circular(4.0),
                 ),
-                boxShadow: [
-                  isWithShadow ? BoxShadow(
-                    blurRadius: 10.0,
-                    offset: Offset(5, 5),
-                    color: Colors.black54,
-                  ) :
-                  BoxShadow(
-                    blurRadius: 0.0,
-                    offset: Offset(0, 0),
-                    color: bubbleColor
+          ),
+          child: Container(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                  color: Colors.blue[100],
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0),
                   ),
-                ],
-                gradient: isWithGradient
-                    ? LinearGradient(
-                      colors: [bubbleColor, Colors.blue[50]],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter
-                    )
-                    : LinearGradient(
-                      colors: [bubbleColor, bubbleColor],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter
+                  boxShadow: [
+                    isWithShadow ? BoxShadow(
+                      blurRadius: 10.0,
+                      offset: Offset(5, 5),
+                      color: Colors.black54,
+                    ) :
+                    BoxShadow(
+                      blurRadius: 0.0,
+                      offset: Offset(0, 0),
+                      color: argBubbleBackgroundColor
                     ),
-            ),
-            child: Align(
-              alignment: Alignment.centerRight,
+                  ],
+                  gradient: isWithGradient
+                      ? LinearGradient(
+                        colors: [argBubbleBackgroundColor, argBubbleBackgroundColorDark],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter
+                      )
+                      : LinearGradient(
+                        colors: [argBubbleBackgroundColor, argBubbleBackgroundColor],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter
+                      ),
+              ),
+
               child: Padding(
-                padding: const EdgeInsets.only(left: 30.0, top: 15.0, right: 30.0, bottom: 15.0),
+                padding: const EdgeInsets.only(left: 20.0, top: 15.0, right: 20.0, bottom: 15.0),
                 child: Text.rich(
-                  buildTextSpan(aText),
+                  buildTextSpan(argText),
                   textDirection: TextDirection.rtl,
                 ),
               ),
             ),
           ),
+        ),
+
+        if (displayPin)
           Positioned(
-            top: 0,
-            right: 0,
+            top: 6.0,
+            right: 4.0,
             child: CustomPaint(
-              painter: BubblesBoxDecorationPin(aBubbleColor: bubbleColor),
+              painter: BubblesBoxDecorationPinBorder(argPinBorderColor: argBubbleBorderColor),
             ),
           ),
-        ],
-      ),
+
+        if (displayPin)
+          Positioned(
+            top: 6.0,
+            right: 4.0,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2.0, left: 2.0, right: 2.0),
+              child: CustomPaint(
+                painter: BubblesBoxDecorationPin(argPinBackgroundColor: argBubbleBackgroundColor),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -78,9 +110,6 @@ class BubblesBoxPersonCard extends StatelessWidget {
           TextSpan(
               text: aDescription,
               style: TextStyle(
-                  //decoration: TextDecoration.underline,
-                  //decorationStyle: TextDecorationStyle.wavy,
-                  //decorationColor: Colors.red,
                   fontWeight: FontWeight.bold
               ))
         ]
@@ -88,22 +117,22 @@ class BubblesBoxPersonCard extends StatelessWidget {
   }
 }
 
-// Draw the Bubble Pin
-// The Pin location is set on positioning which call this function
+//#region Draw the Bubble Pin
 class BubblesBoxDecorationPin extends CustomPainter {
-  Color aBubbleColor;
-  BubblesBoxDecorationPin({this.aBubbleColor});
+  Color argPinBackgroundColor;
+  BubblesBoxDecorationPin({this.argPinBackgroundColor});
 
   @override
   void paint(Canvas canvas, Size size) {
     var paint = Paint();
-    paint.color = aBubbleColor;
+    paint.color = argPinBackgroundColor;
+    // paint.color = Colors.white;
 
     var path = Path();
 
     path.moveTo(0, 0);
-    path.lineTo(-15, 0);
-    path.lineTo(0, -15);
+    path.lineTo(-17, 0);
+    path.lineTo(0, -19);
 
     canvas.drawPath(path, paint);
   }
@@ -113,3 +142,31 @@ class BubblesBoxDecorationPin extends CustomPainter {
     return true;
   }
 }
+//#endregion
+
+//#region Draw the Bubble Pin Border
+class BubblesBoxDecorationPinBorder extends CustomPainter {
+  final Color argPinBorderColor;
+  BubblesBoxDecorationPinBorder({this.argPinBorderColor});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint();
+    paint.color = argPinBorderColor;
+    paint.style = PaintingStyle.fill;
+
+    var path = Path();
+
+    path.moveTo(0, 0);
+    path.lineTo(-20, 0);
+    path.lineTo(0, -22);
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
+  }
+}
+//#endregion

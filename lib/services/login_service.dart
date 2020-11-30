@@ -26,10 +26,9 @@ class LoginService {
       Response response = await post(_getUrlConnectedUser, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
-        print('------ LoginService / userLoginConfirmAtServer / jsonResponse: $jsonResponse');
 
         if ((jsonResponse != '') && (jsonResponse != null))
         {
@@ -42,19 +41,23 @@ class LoginService {
           /// RoleEnum: fetch from json --->>> based on query type (?withPopulate)
           int _roleEnumValue;
           Constants.RotaryRolesEnum _roleEnumDisplay;
+          String _personCardPictureUrl;
           if (withPopulate) {
             _roleEnumValue = _connectedUser['personCardId']['roleId']["roleEnum"];
             /// RoleId: Convert [int] to [Enum]
             Constants.RotaryRolesEnum roleEnum;
             _roleEnumDisplay = roleEnum.convertToEnum(_roleEnumValue);
+            _personCardPictureUrl = _connectedUser['personCardId']['pictureUrl'];
           }
           else {
             _roleEnumDisplay = null;
+            _personCardPictureUrl = null;
           }
 
           return ConnectedLoginObject(
                 connectedUserObject: connectedUserObj,
-                rotaryRoleEnum: _roleEnumDisplay
+                rotaryRoleEnum: _roleEnumDisplay,
+                personCardPictureUrl: _personCardPictureUrl
           );
         } else {
           await LoggerService.log('<LoginService> User Login Confirm At SERVER >>> Failed');

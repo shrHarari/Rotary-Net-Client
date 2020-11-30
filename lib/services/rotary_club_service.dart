@@ -145,8 +145,8 @@ class RotaryClubService {
       Response response = await post(_insertUrlClub, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';
@@ -186,8 +186,8 @@ class RotaryClubService {
       Response response = await post(_insertUrlClub, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';
@@ -227,8 +227,8 @@ class RotaryClubService {
       Response response = await put(_updateUrlClub, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';
@@ -262,8 +262,8 @@ class RotaryClubService {
       Response response = await delete(_deleteUrlClub, headers: Constants.rotaryUrlHeader);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';

@@ -19,8 +19,6 @@ class RotaryMainPageActionImageIcons extends StatelessWidget {
   Widget build(BuildContext context) {
 
     /// ----------- Body - Action Image Icons -----------------
-    final height = MediaQuery.of(context).size.height;
-
     return Container(
       // color: Colors.green,
       // height: height * .5,

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
 class BubblesBoxDetailMessage extends StatelessWidget {
-  final RichText aRichText;
-  final Color bubbleColor;
+  final Widget argContent;
+  final Alignment argContentAlignment;
+  final Color argBubbleBackgroundColor;
+  final Color argBubbleBorderColor;
+  final bool displayPin;
 
-  const BubblesBoxDetailMessage({Key key,
-    this.bubbleColor,
-    this.aRichText});
+  const BubblesBoxDetailMessage({
+    Key key,
+    @required this.argContent,
+    this.argContentAlignment = Alignment.centerRight,
+    @required this.argBubbleBackgroundColor,
+    @required this.argBubbleBorderColor,
+    this.displayPin = true});
 
   @override
   Widget build(BuildContext context) {
@@ -14,76 +21,76 @@ class BubblesBoxDetailMessage extends StatelessWidget {
     return Stack(
       alignment: Alignment.topRight,
       children: <Widget>[
-
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.amber,
+        Card(
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: argBubbleBorderColor, width: 2.0),
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(8.0),
-              bottomLeft: Radius.circular(8.0),
-              bottomRight: Radius.circular(8.0),
+              topLeft: Radius.circular(4.0),
+              bottomLeft: Radius.circular(4.0),
+              bottomRight: Radius.circular(4.0),
             ),
           ),
-        ),
-
-        Container(
-          margin: const EdgeInsets.all(2.0),
-          decoration: BoxDecoration(
-            color: bubbleColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(8.0),
-              bottomLeft: Radius.circular(8.0),
-              bottomRight: Radius.circular(8.0),
+          child: Container(
+            // margin: const EdgeInsets.all(2.0),
+            decoration: BoxDecoration(
+              color: argBubbleBackgroundColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8.0),
+                bottomLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0),
+              ),
             ),
-          ),
 
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 30.0, top: 15.0, right: 30.0, bottom: 15.0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Container(
-                    child: aRichText
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 30.0, top: 15.0, right: 30.0, bottom: 15.0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Container(
+                      alignment: argContentAlignment,
+                      child: argContent
+                  ),
                 ),
               ),
             ),
           ),
         ),
 
-        Positioned(
-          top: 0,
-          right: 0,
-          child: CustomPaint(
-            painter: BubblesBoxDecorationPinBorder(aBubbleColor: bubbleColor),
-          ),
-        ),
-
-        Positioned(
-          top: 0.0,
-          right: 0.0,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 2.0, left: 2.0, right: 2.0),
+        if (displayPin)
+          Positioned(
+            top: 6.0,
+            right: 4.0,
             child: CustomPaint(
-              painter: BubblesBoxDecorationPin(aBubbleColor: bubbleColor),
+              painter: BubblesBoxDecorationPinBorder(argPinBorderColor: argBubbleBorderColor),
             ),
           ),
-        ),
+
+        if (displayPin)
+          Positioned(
+            top: 6.0,
+            right: 4.0,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2.0, left: 2.0, right: 2.0),
+              child: CustomPaint(
+                painter: BubblesBoxDecorationPin(argPinBackgroundColor: argBubbleBackgroundColor),
+              ),
+            ),
+          ),
       ],
     );
   }
 }
 
-// Draw the Bubble Pin
-// The Pin location is set on positioning which call this function
+//#region Draw the Bubble Pin
 class BubblesBoxDecorationPin extends CustomPainter {
-  Color aBubbleColor;
-  BubblesBoxDecorationPin({this.aBubbleColor});
+  Color argPinBackgroundColor;
+  BubblesBoxDecorationPin({this.argPinBackgroundColor});
 
   @override
   void paint(Canvas canvas, Size size) {
     var paint = Paint();
-    paint.color = aBubbleColor;
+    paint.color = argPinBackgroundColor;
 
     var path = Path();
 
@@ -99,17 +106,17 @@ class BubblesBoxDecorationPin extends CustomPainter {
     return true;
   }
 }
+//#endregion
 
-// Draw the Bubble Pin
-// The Pin location is set on positioning which call this function
+//#region Draw the Bubble Pin Border
 class BubblesBoxDecorationPinBorder extends CustomPainter {
-  Color aBubbleColor;
-  BubblesBoxDecorationPinBorder({this.aBubbleColor});
+  Color argPinBorderColor;
+  BubblesBoxDecorationPinBorder({this.argPinBorderColor});
 
   @override
   void paint(Canvas canvas, Size size) {
     var paint = Paint();
-    paint.color = aBubbleColor;
+    paint.color = argPinBorderColor;
     paint.color = Colors.amber;
 
     var path = Path();
@@ -126,3 +133,4 @@ class BubblesBoxDecorationPinBorder extends CustomPainter {
     return true;
   }
 }
+//#endregion

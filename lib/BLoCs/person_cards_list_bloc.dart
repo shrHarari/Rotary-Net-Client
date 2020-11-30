@@ -72,11 +72,11 @@ class PersonCardsListBloc implements BloC {
     }
   }
 
-  Future<void> deletePersonCardById(PersonCardObject aUsrObj) async {
-    if (_personCardsList.contains(aUsrObj)) {
-      await personCardService.deletePersonCardById(aUsrObj);
+  Future<void> deletePersonCardById(PersonCardObject aPersonCardObj) async {
+    if (_personCardsList.contains(aPersonCardObj)) {
+      await personCardService.deletePersonCardById(aPersonCardObj);
 
-      _personCardsList.remove(aUsrObj);
+      _personCardsList.remove(aPersonCardObj);
       _personCardsController.sink.add(_personCardsList);
     }
   }

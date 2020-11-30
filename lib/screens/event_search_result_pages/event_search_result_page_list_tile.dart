@@ -8,8 +8,9 @@ import 'package:rotary_net/objects/event_populated_object.dart';
 import 'package:rotary_net/screens/event_detail_pages/event_detail_page_screen.dart';
 import 'package:rotary_net/screens/event_detail_pages/event_detail_page_widgets.dart';
 import 'package:rotary_net/shared/action_button_decoration.dart';
-import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:rotary_net/shared/loading.dart';
+import 'package:rotary_net/widgets/message_dialog_widget.dart';
+import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class EventSearchResultPageListTile extends StatefulWidget {
   static const routeName = '/EventSearchResultPageListTile';
@@ -48,7 +49,7 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
     });
   }
 
-  //#region Get Update Permission
+  //#region Get Delete Event Permission
   bool getDeleteEventPermission()  {
     ConnectedUserObject _connectedUserObj = ConnectedUserGlobal.currentConnectedUserObject;
     bool _allowDeleteEvent = false;
@@ -92,6 +93,40 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
         hebrewEventTimeLabel = returnEventDataMap["HebrewEventTimeLabel"];
       });
     }
+  }
+  //#endregion
+
+  //#region Remove Message From List
+  Future <void> removeEventFromList(EventPopulatedObject aEventPopulatedObject) async {
+
+    setState(() {
+      loading = true;
+    });
+
+    final eventsBloc = BlocProvider.of<EventsListBloc>(context);
+    await eventsBloc.deleteEventByEventId(aEventPopulatedObject);
+
+    setState(() {
+      loading = false;
+    });
+  }
+  //#endregion
+
+  //#region Open Message Dialog To Confirm Deleting [--->>> Option]
+  Future<bool> openMessageDialogToConfirmDeleting() async {
+
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return MessageDialogWidget(
+            argDialogTitle: Text("האם להסיר את האירוע ${displayEventPopulatedObject.eventName} ?"),
+            argDialogActions: <MessageDialogActionObject>[
+              MessageDialogActionObject(title: "אישור", onPressed:(){return Navigator.of(context).pop(true);}),
+              MessageDialogActionObject(title: "ביטול פעולה", onPressed:(){return Navigator.of(context).pop(false);})
+            ],
+          );
+        }
+    ) ?? false;
   }
   //#endregion
 
@@ -185,11 +220,11 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
 
   //#region Build Delete Event Button
   Widget buildDeleteEventButton(BuildContext context) {
-    final bloc = BlocProvider.of<EventsListBloc>(context);
-    return StreamBuilder<List<EventPopulatedObject>>(
-      stream: bloc.eventsPopulatedStream,
-      initialData: bloc.eventsListPopulated,
-      builder: (context, snapshot) {
+    // final bloc = BlocProvider.of<EventsListBloc>(context);
+    // return StreamBuilder<List<EventPopulatedObject>>(
+    //   stream: bloc.eventsPopulatedStream,
+    //   initialData: bloc.eventsListPopulated,
+    //   builder: (context, snapshot) {
         // List<EventPopulatedObject> currentUsersList =
         // (snapshot.connectionState == ConnectionState.waiting)
         //     ? bloc.eventsListPopulated
@@ -202,10 +237,12 @@ class _EventSearchResultPageListTileState extends State<EventSearchResultPageLis
             argIcon: Icons.delete,
             argIconSize: 20.0,
             onPressed: () async {
-              await bloc.deleteEventByEventId(displayEventPopulatedObject);
+              bool returnVal = await openMessageDialogToConfirmDeleting();
+              if (returnVal) await removeEventFromList(displayEventPopulatedObject);
+              // await bloc.deleteEventByEventId(displayEventPopulatedObject);
             });
-      },
-    );
+    //   },
+    // );
   }
   //#endregion
 }

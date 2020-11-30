@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:rotary_net/BLoCs/bloc_provider.dart';
 import 'package:rotary_net/BLoCs/person_cards_list_bloc.dart';
 import 'package:rotary_net/objects/person_card_object.dart';
@@ -10,6 +9,7 @@ import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/widgets/application_menu_widget.dart';
 import 'package:rotary_net/shared/page_header_application_menu.dart';
+import 'package:rotary_net/shared/loading.dart';
 
 class PersonCardSearchResultPage extends StatefulWidget {
   static const routeName = '/PersonCardSearchResultPage';
@@ -38,6 +38,14 @@ class _PersonCardSearchResultPageState extends State<PersonCardSearchResultPage>
     personCardsBloc = BlocProvider.of<PersonCardsListBloc>(context);
     personCardsBloc.getPersonCardsListBySearchQuery(searchController.text);
   }
+
+  //#region Handle Refresh Screen
+  Future handleRefreshScreen() async {
+
+    personCardsBloc.getPersonCardsListBySearchQuery(searchController.text);
+    return null;
+  }
+  //#endregion
 
   //#region Open Menu
   Future<void> openMenu() async {
@@ -73,11 +81,12 @@ class _PersonCardSearchResultPageState extends State<PersonCardSearchResultPage>
             ),
           ),
 
-          body: Container(
-            child: Stack(
-              children: <Widget>[
-                /// ----------- Header - Application Logo [Title] & Search Box Area [TextBox] -----------------
-                CustomScrollView(
+          body: Stack(
+            children: <Widget>[
+              /// ----------- Header - Application Logo [Title] & Search Box Area [TextBox] -----------------
+              RefreshIndicator(
+                onRefresh: handleRefreshScreen,
+                child: CustomScrollView(
                   slivers: <Widget>[
                     SliverPersistentHeader(
                       pinned: false,
@@ -98,10 +107,10 @@ class _PersonCardSearchResultPageState extends State<PersonCardSearchResultPage>
                       ),
                     ),
 
-                    // (snapshot.connectionState == ConnectionState.waiting) ?
-                    // SliverFillRemaining(
-                    //     child: Loading()
-                    // ) :
+                    (snapshot.connectionState == ConnectionState.waiting) ?
+                    SliverFillRemaining(
+                        child: Loading()
+                    ) :
 
                     (snapshot.hasError) ?
                       SliverFillRemaining(
@@ -130,19 +139,19 @@ class _PersonCardSearchResultPageState extends State<PersonCardSearchResultPage>
                       ),
                   ],
                 ),
+              ),
 
-                /// --------------- Page Header Application Menu ---------------------
-                PageHeaderApplicationMenu(
-                  argDisplayTitleLogo: false,
-                  argDisplayTitleLabel: false,
-                  argTitleLabelText: '',
-                  argDisplayApplicationMenu: true,
-                  argApplicationMenuFunction: openMenu,
-                  argDisplayExit: false,
-                  argReturnFunction: exitAndNavigateBack,
-                ),
-              ],
-            ),
+              /// --------------- Page Header Application Menu ---------------------
+              PageHeaderApplicationMenu(
+                argDisplayTitleLogo: false,
+                argDisplayTitleLabel: false,
+                argTitleLabelText: '',
+                argDisplayApplicationMenu: true,
+                argApplicationMenuFunction: openMenu,
+                argDisplayExit: false,
+                argReturnFunction: exitAndNavigateBack,
+              ),
+            ],
           ),
         );
       },

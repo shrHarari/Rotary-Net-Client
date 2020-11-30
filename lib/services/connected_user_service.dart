@@ -246,6 +246,50 @@ class ConnectedUserService {
 
   //#endregion
 
+  //#region Rotary PersonCard Avatar Image Url ==>> Secure Storage
+
+  //#region Read PersonCard Avatar Image Url From Secure Storage [ReadFromSS]
+  //=============================================================================
+  Future<String> readPersonCardAvatarImageUrlFromSecureStorage() async {
+    String _personCardAvatarImageUrl;
+    try{
+      final secureStorage = new FlutterSecureStorage();
+      _personCardAvatarImageUrl = await secureStorage.read(key: Constants.rotaryPersonCardAvatarImageUrl);
+      return _personCardAvatarImageUrl;
+    }
+    catch  (e) {
+      await LoggerService.log('<ConnectedUserService> Read PersonCard Avatar Image Url From SecureStorage >>> ERROR: ${e.toString()}');
+      developer.log(
+        'readPersonCardAvatarImageUrlFromSecureStorage',
+        name: 'ConnectedUserService',
+        error: 'Read PersonCard Avatar Image Url From SecureStorage >>> ERROR: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+  //#endregion
+
+  //#region Write PersonCard Avatar Image Url To Secure Storage [WriteToSS]
+  //=============================================================================
+  Future writePersonCardAvatarImageUrlToSecureStorage(String aPersonCardAvatarImageUrl) async {
+    try {
+      final secureStorage = new FlutterSecureStorage();
+      await secureStorage.write(key: Constants.rotaryPersonCardAvatarImageUrl, value: aPersonCardAvatarImageUrl);
+    }
+    catch  (e) {
+      await LoggerService.log('<ConnectedUserService> Write PersonCard Avatar Image Url To SecureStorage >>> ERROR: ${e.toString()}');
+      developer.log(
+        'writePersonCardAvatarImageUrlToSecureStorage',
+        name: 'ConnectedUserService',
+        error: 'Write PersonCard Avatar Image Url To SecureStorage >>> ERROR: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+  //#endregion
+
+  //#endregion
+
   //#region Clear Data from Secure Storage
 
   //#region Clear Connected User Object Data From SecureStorage
@@ -263,6 +307,7 @@ class ConnectedUserService {
       await secureStorage.delete(key: Constants.rotaryUserType);
       await secureStorage.delete(key: Constants.rotaryUserStayConnected);
       await secureStorage.delete(key: Constants.rotaryRoleEnum);
+      await secureStorage.delete(key: Constants.rotaryPersonCardAvatarImageUrl);
     }
     catch (e){
       await LoggerService.log('<ConnectedUserService> Clear Connected User Object Data From SecureStorage >>> ERROR: ${e.toString()}');

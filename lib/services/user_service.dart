@@ -173,8 +173,8 @@ class UserService {
       Response response = await post(_insertUrlUser, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         await LoggerService.log('<UserService> Insert User >>> OK');
@@ -208,8 +208,8 @@ class UserService {
       Response response = await put(_updateUrlUser, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         await LoggerService.log('<UserService> Update User By Id >>> OK');
@@ -240,8 +240,8 @@ class UserService {
 
       Response response = await delete(_deleteUrlUser, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';

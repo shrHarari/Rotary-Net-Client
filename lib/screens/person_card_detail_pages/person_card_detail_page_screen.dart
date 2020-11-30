@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
@@ -287,34 +286,29 @@ class _PersonCardDetailPageScreenState extends State<PersonCardDetailPageScreen>
         Expanded(
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            child: Container(
-              padding: EdgeInsets.only(left: 30.0, top: 30.0, right: 30.0, bottom: 20.0),
+            child: Padding(
+              padding: EdgeInsets.only(left: 30.0, top: 20.0, right: 30.0, bottom: 20.0),
               child: Column(
                 children: <Widget>[
-                  Row(
-                    textDirection: TextDirection.rtl,
-                    children: <Widget>[
-                      BubblesBoxPersonCard(
-                        aText: aPersonCardObj.cardDescription,
-                        bubbleColor: Colors.blue[100],
-                        isWithShadow: false,
-                        isWithGradient: false,
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: BubblesBoxPersonCard(
+                      argText: aPersonCardObj.cardDescription,
+                      argBubbleBackgroundColor: Colors.white,
+                      argBubbleBackgroundColorDark: Colors.blue[100],
+                      argBubbleBorderColor: Colors.blue[400],
+                      isWithShadow: true,
+                      isWithGradient: true,
+                      displayPin: false,
+                    ),
                   ),
-                  SizedBox(height: 20.0,),
 
                   /// ---------------- Card Details (Icon Images) --------------------
-                  Column(
-                    textDirection: TextDirection.rtl,
-                    children: <Widget>[
-                      if (aPersonCardObj.email != "") buildDetailImageIcon(Icons.mail_outline, aPersonCardObj.email, Utils.sendEmail),
-                      if (aPersonCardObj.phoneNumber != "") buildDetailImageIcon(Icons.phone, aPersonCardObj.phoneNumber, Utils.makePhoneCall),
-                      if (aPersonCardObj.phoneNumber != "") buildDetailImageIcon(Icons.sms, aPersonCardObj.phoneNumber, Utils.sendSms),
-                      if (aPersonCardObj.address != "") buildDetailImageIcon(Icons.home, aPersonCardObj.address, Utils.launchInMapByAddress),
-                      if (aPersonCardObj.internetSiteUrl != "") buildDetailImageIcon(Icons.alternate_email, aPersonCardObj.internetSiteUrl, Utils.launchInBrowser),
-                      ],
-                  ),
+                  if (aPersonCardObj.email != "") buildDetailImageIcon(Icons.mail_outline, aPersonCardObj.email, Utils.sendEmail),
+                  if (aPersonCardObj.phoneNumber != "") buildDetailImageIcon(Icons.phone, aPersonCardObj.phoneNumber, Utils.makePhoneCall),
+                  if (aPersonCardObj.phoneNumber != "") buildDetailImageIcon(Icons.sms, aPersonCardObj.phoneNumber, Utils.sendSms),
+                  if (aPersonCardObj.address != "") buildDetailImageIcon(Icons.home, aPersonCardObj.address, Utils.launchInMapByAddress),
+                  if (aPersonCardObj.internetSiteUrl != "") buildDetailImageIcon(Icons.alternate_email, aPersonCardObj.internetSiteUrl, Utils.launchInBrowser),
                 ],
               ),
             ),

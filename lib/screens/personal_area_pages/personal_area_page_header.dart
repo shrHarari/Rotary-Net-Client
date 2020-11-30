@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:rotary_net/shared/page_header_application_menu.dart';
-import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class PersonalAreaPageHeader extends StatelessWidget {
   const PersonalAreaPageHeader({Key key}) : super(key: key);

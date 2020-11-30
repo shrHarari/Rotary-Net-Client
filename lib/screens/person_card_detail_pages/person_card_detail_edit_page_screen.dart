@@ -3,12 +3,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/BLoCs/bloc_provider.dart';
 import 'package:rotary_net/BLoCs/person_cards_list_bloc.dart';
+import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/person_card_object.dart';
 import 'package:rotary_net/objects/person_card_role_and_hierarchy_object.dart';
 import 'package:rotary_net/objects/rotary_area_object.dart';
 import 'package:rotary_net/objects/rotary_club_object.dart';
 import 'package:rotary_net/objects/rotary_cluster_object.dart';
 import 'package:rotary_net/objects/rotary_role_object.dart';
+import 'package:rotary_net/services/connected_user_service.dart';
 import 'package:rotary_net/services/aws_service.dart';
 import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/services/rotary_area_service.dart';
@@ -367,15 +369,17 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
 
   //#region Pick Image File
   Future <void> pickImageFile() async {
+    String _imagePickerError;
 
     ImagePicker imagePicker = ImagePicker();
     PickedFile compressedPickedFile = await imagePicker.getImage(
         source: ImageSource.gallery,
-        imageQuality: 80,
-        maxHeight: 800
+        imageQuality: 70,
+        maxHeight: 700
     );
 
     setState(() {
+      error = '';
       loading = true;
     });
 
@@ -392,7 +396,7 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
 
         String localFilePath = '$personCardImagesDirectory/$originalImageFileName';
         File localImageFile = File(localFilePath);
-        localImageFile.delete();
+        if (localImageFile.existsSync()) localImageFile.delete();
       }
 
       // copy the New CompressedPickedFile to a new path --->>> On Client
@@ -414,15 +418,32 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
               originalImageFileName, aBucketFolderName: Constants.rotaryPersonCardImagesFolderName);
 
           if ((uploadReturnVal != null) && (uploadReturnVal["returnCode"] == 200)) {
+            /// 1. Screen Display: Set Current PersonCardImage
             setState(() {
               currentPersonCardImage = uploadReturnVal["imageUrl"];
             });
+
+            /// 2. for User that update his own PersonCard Data: ===>>>
+            if (widget.argPersonCardObject.personCardId == ConnectedUserGlobal.currentConnectedUserObject.personCardId)
+            {
+              /// 2.1. Secure Storage: Write PersonCardAvatarImageUrl to SecureStorage
+              final ConnectedUserService connectedUserService = ConnectedUserService();
+              await connectedUserService.writePersonCardAvatarImageUrlToSecureStorage(currentPersonCardImage);
+
+              /// 2.2. App Global: Update PersonCardAvatarImageUrl
+              var userGlobal = ConnectedUserGlobal();
+              await userGlobal.setPersonCardAvatarImageUrl(currentPersonCardImage);
+            }
+          } else {
+            _imagePickerError = "כשלון בהעלאת התמונה, נסה שנית ...";
+            print('<PersonCardDetailEditPageScreen> Upload Image Url >>> Failed: ${uploadReturnVal["returnCode"]} / ${uploadReturnVal["message"]}');
           }
         }
       });
     }
 
     setState(() {
+      if ((_imagePickerError != null) && (_imagePickerError.length > 0)) error = _imagePickerError;
       loading = false;
     });
   }
@@ -615,6 +636,15 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
                     buildEnabledTextInputWithImageIcon(internetSiteUrlController, 'כתובת אתר אינטרנט', Icons.alternate_email),
 
                     buildDropDownRoleAndHierarchy(),
+
+                    /// ---------------------- Display Error -----------------------
+                    Text(
+                      error,
+                      textDirection: TextDirection.rtl,
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 14.0),
+                    ),
                   ],
                 ),
               ),
@@ -624,13 +654,6 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
 
         buildUpdateButton("שמירה", Icons.save, updatePersonCard),
 
-        /// ---------------------- Display Error -----------------------
-        Text(
-          error,
-          style: TextStyle(
-              color: Colors.red,
-              fontSize: 14.0),
-        ),
       ],
     );
   }
@@ -929,7 +952,7 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
           //     : snapshot.data;
 
           return Padding(
-            padding: const EdgeInsets.only(top: 10.0, right: 120.0, left: 120.0),
+            padding: const EdgeInsets.only(top: 10.0, right: 120.0, left: 120.0, bottom: 10.0),
             child: ActionButtonDecoration(
                 argButtonType: ButtonType.Decorated,
                 argHeight: 40.0,

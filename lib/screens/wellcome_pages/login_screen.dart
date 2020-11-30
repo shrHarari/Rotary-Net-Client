@@ -103,14 +103,20 @@ class _LoginScreenState extends State<LoginScreen> {
         /// 4. Secure Storage: Write RotaryRoleEnum to SecureStorage
         await connectedUserService.writeRotaryRoleEnumDataToSecureStorage(connectedLoginObj.rotaryRoleEnum);
 
-        print('LoginScreen / performLoginProcess / currentConnectedUserObj: ${connectedLoginObj.connectedUserObject}');
-        /// 5. App Global: Update Global Current Connected User
+        /// 5. Secure Storage: Write PersonCardAvatarImageUrl to SecureStorage
+        await connectedUserService.writePersonCardAvatarImageUrlToSecureStorage(connectedLoginObj.personCardPictureUrl);
+
+        /// 6. App Global: Update Global Current Connected User
         var userGlobal = ConnectedUserGlobal();
         await userGlobal.setConnectedUserObject(connectedLoginObj.connectedUserObject);
 
-        /// 4. App Global: Update RotaryRoleEnum
+        /// 7. App Global: Update RotaryRoleEnum
         await userGlobal.setRotaryRoleEnum(connectedLoginObj.rotaryRoleEnum);
 
+        /// 8. App Global: Update PersonCardAvatarImageUrl
+        await userGlobal.setPersonCardAvatarImageUrl(connectedLoginObj.personCardPictureUrl);
+
+        print('LoginScreen / performLoginProcess / connectedUserObject: ${connectedLoginObj.connectedUserObject}');
         openRotaryMainScreen();
       }
     }

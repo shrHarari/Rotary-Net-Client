@@ -142,8 +142,8 @@ class RotaryClusterService {
       String _insertUrlCluster = GlobalsService.applicationServer + Constants.rotaryClusterUrl;
       Response response = await post(_insertUrlCluster, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';
@@ -183,8 +183,8 @@ class RotaryClusterService {
       Response response = await post(_insertUrlCluster, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';
@@ -224,8 +224,8 @@ class RotaryClusterService {
 
       Response response = await put(_updateUrlCluster, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';
@@ -259,8 +259,8 @@ class RotaryClusterService {
 
       Response response = await delete(_deleteUrlCluster, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';

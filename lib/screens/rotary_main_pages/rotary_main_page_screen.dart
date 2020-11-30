@@ -239,7 +239,7 @@ class _RotaryMainPageScreenState extends State<RotaryMainPageScreen> {
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage("assets/background/main_screen.jpg"),
+                    image: AssetImage(Constants.rotaryMainScreenBackground),
                     fit: BoxFit.cover
                 )
             ),
@@ -276,41 +276,38 @@ class _RotaryMainPageScreenState extends State<RotaryMainPageScreen> {
                 Expanded(
                   child: RefreshIndicator(
                     onRefresh: handleRefreshScreen,
-                    child: Container(
-                      child: CustomScrollView(
-                        slivers: <Widget>[
-                          /// ----------- Body - Error Message -----------------
-                          (snapshot.hasError) ?
-                          SliverFillRemaining(
-                            child: DisplayErrorTextAndRetryButton(
-                              errorText: 'שגיאה בשליפת כרטיסי הביקור',
-                              buttonText: 'נסה שוב',
-                              onPressed: () {},
-                            ),
-                          ) :
-
-                          /// ----------- Body - Messages List -----------------
-                          (snapshot.hasData) ?
-                          Container(
-                            child: SliverFixedExtentList(
-                              itemExtent: 220.0,
-                              delegate: SliverChildBuilderDelegate((context, index) {
-                                  return RotaryMainPageMessageListTile(
-                                    argMessagePopulatedObject: currentMessagesList[index],
-                                  );
-                                },
-                                childCount: currentMessagesList.length,
-                              ),
-                            ),
-                          ) :
-
-                          SliverFillRemaining(
-                            child: Center(
-                                child: Text('קראת את כל הודעותיך, רענן מסך...')
-                            ),
+                    child: CustomScrollView(
+                      slivers: <Widget>[
+                        /// ----------- Body - Error Message -----------------
+                        (snapshot.hasError) ?
+                        SliverFillRemaining(
+                          child: DisplayErrorTextAndRetryButton(
+                            errorText: 'שגיאה בשליפת כרטיסי הביקור',
+                            buttonText: 'נסה שוב',
+                            onPressed: () {},
                           ),
-                        ],
-                      ),
+                        ) :
+
+                        /// ----------- Body - Messages List -----------------
+                        (snapshot.hasData) ?
+                        SliverList(
+                          // itemExtent: 200.0,
+                          delegate: SliverChildBuilderDelegate((context, index) {
+                              return RotaryMainPageMessageListTile(
+                                argParentContext: _scaffoldKey.currentContext,
+                                argMessagePopulatedObject: currentMessagesList[index],
+                              );
+                            },
+                            childCount: currentMessagesList.length,
+                          ),
+                        ) :
+
+                        SliverFillRemaining(
+                          child: Center(
+                              child: Text('קראת את כל הודעותיך, רענן מסך...')
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

@@ -493,6 +493,7 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
 
   //#region Pick Image File
   Future <void> pickImageFile() async {
+    String _imagePickerError;
 
     ImagePicker imagePicker = ImagePicker();
     PickedFile compressedPickedFile = await imagePicker.getImage(
@@ -502,6 +503,7 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
     );
 
     setState(() {
+      error = '';
       loading = true;
     });
 
@@ -518,7 +520,7 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
 
         String localFilePath = '$personCardImagesDirectory/$originalImageFileName';
         File localImageFile = File(localFilePath);
-        localImageFile.delete();
+        if (localImageFile.existsSync()) localImageFile.delete();
       }
 
       // copy the New CompressedPickedFile to a new path --->>> On Client
@@ -540,15 +542,28 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
               originalImageFileName, aBucketFolderName: Constants.rotaryPersonCardImagesFolderName);
 
           if ((uploadReturnVal != null) && (uploadReturnVal["returnCode"] == 200)) {
+            /// 1. Screen Display: Set Current PersonCardImage
             setState(() {
               currentPersonCardImage = uploadReturnVal["imageUrl"];
             });
+
+            /// 2. Secure Storage: Write PersonCardAvatarImageUrl to SecureStorage
+            final ConnectedUserService connectedUserService = ConnectedUserService();
+            await connectedUserService.writePersonCardAvatarImageUrlToSecureStorage(currentPersonCardImage);
+
+            /// 3. App Global: Update PersonCardAvatarImageUrl
+            var userGlobal = ConnectedUserGlobal();
+            await userGlobal.setPersonCardAvatarImageUrl(currentPersonCardImage);
+          } else {
+            _imagePickerError = "כשלון בהעלאת התמונה, נסה שנית ...";
+            print('<PersonCardDetailEditPageScreen> Upload Image Url >>> Failed: ${uploadReturnVal["returnCode"]} / ${uploadReturnVal["message"]}');
           }
         }
       });
     }
 
     setState(() {
+      if ((_imagePickerError != null) && (_imagePickerError.length > 0)) error = _imagePickerError;
       loading = false;
     });
   }
@@ -615,6 +630,16 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
                     buildEnabledTextInputWithImageIcon(internetSiteUrlController, 'כתובת אתר אינטרנט', Icons.alternate_email),
 
                     buildDropDownRoleAndHierarchy(),
+
+                    /// ---------------------- Display Error -----------------------
+                    Text(
+                      error,
+                      textDirection: TextDirection.rtl,
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 14.0
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -623,15 +648,6 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
         ),
 
         buildUpdateButton('שמירה', Icons.save, updatePersonCard),
-
-        /// ---------------------- Display Error -----------------------
-        Text(
-          error,
-          style: TextStyle(
-              color: Colors.red,
-              fontSize: 14.0
-          ),
-        ),
       ],
     );
   }
@@ -920,7 +936,7 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
   Widget buildUpdateButton(String aButtonText, IconData aIcon, Function aFunc) {
 
     return Padding(
-      padding: const EdgeInsets.only(top: 10.0, right: 120.0, left: 120.0),
+      padding: const EdgeInsets.only(top: 10.0, right: 120.0, left: 120.0, bottom: 10.0),
       child: ActionButtonDecoration(
           argButtonType: ButtonType.Decorated,
           argHeight: 35.0,

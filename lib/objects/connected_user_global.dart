@@ -5,6 +5,7 @@ class ConnectedUserGlobal {
 
   static ConnectedUserObject currentConnectedUserObject;
   static Constants.RotaryRolesEnum currentRotaryRoleEnum;
+  static String currentPersonCardAvatarImageUrl;
 
   static final ConnectedUserGlobal _connectedUser = ConnectedUserGlobal._internal();
 
@@ -34,5 +35,13 @@ class ConnectedUserGlobal {
 
   setRotaryRoleEnum(Constants.RotaryRolesEnum aRotaryRolesEnum){
     currentRotaryRoleEnum = aRotaryRolesEnum;
+  }
+
+  String getPersonCardAvatarImageUrl(){
+    return currentPersonCardAvatarImageUrl;
+  }
+
+  setPersonCardAvatarImageUrl(String aPersonCardAvatarImageUrl){
+    currentPersonCardAvatarImageUrl = aPersonCardAvatarImageUrl;
   }
 }

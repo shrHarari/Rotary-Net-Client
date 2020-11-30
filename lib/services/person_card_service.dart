@@ -373,14 +373,14 @@ class PersonCardService {
 
   //#endregion
 
-  //#region * Get Person Card By Id RoleEnum [GET]
+  //#region * Get Person Card By Id For ConnectedData [GET]
   // =========================================================
-  Future getPersonCardByIdRoleEnum(String aPersonCardId) async {
+  Future getPersonCardByIdForConnectedData(String aPersonCardId) async {
     try {
       /// In case of User (Guest) without PersonCardObject ===>>> return Empty PersonCardObject
       if (aPersonCardId == null) return null;
 
-      String _getUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId/roleEnum";
+      String _getUrlPersonCard = GlobalsService.applicationServer + Constants.rotaryPersonCardUrl + "/personCardId/$aPersonCardId/connectedData";
       Response response = await get(_getUrlPersonCard);
 
       if (response.statusCode <= 300) {
@@ -400,7 +400,13 @@ class PersonCardService {
           Constants.RotaryRolesEnum roleEnum;
           _roleEnumDisplay = roleEnum.convertToEnum(_roleEnumValue);
 
-          return _roleEnumDisplay;
+          Map<String, dynamic> connectedReturnData = {
+            "roleEnumValue" : _roleEnumValue,
+            "roleEnumDisplay" : _roleEnumDisplay,
+            "personCardPictureUrl" : _personCard['pictureUrl']
+          };
+
+          return connectedReturnData;
         } else {
           await LoggerService.log('<PersonCardService> Get PersonCard By Id RoleEnum >>> Failed');
           print('<PersonCardService>  Get PersonCard By Id RoleEnum >>> Failed');
@@ -436,8 +442,8 @@ class PersonCardService {
       Response response = await post(_insertUrlPersonCard, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         final Map parsedResponse = json.decode(jsonResponse);
@@ -502,8 +508,8 @@ class PersonCardService {
       Response response = await post(_insertUrlPersonCard, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         await LoggerService.log('<PersonCardService> Insert PersonCard OnInitialize DataBase >>> OK');
@@ -537,8 +543,8 @@ class PersonCardService {
 
       Response response = await put(_updateUrlPersonCard, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         await LoggerService.log('<PersonCardService> Update PersonCard By Id >>> OK');
@@ -573,8 +579,8 @@ class PersonCardService {
 
       Response response = await put(_updateUrlPersonCard, body: bodyParams);
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         await LoggerService.log('<PersonCardService> Update PersonCard Image Url By Id >>> OK');
@@ -605,8 +611,8 @@ class PersonCardService {
 
       Response response = await delete(_deleteUrlPersonCard, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';

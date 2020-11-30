@@ -6,7 +6,6 @@ import 'package:rotary_net/screens/wellcome_pages/login_screen.dart';
 import 'package:rotary_net/screens/wellcome_pages/register_screen.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
 import 'package:rotary_net/services/registration_service.dart';
-import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/loading.dart';
 

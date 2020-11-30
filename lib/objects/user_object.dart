@@ -76,10 +76,15 @@ class UserObject {
     bool _stayConnected;
     parsedJson['stayConnected'] == 0 ? _stayConnected = false : _stayConnected = true;
 
+    // PersonCardId: Check if exists
+    String _personCardId = '';
+    if ((parsedJson['personCardId'] == null) || parsedJson['personCardId'] == '')
+      _personCardId = parsedJson['personCardId'];
+
     if (parsedJson['_id'] == null) {
       return UserObject(
           userId: '',
-          personCardId: parsedJson['personCardId'],
+          personCardId: _personCardId,
           email: parsedJson['email'],
           firstName : parsedJson['firstName'],
           lastName : parsedJson['lastName'],
@@ -123,9 +128,14 @@ class UserObject {
     bool _stayConnected;
     jsonFromMap['stayConnected'] == 0 ? _stayConnected = false : _stayConnected = true;
 
+    // PersonCardId: Check if exists
+    String _personCardId = '';
+    if ((jsonFromMap['personCardId'] == null) || jsonFromMap['personCardId'] == '')
+      _personCardId = jsonFromMap['personCardId'];
+
     return UserObject(
       // userIdId: jsonFromMap['_id'],
-      personCardId: jsonFromMap['personCardId'],
+      personCardId: _personCardId,
       email: jsonFromMap['email'],
       firstName : jsonFromMap['firstName'],
       lastName : jsonFromMap['lastName'],

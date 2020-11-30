@@ -11,6 +11,7 @@ import 'package:rotary_net/screens/personal_area_pages/personal_area_page_screen
 import 'package:rotary_net/screens/rotary_users_pages/rotary_users_list_page_screen.dart';
 import 'package:rotary_net/screens/settings/user_settings_screen.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
+import 'package:rotary_net/shared/person_card_image_avatar.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:rotary_net/utils/utils_class.dart';
 
@@ -26,6 +27,8 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
 
   ConnectedUserObject currentConnectedUserObj;
   Constants.RotaryRolesEnum currentRotaryRolesEnum;
+  String currentPersonCardAvatarImageUrl;
+
   bool userHasAdminPermission = false;
   bool userHasRotaryPermission = false;
   Widget hebrewMessageCreatedTimeLabel;
@@ -34,6 +37,7 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
   void initState() {
     currentConnectedUserObj = ConnectedUserGlobal.currentConnectedUserObject;
     currentRotaryRolesEnum = ConnectedUserGlobal.currentRotaryRoleEnum;
+    currentPersonCardAvatarImageUrl = ConnectedUserGlobal.currentPersonCardAvatarImageUrl;
 
     userHasAdminPermission = Utils.getAdminPermission(currentConnectedUserObj.userType);
     userHasRotaryPermission = Utils.getRotaryPermission(currentRotaryRolesEnum);
@@ -66,25 +70,22 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
 
   @override
   Widget build(BuildContext context) {
-//    final height = MediaQuery.of(context).size.height;
+   final height = MediaQuery.of(context).size.height;
     return Drawer(
       elevation: 10.0,
       child:
         Column(
           children: <Widget>[
-          Expanded(
-            flex: 2,
-            child: Container(
-//              height: height * .28,
-              child: DrawerHeader(
-                child:
-                Column(
-                  children: <Widget>[
-                    buildPersonalAreaIcon(),
-                    buildUserWelcomeTitle(),          // שלום אורח
-                    buildPersonalAreaTitle(context),  // לאיזור האישי
-                  ],
-                ),
+          Container(
+           height: height * 0.3,
+            child: DrawerHeader(
+              child:
+              Column(
+                children: <Widget>[
+                  buildPersonalAreaIcon(),
+                  buildUserWelcomeTitle(),          // שלום אורח
+                  buildPersonalAreaTitle(context),  // לאיזור האישי
+                ],
               ),
             ),
           ),
@@ -219,16 +220,12 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
   {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
-      child: MaterialButton(
-        onPressed: () {},
-        color: Colors.lightBlue,
-        textColor: Colors.white,
-        child: Icon(
-          Icons.person_outline,
-          size: 30,
-        ),
-        padding: EdgeInsets.all(16),
-        shape: CircleBorder(),
+      child:
+
+      PersonCardImageAvatar(
+        argPersonCardPictureUrl: currentPersonCardAvatarImageUrl,
+        argIcon: Icons.person_outline,
+        argOnTapFunction: null,
       ),
     );
   }
@@ -251,7 +248,6 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
                 color: Colors.black,
                 fontSize: 16,
             ),
-//            style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
             TextSpan(
               text: userTitle,

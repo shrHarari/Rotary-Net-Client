@@ -194,8 +194,8 @@ class Utils {
       List<Placemark> placeMarksList = await Geolocator().placemarkFromAddress(aAddress);
 
       if (placeMarksList != null && placeMarksList.isNotEmpty) {
-        final List<String> position = placeMarksList.map((placeMark) =>
-        placeMark.position?.latitude.toString() + ', ' + placeMark.position?.longitude.toString()).toList();
+        // final List<String> position = placeMarksList.map((placeMark) =>
+        // placeMark.position?.latitude.toString() + ', ' + placeMark.position?.longitude.toString()).toList();
 
         final Placemark pos = placeMarksList[0];
         double latitude = pos.position?.latitude;
@@ -301,10 +301,8 @@ class Utils {
   //#region Upload Image To Server
   static Future<String> uploadImageToServer(String aFileName) async {
     try {
-      String _getUrlUploadImage = GlobalsService.applicationServer +
-          Constants.rotaryUtilUrl + "/uploadPersonCardImage";
-      var request = http.MultipartRequest(
-          'POST', Uri.parse(_getUrlUploadImage));
+      String _getUrlUploadImage = GlobalsService.applicationServer + Constants.rotaryUtilUrl + "/uploadPersonCardImage";
+      var request = http.MultipartRequest('POST', Uri.parse(_getUrlUploadImage));
 
       // Map<String, String> bodyFields = {'image': 'TEST.jpg'};
       // request.fields.addAll(bodyFields);
@@ -314,23 +312,17 @@ class Utils {
       http.StreamedResponse response = await request.send();
 
       if (response.statusCode <= 300) {
-        print('Utils / Upload Image To Server / Return Value: ${response
-            .reasonPhrase}');
-        await LoggerService.log(
-            '<Utils> Upload Image To Server >>> ${response.reasonPhrase}');
+        print('Utils / Upload Image To Server / Return Value: ${response.reasonPhrase}');
+        await LoggerService.log('<Utils> Upload Image To Server >>> ${response.reasonPhrase}');
         return response.reasonPhrase;
       } else {
-        await LoggerService.log(
-            '<Utils> Upload Image To Server >>> Failed: ${response
-                .statusCode}');
-        print('<Utils> Upload Image To Server >>> Failed: ${response
-            .statusCode}');
+        await LoggerService.log('<Utils> Upload Image To Server >>> Failed: ${response.statusCode}');
+        print('<Utils> Upload Image To Server >>> Failed: ${response.statusCode}');
         return null;
       }
     }
     catch (e) {
-      await LoggerService.log(
-          '<Utils> Upload Image To Server >>> ERROR: ${e.toString()}');
+      await LoggerService.log('<Utils> Upload Image To Server >>> ERROR: ${e.toString()}');
       developer.log(
         'uploadImageToServer',
         name: 'Utils',
@@ -344,28 +336,21 @@ class Utils {
   //#region Delete Image From Server
   static Future<String> deleteImageFromServer(String aFileName) async {
     try {
-      String _deleteUrlImage = GlobalsService.applicationServer +
-          Constants.rotaryUtilUrl + "/deletePersonCardImage/$aFileName";
+      String _deleteUrlImage = GlobalsService.applicationServer + Constants.rotaryUtilUrl + "/deletePersonCardImage/$aFileName";
       http.Response response = await http.delete(_deleteUrlImage);
 
       if (response.statusCode <= 300) {
-        print('Utils / Upload Image To Server / Return Value: ${response
-            .reasonPhrase}');
-        await LoggerService.log(
-            '<Utils> Upload Image To Server >>> ${response.reasonPhrase}');
+        print('Utils / Upload Image To Server / Return Value: ${response.reasonPhrase}');
+        await LoggerService.log('<Utils> Upload Image To Server >>> ${response.reasonPhrase}');
         return response.reasonPhrase;
       } else {
-        await LoggerService.log(
-            '<Utils> Upload Image To Server >>> Failed: ${response
-                .statusCode}');
-        print('<Utils> Upload Image To Server >>> Failed: ${response
-            .statusCode}');
+        await LoggerService.log('<Utils> Upload Image To Server >>> Failed: ${response.statusCode}');
+        print('<Utils> Upload Image To Server >>> Failed: ${response.statusCode}');
         return null;
       }
     }
     catch (e) {
-      await LoggerService.log(
-          '<Utils> Upload Image To Server >>> ERROR: ${e.toString()}');
+      await LoggerService.log('<Utils> Upload Image To Server >>> ERROR: ${e.toString()}');
       developer.log(
         'uploadImageToServer',
         name: 'Utils',

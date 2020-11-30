@@ -223,8 +223,8 @@ class MessageService {
       Response response = await post(_insertUrlMessage, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         final Map parsedResponse = json.decode(jsonResponse);
@@ -260,8 +260,8 @@ class MessageService {
       Response response = await put(_updateUrlMessage, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         await LoggerService.log('<MessageService> Update Message By Id >>> OK');
@@ -292,8 +292,8 @@ class MessageService {
       Response response = await delete(_deleteUrlMessage, headers: Constants.rotaryUrlHeader);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';
@@ -331,8 +331,8 @@ class MessageService {
       Response response = await put(_deleteUrlMessage, headers: Constants.rotaryUrlHeader);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';
@@ -370,8 +370,8 @@ class MessageService {
       Response response = await put(_addUrlMessage, headers: Constants.rotaryUrlHeader);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         await LoggerService.log('<MessageService> Insert Message Back To MessageQueue >>> OK');

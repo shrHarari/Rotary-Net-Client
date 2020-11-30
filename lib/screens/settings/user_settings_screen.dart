@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
@@ -125,23 +124,32 @@ class _UserSettingsScreen extends State<UserSettingsScreen> {
     });
 
     /// SAVE New ConnectedUser:
-    /// 1. Secure Storage: Write to SecureStorage
+    /// 1. Fetch Connected PersonCard Data
+    PersonCardService personCardService = PersonCardService();
+    Map<String, dynamic> connectedReturnData = await personCardService.getPersonCardByIdForConnectedData(_newConnectedUserObj.personCardId);
+
+    /// 2. Secure Storage: Write to SecureStorage
     await connectedUserService.writeConnectedUserObjectDataToSecureStorage(_newConnectedUserObj);
 
-    /// 2. Secure Storage: Write RotaryRoleEnum to SecureStorage
-    PersonCardService personCardService = PersonCardService();
-    print('onChangeDropdownUserItem / _newConnectedUserObj.personCardId: ${_newConnectedUserObj.personCardId}');
-    Constants.RotaryRolesEnum _roleEnum = await personCardService.getPersonCardByIdRoleEnum(_newConnectedUserObj.personCardId);
+    /// 3. Secure Storage: Write RotaryRoleEnum to SecureStorage
+    Constants.RotaryRolesEnum _roleEnum = connectedReturnData['roleEnumDisplay'];
     await connectedUserService.writeRotaryRoleEnumDataToSecureStorage(_roleEnum);
 
-    /// 3. App Global: Update Global Current Connected User
+    /// 4. Secure Storage: Write PersonCardAvatarImageUrl to SecureStorage
+    String _personCardPictureUrl = connectedReturnData['personCardPictureUrl'];
+    await connectedUserService.writePersonCardAvatarImageUrlToSecureStorage(_personCardPictureUrl);
+
     var userGlobal = ConnectedUserGlobal();
+    /// 5. App Global: Update Global Current Connected User
     await userGlobal.setConnectedUserObject(_newConnectedUserObj);
 
-    /// 4. App Global: Update RotaryRoleEnum
+    /// 6. App Global: Update RotaryRoleEnum
     await userGlobal.setRotaryRoleEnum(_roleEnum);
 
-    print('LoginScreen / ChangeUserForDebug / NewConnectedUserObj: $_newConnectedUserObj');
+    /// 7. App Global: Update PersonCardAvatarImageUrl
+    await userGlobal.setPersonCardAvatarImageUrl(_personCardPictureUrl);
+
+    print('UserSettingsScreen / ChangeUserForDebug / NewConnectedUserObj: $_newConnectedUserObj');
   }
   //#endregion
 

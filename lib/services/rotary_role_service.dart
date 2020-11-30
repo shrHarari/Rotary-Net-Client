@@ -147,8 +147,8 @@ class RotaryRoleService {
 
       Response response = await post(_getUrlRole, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';
@@ -188,8 +188,8 @@ class RotaryRoleService {
 
       Response response = await put(_updateUrlRole, headers: Constants.rotaryUrlHeader, body: jsonToPost);
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';
@@ -224,8 +224,8 @@ class RotaryRoleService {
 
       Response response = await delete(_deleteUrlRole, headers: Constants.rotaryUrlHeader);
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         bool returnVal = jsonResponse.toLowerCase() == 'true';

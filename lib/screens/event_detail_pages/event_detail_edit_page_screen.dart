@@ -15,13 +15,15 @@ import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/shared/decoration_style.dart';
 import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/utils/hebrew_syntax_format.dart';
-import 'package:rotary_net/widgets/application_menu_widget.dart';
 import 'package:rotary_net/widgets/pick_date_time_dialog_widget.dart';
 import 'package:rotary_net/utils/utils_class.dart';
 import 'package:rotary_net/shared/page_header_application_menu.dart';
 import 'package:rotary_net/shared/action_button_decoration.dart';
+import 'package:rotary_net/shared/error_message_screen.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:path/path.dart' as Path;
+
+import 'dart:async';
 
 class EventDetailEditPageScreen extends StatefulWidget {
   static const routeName = '/EventDetailEditPageScreen';
@@ -36,6 +38,7 @@ class EventDetailEditPageScreen extends StatefulWidget {
 
 class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
   final EventService eventService = EventService();
 
@@ -94,17 +97,16 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
     });
 
     return DataRequiredForBuild(
-      // personCardWithDescriptionObject: _personCardWithDescriptionObject,
       personCardPopulatedObject: _personCardPopulatedObject,
     );
   }
   //#endregion
 
-  executeAfterBuildComplete(BuildContext context){
-    setState(() {
-      loading = false;
-    });
-  }
+  // executeAfterBuildComplete(BuildContext context){
+  //   setState(() {
+  //     loading = false;
+  //   });
+  // }
 
   //#region Set Event Variables
   Future<void> setEventVariables(EventPopulatedObject aEventPopulated) async {
@@ -139,37 +141,42 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
   //#region Pick DateTime Dialog
   Future<void> openDateTimePickerDialog(BuildContext context) async {
 
+    DateTime _startDateTime;
+    DateTime _endDateTime;
+
     if (selectedPickStartDateTime == null) {
       DateTime dtNow = DateTime.now();
-      selectedPickStartDateTime = DateTime(dtNow.year, dtNow.month, dtNow.day, dtNow.hour+1, 0, 0);
-      selectedPickEndDateTime = selectedPickStartDateTime.add(Duration(hours: 1));
+      _startDateTime = DateTime(dtNow.year, dtNow.month, dtNow.day, dtNow.hour + 1, 0, 0);
+      _endDateTime = _startDateTime.add(Duration(hours: 1));
     } else {
+      _startDateTime = selectedPickStartDateTime;
       if (selectedPickEndDateTime == null) {
-        selectedPickEndDateTime = selectedPickStartDateTime.add(Duration(hours: 1));
+        _endDateTime = _startDateTime.add(Duration(hours: 1));
       }
     }
 
-    Map datesMapObj = await HebrewFormatSyntax.getHebrewStartEndDateTimeLabels(selectedPickStartDateTime, selectedPickEndDateTime);
+    Map datesMapObj = await HebrewFormatSyntax.getHebrewStartEndDateTimeLabels(_startDateTime, _endDateTime);
 
     final returnDataMapFromPicker = await showDialog(
-        context: context,
+        context: _scaffoldKey.currentContext,
         builder: (context) {
           return PickDateTimeDialogWidget(
-              argStartDateTime: selectedPickStartDateTime,
-              argEndDateTime: selectedPickEndDateTime,
+              argStartDateTime: _startDateTime,
+              argEndDateTime: _endDateTime,
               argDatesMapObj: datesMapObj);
         }
     );
 
     if (returnDataMapFromPicker != null) {
-      DateTime _startDateTime = returnDataMapFromPicker["EventPickedStartDateTime"];
-      DateTime _endDateTime = returnDataMapFromPicker["EventPickedEndDateTime"];
-      Widget _displayHebrewDateTime = await EventDetailWidgets.buildEventDateTimeLabel(_startDateTime, _endDateTime);
+      Widget _displayHebrewEventTimeLabel = await EventDetailWidgets.buildEventDateTimeLabel(
+          returnDataMapFromPicker["EventPickedStartDateTime"],
+          returnDataMapFromPicker["EventPickedEndDateTime"]
+      );
 
       setState(() {
         selectedPickStartDateTime = _startDateTime;
         selectedPickEndDateTime = _endDateTime;
-        currentHebrewEventTimeLabel = _displayHebrewDateTime;
+        currentHebrewEventTimeLabel = _displayHebrewEventTimeLabel;
       });
     }
   }
@@ -177,15 +184,17 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
   //#region Pick Image File
   Future <void> pickImageFile() async {
+    String _imagePickerError;
 
     ImagePicker imagePicker = ImagePicker();
     PickedFile compressedPickedFile = await imagePicker.getImage(
         source: ImageSource.gallery,
-        imageQuality: 80,
-        maxHeight: 800
+        imageQuality: 70,
+        maxHeight: 700
     );
 
     setState(() {
+      error = '';
       loading = true;
     });
 
@@ -202,11 +211,11 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
         String localFilePath = '$eventImagesDirectory/$originalImageFileName';
         File localImageFile = File(localFilePath);
-        localImageFile.delete();
+        if (localImageFile.existsSync()) localImageFile.delete();
       }
 
-      // copy the New CompressedPickedFile to a new path --->>> On Client
       File pickedPictureFile = File(compressedPickedFile.path);
+      // copy the New CompressedPickedFile to a new path --->>> On Client
       String copyImageFileName = '${widget.argEventPopulatedObject.eventId}_${DateTime.now()}.jpg';
       String copyFilePath = '$eventImagesDirectory/$copyImageFileName';
 
@@ -227,12 +236,16 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
             setState(() {
               currentEventImage = uploadReturnVal["imageUrl"];
             });
+          } else {
+            _imagePickerError = "כשלון בהעלאת התמונה, נסה שנית ...";
+            print('<EventDetailEditPageScreen> Upload Image Url >>> Failed: ${uploadReturnVal["returnCode"]} / ${uploadReturnVal["message"]}');
           }
         }
       });
     }
 
     setState(() {
+      if ((_imagePickerError != null) && (_imagePickerError.length > 0)) error = _imagePickerError;
       loading = false;
     });
   }
@@ -370,16 +383,33 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.blue[50],
 
-      drawer: Container(
-        width: 250,
-        child: Drawer(
-          child: ApplicationMenuDrawer(),
-        ),
+      body: FutureBuilder<DataRequiredForBuild>(
+          future: dataRequiredForBuild,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting)
+              return Loading();
+            else
+            if (snapshot.hasError) {
+              return DisplayErrorTextAndRetryButton(
+                errorText: 'שגיאה בשליפת אירועים',
+                buttonText: 'אנא פנה למנהל המערכת',
+                onPressed: () {},
+              );
+            } else {
+              if (snapshot.hasData)
+              {
+                currentDataRequired = snapshot.data;
+                return buildMainScaffoldBody();
+              }
+              else
+                return Center(child: Text('אין תוצאות'));
+            }
+          }
       ),
-
-      body: buildMainScaffoldBody(),
+      // body: buildMainScaffoldBody(),
     );
   }
 
@@ -435,6 +465,16 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
                           buildEnabledTextInputWithImageIcon(eventDescriptionController, 'תיאור האירוע', Icons.view_list, true),
                           buildEnabledTextInputWithImageIcon(eventLocationController, 'מיקום האירוע', Icons.location_on, false),
                           buildEventDetailImageIcon(Icons.event_available, currentHebrewEventTimeLabel, openDateTimePickerDialog),
+
+                          /// ---------------------- Display Error -----------------------
+                          Text(
+                            error,
+                            textDirection: TextDirection.rtl,
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 14.0),
+                          ),
+
                         ],
                       ),
                     ),
@@ -447,13 +487,6 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
         buildUpdateButton("שמירה", Icons.save, updateEvent),
 
-        /// ---------------------- Display Error -----------------------
-        Text(
-          error,
-          style: TextStyle(
-              color: Colors.red,
-              fontSize: 14.0),
-        ),
       ],
     );
   }
@@ -642,7 +675,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
           //     : snapshot.data;
 
           return Padding(
-            padding: const EdgeInsets.only(right: 120.0, left: 120.0),
+            padding: const EdgeInsets.only(right: 120.0, left: 120.0, bottom: 10.0),
             child: ActionButtonDecoration(
                 argButtonType: ButtonType.Decorated,
                 argHeight: 40.0,

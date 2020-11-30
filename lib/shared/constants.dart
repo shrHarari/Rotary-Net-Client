@@ -4,6 +4,7 @@
 
 const String rotaryApplicationName = 'מועדון רוטרי';
 const String rotaryApplicationLogo = 'assets/app_icon/RotaryNetLogo.png';
+const String rotaryMainScreenBackground = 'assets/background/main_screen.jpg';
 //#endregion
 
 //#region Application Parameters: SharedPreferences [Key Name]
@@ -55,6 +56,7 @@ const String rotaryUserFirstName = 'Rotary User First Name';
 const String rotaryUserLastName = 'Rotary User Family Name';
 const String rotaryUserPassword = 'Rotary User Password';
 const String rotaryUserStayConnected = 'Rotary User StayConnected';
+const String rotaryPersonCardAvatarImageUrl = 'Rotary PersonCard Avatar Image Url';
 //#endregion
 
 //#region UserType [Key Name]+[Enum]

@@ -29,10 +29,12 @@ class RotaryNetApp extends StatelessWidget {
 
     ConnectedUserObject _connectedUserObj = await initializeConnectedUserObject();
     Constants.RotaryRolesEnum _rotaryRolesEnum = await initializeRotaryRolesEnum();
+    String _personCardAvatarImageUrl = await initializePersonCardAvatarImageUrl();
 
     return DataRequiredForBuild(
       connectedUserObj: _connectedUserObj,
       rotaryRolesEnum: _rotaryRolesEnum,
+      personCardAvatarImageUrl: _personCardAvatarImageUrl,
     );
   }
   //#endregion
@@ -67,6 +69,16 @@ class RotaryNetApp extends StatelessWidget {
     userGlobal.setRotaryRoleEnum(_currentRotaryRolesEnum);
 
     return _currentRotaryRolesEnum;
+  }
+  //#endregion
+
+  //#region Initialize RotaryRolesEnum [CONNECTED USER]
+  Future <String> initializePersonCardAvatarImageUrl() async {
+    String _personCardAvatarImageUrl  = await connectedUserService.readPersonCardAvatarImageUrlFromSecureStorage();
+
+    userGlobal.setPersonCardAvatarImageUrl(_personCardAvatarImageUrl);
+
+    return _personCardAvatarImageUrl;
   }
   //#endregion
 
@@ -139,10 +151,11 @@ class RotaryNetApp extends StatelessWidget {
 class DataRequiredForBuild {
   ConnectedUserObject connectedUserObj;
   Constants.RotaryRolesEnum rotaryRolesEnum;
-  bool applicationMode;
+  String personCardAvatarImageUrl;
 
   DataRequiredForBuild({
     this.connectedUserObj,
     this.rotaryRolesEnum,
+    this.personCardAvatarImageUrl
   });
 }

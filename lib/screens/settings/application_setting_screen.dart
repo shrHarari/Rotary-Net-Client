@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:rotary_net/database/init_database_service.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
@@ -65,20 +64,30 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
     ConnectedUserObject _newConnectedUserObj = await connectedUserService.getConnectedUserByEmail(currentDataRequired.connectedUserObj.email);
 
     /// SAVE New ConnectedUser:
-    /// 1. Secure Storage: Write to SecureStorage
+    /// 1. Fetch Connected PersonCard Data
+    PersonCardService personCardService = PersonCardService();
+    Map<String, dynamic> connectedReturnData = await personCardService.getPersonCardByIdForConnectedData(_newConnectedUserObj.personCardId);
+
+    /// 2. Secure Storage: Write to SecureStorage
     await connectedUserService.writeConnectedUserObjectDataToSecureStorage(_newConnectedUserObj);
 
-    /// 2. Secure Storage: Write RotaryRoleEnum to SecureStorage
-    PersonCardService personCardService = PersonCardService();
-    Constants.RotaryRolesEnum _roleEnum = await personCardService.getPersonCardByIdRoleEnum(_newConnectedUserObj.personCardId);
+    /// 3. Secure Storage: Write RotaryRoleEnum to SecureStorage
+    Constants.RotaryRolesEnum _roleEnum = connectedReturnData['roleEnumDisplay'];
     await connectedUserService.writeRotaryRoleEnumDataToSecureStorage(_roleEnum);
 
-    /// 3. App Global: Update Global Current Connected User
+    /// 4. Secure Storage: Write PersonCardAvatarImageUrl to SecureStorage
+    String _personCardPictureUrl = connectedReturnData['personCardPictureUrl'];
+    await connectedUserService.writePersonCardAvatarImageUrlToSecureStorage(_personCardPictureUrl);
+
     var userGlobal = ConnectedUserGlobal();
+    /// 5. App Global: Update Global Current Connected User
     await userGlobal.setConnectedUserObject(_newConnectedUserObj);
 
-    /// 4. App Global: Update RotaryRoleEnum
+    /// 6. App Global: Update RotaryRoleEnum
     await userGlobal.setRotaryRoleEnum(_roleEnum);
+
+    /// 7. App Global: Update PersonCardAvatarImageUrl
+    await userGlobal.setPersonCardAvatarImageUrl(_personCardPictureUrl);
 
     print('ApplicationSettingsScreen / updateApplicationType / NewConnectedUserObj: $_newConnectedUserObj');
   }
@@ -339,7 +348,7 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
                           style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () async {
-                          InitDatabaseService _initDatabaseService = InitDatabaseService();
+                          // InitDatabaseService _initDatabaseService = InitDatabaseService();
                           // await _initDatabaseService.insertAllStartedRotaryRoleToDb();
                           // await _initDatabaseService.insertAllStartedRotaryAreaToDb();
                           // await _initDatabaseService.insertAllStartedRotaryClusterToDb();

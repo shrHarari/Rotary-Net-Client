@@ -38,6 +38,14 @@ class _EventSearchResultPageState extends State<EventSearchResultPage> {
     eventsBloc.getEventsListPopulatedBySearchQuery(searchController.text);
   }
 
+  //#region Handle Refresh Screen
+  Future handleRefreshScreen() async {
+
+    eventsBloc.getEventsListPopulatedBySearchQuery(searchController.text);
+    return null;
+  }
+  //#endregion
+
   //#region Open Menu
   Future<void> openMenu() async {
     _scaffoldKey.currentState.openDrawer();
@@ -71,11 +79,12 @@ class _EventSearchResultPageState extends State<EventSearchResultPage> {
             ),
           ),
 
-          body: Container(
-            child: Stack(
-              children: [
-                /// ----------- Header - Application Logo [Title] & Search Box Area [TextBox] -----------------
-                CustomScrollView(
+          body: Stack(
+            children: [
+              /// ----------- Header - Application Logo [Title] & Search Box Area [TextBox] -----------------
+              RefreshIndicator(
+                onRefresh: handleRefreshScreen,
+                child: CustomScrollView(
                   slivers: <Widget>[
                     SliverPersistentHeader(
                       pinned: false,
@@ -96,10 +105,10 @@ class _EventSearchResultPageState extends State<EventSearchResultPage> {
                       ),
                     ),
 
-                    // (snapshot.connectionState == ConnectionState.waiting) ?
-                    // SliverFillRemaining(
-                    //     child: Loading()
-                    // ) :
+                    (snapshot.connectionState == ConnectionState.waiting) ?
+                    SliverFillRemaining(
+                        child: Loading()
+                    ) :
 
                     (snapshot.hasError) ?
                     SliverFillRemaining(
@@ -127,19 +136,19 @@ class _EventSearchResultPageState extends State<EventSearchResultPage> {
                     ),
                   ],
                 ),
+              ),
 
-                /// --------------- Page Header Application Menu ---------------------
-                PageHeaderApplicationMenu(
-                  argDisplayTitleLogo: false,
-                  argDisplayTitleLabel: false,
-                  argTitleLabelText: '',
-                  argDisplayApplicationMenu: true,
-                  argApplicationMenuFunction: openMenu,
-                  argDisplayExit: false,
-                  argReturnFunction: exitAndNavigateBack,
-                ),
-              ],
-            ),
+              /// --------------- Page Header Application Menu ---------------------
+              PageHeaderApplicationMenu(
+                argDisplayTitleLogo: false,
+                argDisplayTitleLabel: false,
+                argTitleLabelText: '',
+                argDisplayApplicationMenu: true,
+                argApplicationMenuFunction: openMenu,
+                argDisplayExit: false,
+                argReturnFunction: exitAndNavigateBack,
+              ),
+            ],
           ),
         );
       },

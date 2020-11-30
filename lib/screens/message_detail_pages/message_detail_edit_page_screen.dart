@@ -4,11 +4,9 @@ import 'package:rotary_net/BLoCs/messages_list_bloc.dart';
 import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/connected_user_object.dart';
 import 'package:rotary_net/objects/message_populated_object.dart';
-import 'package:rotary_net/objects/person_card_object.dart';
 import 'package:rotary_net/objects/person_card_populated_object.dart';
 import 'package:rotary_net/objects/person_card_role_and_hierarchy_object.dart';
 import 'package:rotary_net/screens/message_detail_pages/message_composer_detail_section.dart';
-import 'package:rotary_net/screens/person_card_detail_pages/person_card_detail_page_screen.dart';
 import 'package:rotary_net/services/message_service.dart';
 import 'package:rotary_net/services/person_card_service.dart';
 import 'package:rotary_net/shared/decoration_style.dart';
@@ -79,7 +77,6 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
     });
 
     return DataRequiredForBuild(
-      // personCardWithDescriptionObject: _personCardWithDescriptionObject,
       personCardPopulatedObject: _personCardPopulatedObject,
     );
   }
@@ -226,7 +223,7 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
             else
             if (snapshot.hasError) {
               return DisplayErrorTextAndRetryButton(
-                errorText: 'שגיאה בשליפת אירועים',
+                errorText: 'שגיאה בשליפת הודעות',
                 buttonText: 'אנא פנה למנהל המערכת',
                 onPressed: () {},
               );

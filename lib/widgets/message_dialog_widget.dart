@@ -31,7 +31,7 @@ class _MessageDialogWidgetState extends State<MessageDialogWidget> {
 
     return AlertDialog(
       content: Container(
-        height: 100,
+        height: 130,
         child: Stack(
           overflow: Overflow.visible,
           children: <Widget>[
@@ -55,7 +55,8 @@ class _MessageDialogWidgetState extends State<MessageDialogWidget> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Expanded(
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: widget.argDialogTitle,
                   ),
 
@@ -73,9 +74,10 @@ class _MessageDialogWidgetState extends State<MessageDialogWidget> {
   Widget buildActionButtons() {
 
     return Row(
-      children: widget.argDialogActions.map<Widget>(
-            (actionButton) => buildActionButtonWidget(actionButton),
-      ).toList());
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: widget.argDialogActions.map<Widget>(
+              (actionButton) => buildActionButtonWidget(actionButton),
+        ).toList());
   }
 
   Widget buildActionButtonWidget(MessageDialogActionObject aDialogActions) {

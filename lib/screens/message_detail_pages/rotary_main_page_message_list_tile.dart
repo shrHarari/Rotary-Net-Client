@@ -9,36 +9,54 @@ import 'package:rotary_net/objects/connected_user_global.dart';
 import 'package:rotary_net/objects/message_populated_object.dart';
 import 'package:rotary_net/screens/message_detail_pages/message_detail_page_screen.dart';
 import 'package:rotary_net/screens/message_detail_pages/message_detail_page_widgets.dart';
-import 'package:rotary_net/shared/bubble_box_rotary_message.dart';
+import 'package:rotary_net/shared/bubble_box_detail_message.dart';
 import 'package:intl/date_symbol_data_local.dart' as SymbolData;
 import 'package:intl/intl.dart' as Intl;
 import 'package:rotary_net/widgets/message_dialog_widget.dart';
 import 'package:rotary_net/widgets/message_paragraph_painter.dart';
 
 class RotaryMainPageMessageListTile extends StatelessWidget {
+  final BuildContext argParentContext;
   final MessagePopulatedObject argMessagePopulatedObject;
 
-  const RotaryMainPageMessageListTile({Key key, this.argMessagePopulatedObject}) : super(key: key);
+  const RotaryMainPageMessageListTile({Key key, this.argParentContext, this.argMessagePopulatedObject}) : super(key: key);
 
   //#region Message Content
 
   static const MAX_LINES = 4;
-  static const MAX_LENGTH_DISPLAY_LAST_LINE = 15;
+  static const MAX_LENGTH_DISPLAY_LAST_LINE = 25;
   static const MAX_LENGTH_LINE = 30;
 
   //#region Get Text styles
-  static const TextStyle messageTextSpanStyleBold = TextStyle(
+  static const TextStyle messageMainTextStyle = TextStyle(
     fontFamily: 'Heebo-Light',
-    fontSize: 18.0,
+    fontSize: 16.0,
     height: 1.5,
     color: Colors.black,
     fontWeight: FontWeight.bold,
   );
-  static const TextStyle messageTextSpanStyle = TextStyle(
+
+  static const TextStyle messageEndTextStyle = TextStyle(
       fontFamily: 'Heebo-Light',
-      fontSize: 17.0,
+      fontSize: 16.0,
+      height: 1.5,
+      color: Colors.black45,
+      fontWeight: FontWeight.bold,
+  );
+
+  static const TextStyle messageMetaDataStyle = TextStyle(
+      fontFamily: 'Heebo-Light',
+      fontSize: 16.0,
       height: 1.5,
       color: Colors.black87
+  );
+
+  static const TextStyle messageRemarkStyle = TextStyle(
+      fontFamily: 'Heebo-Light',
+      fontSize: 16.0,
+      height: 1.5,
+      color: Colors.black45,
+      fontWeight: FontWeight.bold,
   );
   //#endregion
 
@@ -48,14 +66,80 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
       textDirection: TextDirection.rtl,
       text: TextSpan(
         text: '[${argMessagePopulatedObject.composerFirstName} ${argMessagePopulatedObject.composerLastName}]: ',
-        style: messageTextSpanStyle,
+        style: messageMetaDataStyle,
       ),
     );
   }
   //#endregion
 
-  //#region Get Message Paragraph Layout
-  Widget getMessageParagraphLayout(String aText, TextStyle aTextStyle) {
+  //#region Get Message Content Layout
+  Widget getMessageContentLayout(String aText) {
+    bool _isExpanded = false;
+    Container returnWidget;
+
+    return LayoutBuilder(
+        builder: (context, size) {
+          final span = TextSpan(text: aText, style: messageMainTextStyle);
+          final textPainter = TextPainter(text: span, maxLines: MAX_LINES, textDirection: TextDirection.rtl);
+          textPainter.layout(maxWidth: size.maxWidth, minWidth: 0);
+
+          List<LineMetrics> lines = textPainter.computeLineMetrics();
+          int numberOfLines = lines.length;
+
+          if (numberOfLines > MAX_LINES)
+          {
+            returnWidget = Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                textDirection: TextDirection.rtl,
+                children: [
+                  Text(aText, style: messageMainTextStyle, maxLines: MAX_LINES,),
+                  Center(
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Material(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              elevation: 0.5,
+                              child:  InkWell(
+                                // onTap: _handleOnTap,
+                                child: Icon( _isExpanded ? Icons.expand_less : Icons.expand_more,
+                                  color: Colors.grey.withOpacity(0.8),),
+                              )
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0, right: 10.0),
+                          child: RichText(
+                            text: TextSpan(
+                              text: 'קרא עוד ...',
+                              style: messageRemarkStyle,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            returnWidget = Container(
+              child: Container(
+                child: Text(aText, style: messageMainTextStyle,),
+              ),
+            );
+          }
+          return returnWidget;
+        }
+    );
+  }
+  //#endregion
+
+  //#region Get Message Paragraph Painter Layout [Obsolete]
+  Widget getMessageParagraphPainterLayout(String aText, TextStyle aTextStyle) {
     Container returnWidget;
 
     return LayoutBuilder(
@@ -89,7 +173,7 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
 
                       text: TextSpan(
                         text: '< קרא עוד ... >',
-                        style: messageTextSpanStyle,
+                        style: messageRemarkStyle,
                       ),
                     ),
                   ),
@@ -126,11 +210,11 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
         children: [
           TextSpan(
             text: '\n[תאריך]: ',
-            style: messageTextSpanStyle,
+            style: messageMetaDataStyle,
           ),
           TextSpan(
             text: hebrewMessageCreatedDateTime,
-            style: messageTextSpanStyle,
+            style: messageMetaDataStyle,
           ),
         ],
       ),
@@ -139,27 +223,18 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
   //#endregion
 
   //#region Get Message Content
-  Widget getMessageContent(String aText, TextStyle aTextStyle) {
+  Widget getMessageContent(String aText) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 10.0, right: 10.0),
-            child: getComposerName(),
-          ),
+          getComposerName(),
 
-          Flexible(
-            // fit: FlexFit.loose,
-            child: getMessageParagraphLayout(aText, aTextStyle)
-          ),
+          getMessageContentLayout(aText),
 
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
-            child: getHebrewMessageCreatedDateTime(),
-          )
+          getHebrewMessageCreatedDateTime()
         ],
       ),
     );
@@ -170,7 +245,6 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
 
   //#region Open Message Detail Screen
   openMessageDetailScreen(BuildContext context) async {
-
     Widget hebrewMessageCreatedTimeLabel = await MessageDetailWidgets.buildMessageCreatedTimeLabel(argMessagePopulatedObject.messageCreatedDateTime);
 
     Navigator.push(
@@ -189,12 +263,12 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
   Widget build(BuildContext context) {
 
     //#region Remove Message From List
-    void removeMessageFromList(MessagePopulatedObject aMessagePopulatedObject) async {
+    Future <void> removeMessageFromList(MessagePopulatedObject aMessagePopulatedObject) async {
 
       var userGlobal = ConnectedUserGlobal();
       String connectedPersonCardId = userGlobal.getConnectedUserObject().personCardId;
 
-      final messagesBloc = BlocProvider.of<MessagesListBloc>(context);
+      final messagesBloc = BlocProvider.of<MessagesListBloc>(argParentContext);
       await messagesBloc.removeMessageFromPersonCardMessageQueue(aMessagePopulatedObject, connectedPersonCardId);
     }
     //#endregion
@@ -205,19 +279,19 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
       var userGlobal = ConnectedUserGlobal();
       String connectedPersonCardId = userGlobal.getConnectedUserObject().personCardId;
 
-      final messagesBloc = BlocProvider.of<MessagesListBloc>(context);
+      final messagesBloc = BlocProvider.of<MessagesListBloc>(argParentContext);
       await messagesBloc.addMessageBackToPersonCardMessageQueue(aMessagePopulatedObject, connectedPersonCardId);
     }
     //#endregion
 
     //#region Handle Dismiss
-    handleDismiss() {
+    handleDismiss() async {
       // Get a reference to the swiped item
       final copiedMessagePopulatedObject = MessagePopulatedObject.copy(argMessagePopulatedObject);
       // Remove it from the list
-      removeMessageFromList(argMessagePopulatedObject);
+      await removeMessageFromList(argMessagePopulatedObject);
 
-      final scaffold = Scaffold.of(context);
+      final scaffold = Scaffold.of(argParentContext);
       scaffold.showSnackBar(
         SnackBar(
           duration: Duration(seconds: 3),
@@ -238,21 +312,21 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
               Row(
                 children: [
                   FlatButton(
-                    child: Text('אשר',
+                    child: Text('אישור',
                       style: TextStyle(color: Colors.blue, fontSize: 14.0),
                     ),
                     onPressed: () {
-                      Scaffold.of(context).hideCurrentSnackBar(reason: SnackBarClosedReason.action);
+                      Scaffold.of(argParentContext).hideCurrentSnackBar(reason: SnackBarClosedReason.action);
                     },
                   ),
                   FlatButton(
-                    child: Text('בטל פעולה',
+                    child: Text('ביטול פעולה',
                       style: TextStyle(color: Colors.blue, fontSize: 14.0),
                     ),
                     onPressed: () {
                       // Undo ===>>> Insert Back Message
                       undoAndAddMessageBackToList(copiedMessagePopulatedObject);
-                      Scaffold.of(context).hideCurrentSnackBar(reason: SnackBarClosedReason.action);
+                      Scaffold.of(argParentContext).hideCurrentSnackBar(reason: SnackBarClosedReason.action);
                     },
                   ),
                 ],
@@ -284,7 +358,7 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
     Future<bool> openMessageDialogToConfirmDeleting() async {
 
       return await showDialog(
-          context: context,
+          context: argParentContext,
           builder: (context) {
             return MessageDialogWidget(
               argDialogTitle: Text("האם להסיר את ההודעה ?"),
@@ -299,14 +373,15 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
     //#endregion
 
     return Padding(
-      padding: const EdgeInsets.only(left: 15.0, top: 15.0, right: 15.0, bottom:10.0),
+      padding: const EdgeInsets.only(left: 15.0, top: 15.0, right: 15.0, bottom:5.0),
       child: Dismissible(
         key: ObjectKey(argMessagePopulatedObject),
         direction: DismissDirection.startToEnd,
         confirmDismiss: (_) => openMessageDialogToConfirmDeleting(),
         child: GestureDetector(
-          child: BubblesBoxRotaryMessage(
-            argContent: getMessageContent(argMessagePopulatedObject.messageText, messageTextSpanStyleBold),
+          child: BubblesBoxDetailMessage(
+            argContent: getMessageContent(argMessagePopulatedObject.messageText),
+            argContentAlignment: Alignment.centerRight,
             argBubbleBackgroundColor: Colors.white,
             argBubbleBorderColor: Colors.amber,
           ),
@@ -322,7 +397,7 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
         },
 
         // background: buildBackgroundListItem(),
-        background: BubblesBoxRotaryMessage(
+        background: BubblesBoxDetailMessage(
           argContent: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

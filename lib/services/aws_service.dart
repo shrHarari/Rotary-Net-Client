@@ -22,31 +22,31 @@ class AwsService {
       ) async {
 
     try {
-      AwsGenerateImageUrl generateAwsImageUrl = AwsGenerateImageUrl();
-      await generateAwsImageUrl.generateUrl(aFileName, aFileType, aBucketFolderName);
+      AwsGenerateImageUrlService generateAwsImageUrlService = AwsGenerateImageUrlService();
+      await generateAwsImageUrlService.generateUrl(aFileName, aFileType, aBucketFolderName);
 
       String uploadUrl;
-      if (generateAwsImageUrl.isGenerated != null && generateAwsImageUrl.isGenerated) {
-        uploadUrl = generateAwsImageUrl.uploadBucketUrl;
+      if (generateAwsImageUrlService.isGenerated != null && generateAwsImageUrlService.isGenerated) {
+        uploadUrl = generateAwsImageUrlService.uploadBucketUrl;
       } else {
-          return {
-            "returnCode" : 301,
-            "message" : generateAwsImageUrl.message,
-            "imageUrl" : null
-          };
+        return {
+          "returnCode" : 301,
+          "message" : generateAwsImageUrlService.message,
+          "imageUrl" : null
+        };
       }
 
       AwsUploadFileService uploadAwsFileService = AwsUploadFileService();
       await uploadAwsFileService.upload(uploadUrl, aPickedFile);
 
       if (uploadAwsFileService.isUploaded != null && uploadAwsFileService.isUploaded) {
-        bool isSaved = await onSaveImage(aObjectId, aBucketFolderName, generateAwsImageUrl.downloadImageUrl);
+        bool isSaved = await onSaveImage(aObjectId, aBucketFolderName, generateAwsImageUrlService.downloadImageUrl);
         if (isSaved) {
           onImageSuccessfullySaved(aOldFileName, aBucketFolderName);
           return {
             "returnCode" : 200,
             "message" : "Image Successfully Saved",
-            "imageUrl" : generateAwsImageUrl.downloadImageUrl
+            "imageUrl" : generateAwsImageUrlService.downloadImageUrl
           };
         } else {
           return {
@@ -114,7 +114,7 @@ class AwsService {
 }
 
 //#region CLASS Generate AWS Image Url
-class AwsGenerateImageUrl {
+class AwsGenerateImageUrlService {
   bool success;
   String message;
 
@@ -145,17 +145,20 @@ class AwsGenerateImageUrl {
           isGenerated = true;
           uploadBucketUrl = result["uploadBucketUrl"];
           downloadImageUrl = result["downloadImageUrl"];
+        } else {
+          await LoggerService.log('<AwsService> Aws Generate Image Url >>> Failed: $message');
+          print('<AwsService> Aws Generate Image Url >>> Failed');
         }
       }
     }
     catch (e) {
-      await LoggerService.log('<AwsService> AWS Generate Url >>> ERROR: ${e.toString()}');
+      await LoggerService.log('<AwsService> Aws Generate Image Url Service >>> ERROR: ${e.toString()}');
       developer.log(
         'AwsService',
-        name: 'GenerateImageUrl',
-        error: 'AWS Generate Url >>> ERROR: ${e.toString()}',
+        name: 'AwsGenerateImageUrlService',
+        error: 'Aws Generate Image Url Service >>> ERROR: ${e.toString()}',
       );
-      message = 'GenerateAwsImageUrl / AWS Generate Url >>> ERROR: ${e.toString()}';
+      message = 'Aws Generate Image Url Service >>> ERROR: ${e.toString()}';
       return null;
     }
   }
@@ -176,9 +179,19 @@ class AwsUploadFileService {
       if (response.statusCode == 200) {
         isUploaded = true;
         message = 'AWS Upload File >>> Success';
+      } else {
+        message = "Failed to upload image";
+        await LoggerService.log('<AwsService> Aws Upload File Service >>> Failed');
+        print('<AwsService> Aws Upload File Service >>> Failed');
       }
     } catch (e) {
-      message = 'AWS Upload File >>> ERROR: ${e.toString()}';
+      await LoggerService.log('<AwsService> Aws Upload File Service >>> ERROR: ${e.toString()}');
+      developer.log(
+        'AwsService',
+        name: 'AwsUploadFileService',
+        error: 'Aws Upload File Service >>> ERROR: ${e.toString()}',
+      );
+      message = 'Aws Upload File Service >>> ERROR: ${e.toString()}';
       return null;
     }
   }
@@ -218,7 +231,9 @@ class AwsDeleteFileService {
 
         if ((response.statusCode == 202) && (success)) {
           isDeleted = true;
-          // deletedData = result["deletedData"];
+        } else {
+          await LoggerService.log('<AwsService> Aws Delete File Service >>> Failed');
+          print('<AwsService> Aws Delete File Service >>> Failed');
         }
       }
     }

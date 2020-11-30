@@ -78,7 +78,6 @@ class EventPopulatedObject {
 
   //#endregion
 
-
   EventPopulatedObject.copy(EventPopulatedObject uniqueObject) :
         eventId = uniqueObject.eventId,
         eventName = uniqueObject.eventName,

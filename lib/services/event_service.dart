@@ -223,8 +223,8 @@ class EventService {
       Response response = await post(_insertUrlEvent, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         final Map parsedResponse = json.decode(jsonResponse);
@@ -261,8 +261,8 @@ class EventService {
       Response response = await put(_updateUrlEvent, headers: Constants.rotaryUrlHeader, body: jsonToPost);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         await LoggerService.log('<EventService> Update Event By Id >>> OK');
@@ -297,8 +297,8 @@ class EventService {
       Response response = await put(_updateUrlEvent, body: bodyParams);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
 
         await LoggerService.log('<EventService> Update Event Image Url By Id >>> OK');
@@ -331,8 +331,8 @@ class EventService {
       Response response = await delete(_deleteUrlEvent, headers: Constants.rotaryUrlHeader);
 
       if (response.statusCode <= 300) {
-        Map<String, String> headers = response.headers;
-        String contentType = headers['content-type'];
+        // Map<String, String> headers = response.headers;
+        // String contentType = headers['content-type'];
         String jsonResponse = response.body;
         print('deleteEventById / EventObject / jsonResponse: $jsonResponse');
 
