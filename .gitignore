@@ -33,7 +33,7 @@
 /assets/
 .Database/
 .assets/
-.android/shahar.txt
+shahar.txt
 
 # Web related
 lib/generated_plugin_registrant.dart
