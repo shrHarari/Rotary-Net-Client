@@ -29,8 +29,8 @@
 .pub-cache/
 .pub/
 /build/
-.Database/
-.assets/
+Database/
+assets/
 android/shahar.txt
 
 # Web related
