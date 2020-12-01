@@ -68,11 +68,14 @@ class BubblesBoxPersonCard extends StatelessWidget {
                       ),
               ),
 
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20.0, top: 15.0, right: 20.0, bottom: 15.0),
-                child: Text.rich(
-                  buildTextSpan(argText),
-                  textDirection: TextDirection.rtl,
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20.0, top: 15.0, right: 20.0, bottom: 15.0),
+                  child: Text.rich(
+                    buildTextSpan(argText),
+                    textDirection: TextDirection.rtl,
+                  ),
                 ),
               ),
             ),
