@@ -29,9 +29,9 @@
 .pub-cache/
 .pub/
 /build/
-Database/
-assets/
-android/shahar.js
+#Database/
+#assets/
+#android/shahar.json
 
 # Web related
 lib/generated_plugin_registrant.dart
