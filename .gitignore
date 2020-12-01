@@ -32,9 +32,7 @@
 #Database/
 assets/
 android/shahar.json
-android/shahar_new.json
-android/shahar_new_in.json
-android/shahar_new_out.json
+/android/shahar_in.json
 
 # Web related
 lib/generated_plugin_registrant.dart
