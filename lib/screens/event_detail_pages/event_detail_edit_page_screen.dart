@@ -474,7 +474,6 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
                                 color: Colors.red,
                                 fontSize: 14.0),
                           ),
-
                         ],
                       ),
                     ),

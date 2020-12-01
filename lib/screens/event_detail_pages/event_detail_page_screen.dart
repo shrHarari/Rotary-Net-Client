@@ -112,23 +112,6 @@ class _EventDetailPageScreenState extends State<EventDetailPageScreen> {
   }
   //#endregion
 
-  // //#region Open Composer Person Card Detail Screen
-  // openComposerPersonCardDetailScreen(String aComposerId) async {
-  //
-  //   PersonCardService _personCardService = PersonCardService();
-  //   PersonCardObject _personCardObj = await _personCardService.getPersonCardByPersonId(aComposerId);
-  //
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => PersonCardDetailPageScreen(
-  //           argPersonCardObject: _personCardObj
-  //       ),
-  //     ),
-  //   );
-  // }
-  // //#endregion
-
   @override
   Widget build(BuildContext context) {
     return loading ? Loading() :

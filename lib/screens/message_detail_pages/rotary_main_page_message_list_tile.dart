@@ -13,7 +13,6 @@ import 'package:rotary_net/shared/bubble_box_detail_message.dart';
 import 'package:intl/date_symbol_data_local.dart' as SymbolData;
 import 'package:intl/intl.dart' as Intl;
 import 'package:rotary_net/widgets/message_dialog_widget.dart';
-import 'package:rotary_net/widgets/message_paragraph_painter.dart';
 
 class RotaryMainPageMessageListTile extends StatelessWidget {
   final BuildContext argParentContext;
@@ -129,66 +128,6 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
             returnWidget = Container(
               child: Container(
                 child: Text(aText, style: messageMainTextStyle,),
-              ),
-            );
-          }
-          return returnWidget;
-        }
-    );
-  }
-  //#endregion
-
-  //#region Get Message Paragraph Painter Layout [Obsolete]
-  Widget getMessageParagraphPainterLayout(String aText, TextStyle aTextStyle) {
-    Container returnWidget;
-
-    return LayoutBuilder(
-        builder: (context, size) {
-          final span = TextSpan(text: aText, style: aTextStyle);
-          final textPainter = TextPainter(text: span, maxLines: MAX_LINES, textDirection: TextDirection.rtl);
-          textPainter.layout(maxWidth: size.maxWidth, minWidth: 0);
-
-          List<LineMetrics> lines = textPainter.computeLineMetrics();
-          int numberOfLines = lines.length;
-
-          if (numberOfLines > MAX_LINES)
-          {
-            returnWidget = Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints.expand(height: 160),
-                      child: CustomPaint(
-                        painter: MessageParagraphPainter(aText, aTextStyle, MAX_LINES-1, numberOfLines, TextDirection.rtl, Colors.white),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 80.0, right: 20.0),
-                    child: RichText(
-                      textDirection: TextDirection.rtl,
-
-                      text: TextSpan(
-                        text: '< קרא עוד ... >',
-                        style: messageRemarkStyle,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            returnWidget = Container(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints.expand(height: 160),
-                child: Container(
-                  child: CustomPaint(
-                    painter: MessageParagraphPainter(aText, aTextStyle, MAX_LINES, numberOfLines, TextDirection.rtl, Colors.white),
-                  ),
-                ),
               ),
             );
           }

@@ -29,7 +29,6 @@
 .pub-cache/
 .pub/
 /build/
-#Database/
 assets/
 android/key.properties
 

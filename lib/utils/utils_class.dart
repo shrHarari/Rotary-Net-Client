@@ -300,6 +300,7 @@ class Utils {
 
   //#region Upload Image To Server
   static Future<String> uploadImageToServer(String aFileName) async {
+    /// Upload File to HEROKU Server using MultipartFile
     try {
       String _getUrlUploadImage = GlobalsService.applicationServer + Constants.rotaryUtilUrl + "/uploadPersonCardImage";
       var request = http.MultipartRequest('POST', Uri.parse(_getUrlUploadImage));
@@ -307,8 +308,7 @@ class Utils {
       // Map<String, String> bodyFields = {'image': 'TEST.jpg'};
       // request.fields.addAll(bodyFields);
       // request.fields['image'] = 'TEST.jpg';
-      request.files.add(
-          await http.MultipartFile.fromPath('personCardImage', aFileName));
+      request.files.add(await http.MultipartFile.fromPath('personCardImage', aFileName));
       http.StreamedResponse response = await request.send();
 
       if (response.statusCode <= 300) {
@@ -335,6 +335,7 @@ class Utils {
 
   //#region Delete Image From Server
   static Future<String> deleteImageFromServer(String aFileName) async {
+    /// Delete File from HEROKU Server
     try {
       String _deleteUrlImage = GlobalsService.applicationServer + Constants.rotaryUtilUrl + "/deletePersonCardImage/$aFileName";
       http.Response response = await http.delete(_deleteUrlImage);
