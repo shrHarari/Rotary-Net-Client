@@ -30,8 +30,8 @@
 .pub/
 /build/
 #Database/
-#assets/
-#android/shahar.json
+assets/
+android/shahar.json
 
 # Web related
 lib/generated_plugin_registrant.dart
