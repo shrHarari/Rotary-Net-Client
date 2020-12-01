@@ -31,8 +31,6 @@
 /build/
 #Database/
 assets/
-android/shahar.json
-android/harari.json
 
 # Web related
 lib/generated_plugin_registrant.dart
