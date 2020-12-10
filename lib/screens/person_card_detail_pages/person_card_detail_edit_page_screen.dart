@@ -463,9 +463,7 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
   //#region Update PersonCard
   Future updatePersonCard(PersonCardsListBloc aPersonCardBloc) async {
 
-    setState(() {
-      loading = true;
-    });
+    setState(() {loading = true;});
 
     bool validationVal = await checkValidation();
 
@@ -511,9 +509,7 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
       FocusScope.of(context).requestFocus(FocusNode());
       Navigator.pop(context, returnPersonCardDataMap);
     }
-    setState(() {
-      loading = false;
-    });
+    setState(() {loading = false;});
   }
   //#endregion
 
@@ -588,7 +584,7 @@ class _PersonCardDetailEditPageScreenState extends State<PersonCardDetailEditPag
                 argTitleLabelText: '',
                 argDisplayApplicationMenu: false,
                 argApplicationMenuFunction: null,
-                argDisplayExit: false,
+                argDisplayExit: true,
                 argReturnFunction: exitAndNavigateBack,
               ),
             ),

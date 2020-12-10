@@ -1,10 +1,10 @@
 import 'dart:io';
+import 'package:geocoder/geocoder.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/services/logger_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:uuid/uuid.dart';import 'package:connectivity/connectivity.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
@@ -188,29 +188,33 @@ class Utils {
   }
   //#endregion
 
-  //#region Launch In Map By Position
-  static Future<void> launchInMapByPosition(String aAddress) async {
+  //#region Launch In Map By Coordinates
+  static Future<void> launchInMapByCoordinates(String aAddress) async {
     try {
-      List<Placemark> placeMarksList = await Geolocator().placemarkFromAddress(aAddress);
+      var addresses = await Geocoder.local.findAddressesFromQuery(aAddress);
 
-      if (placeMarksList != null && placeMarksList.isNotEmpty) {
-        // final List<String> position = placeMarksList.map((placeMark) =>
-        // placeMark.position?.latitude.toString() + ', ' + placeMark.position?.longitude.toString()).toList();
+      if (addresses != null) {
+        var position = addresses.first;
 
-        final Placemark pos = placeMarksList[0];
-        double latitude = pos.position?.latitude;
-        double longitude = pos.position?.longitude;
+        double latitude = position.coordinates?.latitude;
+        double longitude = position.coordinates?.longitude;
 
         String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
         if (await canLaunch(googleUrl)) {
           await launch(googleUrl);
         } else {
-          throw 'Could not open the map.';
+          print('<Utils> Launch In Map By Coordinates >>> Failed');
         }
       }
     }
-    catch (ex){
-      print ('${ex.toString()}');
+    catch (e){
+      await LoggerService.log('<Utils> Launch In Map By Coordinates >>> ERROR: ${e.toString()}');
+      developer.log(
+        'launchInMapByCoordinates',
+        name: 'Utils',
+        error: 'Launch In Map By Coordinates >>> ERROR: ${e.toString()}',
+      );
+      return null;
     }
   }
   //#endregion

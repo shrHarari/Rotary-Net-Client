@@ -79,6 +79,8 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
   //#region Update User
   Future updateUser(RotaryUsersListBloc aUserBloc) async {
 
+    setState(() {loading = true;});
+
     bool validationVal = await checkValidation();
 
     if (validationVal){
@@ -115,6 +117,7 @@ class _UserDetailEditPageScreenState extends State<UserDetailEditPageScreen> {
 
       Navigator.pop(context, newUserObj);
     }
+    setState(() {loading = false;});
   }
   //#endregion
 

@@ -11,6 +11,7 @@ class GlobalsService {
   //#region Application Type
   //------------------------------------------------------------------------------
   static Future setApplicationType(bool aApplicationType) async {
+    /// SERVER Type  --->>> On(true): NETWORK    // Off (false): CLIENT
     applicationType = aApplicationType;
 
     // SERVER Type: On(true) --->>> NET Mode    // Off (false): CLIENT Mode
@@ -65,6 +66,7 @@ class GlobalsService {
   //#region Application Running Mode
   //------------------------------------------------------------------------------
   static Future setApplicationRunningMode(bool aApplicationRunningMode) async {
+    /// Running Mode --->>> On(true): Production // Off (false): Debug Mode
     applicationRunningMode = aApplicationRunningMode;
   }
 

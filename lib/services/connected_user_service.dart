@@ -146,7 +146,7 @@ class ConnectedUserService {
       await secureStorage.write(key: Constants.rotaryUserFirstName, value: aConnectedUserObj.firstName);
       await secureStorage.write(key: Constants.rotaryUserLastName, value: aConnectedUserObj.lastName);
       await secureStorage.write(key: Constants.rotaryUserPassword, value: aConnectedUserObj.password);
-      await secureStorage.write(key: Constants.rotaryUserType, value: EnumToString.parse(aConnectedUserObj.userType));
+      await secureStorage.write(key: Constants.rotaryUserType, value: EnumToString.convertToString(aConnectedUserObj.userType));
       await secureStorage.write(key: Constants.rotaryUserStayConnected, value: _stayConnected);
     }
     catch  (e) {
@@ -186,7 +186,7 @@ class ConnectedUserService {
     try{
       final secureStorage = new FlutterSecureStorage();
 
-      await secureStorage.write(key: Constants.rotaryUserType, value: EnumToString.parse(aUserType));
+      await secureStorage.write(key: Constants.rotaryUserType, value: EnumToString.convertToString(aUserType));
     }
     catch  (e) {
       await LoggerService.log('<ConnectedUserService> Write Connected User Type To SecureStorage >>> ERROR: ${e.toString()}');
@@ -230,7 +230,7 @@ class ConnectedUserService {
   Future writeRotaryRoleEnumDataToSecureStorage(Constants.RotaryRolesEnum aRotaryRolesEnum) async {
     try {
       final secureStorage = new FlutterSecureStorage();
-      await secureStorage.write(key: Constants.rotaryRoleEnum, value: EnumToString.parse(aRotaryRolesEnum));
+      await secureStorage.write(key: Constants.rotaryRoleEnum, value: EnumToString.convertToString(aRotaryRolesEnum));
     }
     catch  (e) {
       await LoggerService.log('<ConnectedUserService> Write Rotary Role Enum Data To SecureStorage >>> ERROR: ${e.toString()}');
@@ -259,8 +259,7 @@ class ConnectedUserService {
     }
     catch  (e) {
       await LoggerService.log('<ConnectedUserService> Read PersonCard Avatar Image Url From SecureStorage >>> ERROR: ${e.toString()}');
-      developer.log(
-        'readPersonCardAvatarImageUrlFromSecureStorage',
+      developer.log('readPersonCardAvatarImageUrlFromSecureStorage',
         name: 'ConnectedUserService',
         error: 'Read PersonCard Avatar Image Url From SecureStorage >>> ERROR: ${e.toString()}',
       );
@@ -277,9 +276,9 @@ class ConnectedUserService {
       await secureStorage.write(key: Constants.rotaryPersonCardAvatarImageUrl, value: aPersonCardAvatarImageUrl);
     }
     catch  (e) {
+      print('Write PersonCard Avatar Image Url To SecureStorage >>> ERROR: ${e.toString()}');
       await LoggerService.log('<ConnectedUserService> Write PersonCard Avatar Image Url To SecureStorage >>> ERROR: ${e.toString()}');
-      developer.log(
-        'writePersonCardAvatarImageUrlToSecureStorage',
+      developer.log('writePersonCardAvatarImageUrlToSecureStorage',
         name: 'ConnectedUserService',
         error: 'Write PersonCard Avatar Image Url To SecureStorage >>> ERROR: ${e.toString()}',
       );

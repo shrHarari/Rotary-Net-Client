@@ -74,12 +74,13 @@ class ConnectedUserObject {
 
     // StayConnected: Convert [int] to [bool]
     bool _stayConnected;
-    parsedJson['stayConnected'] == 0 ? _stayConnected = false : _stayConnected = true;
 
-    // PersonCardId: fetch from json --->>> depend on query type
-    String _personCardId;
-    if (withPopulate) _personCardId = parsedJson['personCardId']["_id"];
-    else _personCardId = parsedJson['personCardId'];
+    String _personCardId = '';
+    dynamic _parsedPersonCardId = parsedJson['personCardId'];
+    if ((_parsedPersonCardId != null) && (_parsedPersonCardId != '')) {
+      if (withPopulate) _personCardId = parsedJson['personCardId']['_id'];
+      else _personCardId = parsedJson['personCardId'];
+    }
 
     if (parsedJson['_id'] == null) {
       return ConnectedUserObject(
@@ -95,7 +96,7 @@ class ConnectedUserObject {
     } else {
       return ConnectedUserObject(
           userId: parsedJson['_id'],
-          personCardId: parsedJson['personCardId']["_id"],
+          personCardId: _personCardId,
           email: parsedJson['email'],
           firstName : parsedJson['firstName'],
           lastName : parsedJson['lastName'],
@@ -142,7 +143,7 @@ class ConnectedUserObject {
 
   Map<String, dynamic> toMap() {
     // UserType: Convert [Enum] to [String]
-    String _userType = EnumToString.parse(userType);
+    String _userType = EnumToString.convertToString(userType);
 
     return {
       if ((userId != null) && (userId != '')) '_id': userId,

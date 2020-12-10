@@ -10,6 +10,7 @@ import 'package:rotary_net/screens/wellcome_pages/register_screen.dart';
 import 'package:rotary_net/screens/wellcome_pages/wellcome_decoration_style.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
 import 'package:rotary_net/services/login_service.dart';
+import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class LoginScreen extends StatefulWidget {
@@ -89,10 +90,6 @@ class _LoginScreenState extends State<LoginScreen> {
           loading = false;
         });
       } else {
-        setState(() {
-          loginConfirmationCheck = true;
-          loading = false;
-        });
 
         /// 2. Update ConnectedUserObject.StayConnected
         await connectedLoginObj.connectedUserObject.setStayConnected(newStayConnected);
@@ -117,6 +114,12 @@ class _LoginScreenState extends State<LoginScreen> {
         await userGlobal.setPersonCardAvatarImageUrl(connectedLoginObj.personCardPictureUrl);
 
         print('LoginScreen / performLoginProcess / connectedUserObject: ${connectedLoginObj.connectedUserObject}');
+
+        setState(() {
+          loginConfirmationCheck = true;
+          loading = false;
+        });
+
         openRotaryMainScreen();
       }
     }
@@ -151,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    return Scaffold(
+    return loading ? Loading() : Scaffold(
         body: Container(
           height: height,
           child: Stack(

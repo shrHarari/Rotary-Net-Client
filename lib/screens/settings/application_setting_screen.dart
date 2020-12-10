@@ -21,7 +21,7 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
   Future<DataRequiredForBuild> dataRequiredForBuild;
   DataRequiredForBuild currentDataRequired;
 
-  String appBarTitle = 'Application Settings';
+  String appBarTitle = 'הגדרות מערכת';
   bool newApplicationType;
   bool newApplicationRunningMode;
   bool isFirst = true;
@@ -62,30 +62,54 @@ class _ApplicationSettingsScreen extends State<ApplicationSettingsScreen> {
     ConnectedUserObject _newConnectedUserObj = await connectedUserService.getConnectedUserByEmail(currentDataRequired.connectedUserObj.email);
 
     /// SAVE New ConnectedUser:
-    /// 1. Fetch Connected PersonCard Data
-    PersonCardService personCardService = PersonCardService();
-    Map<String, dynamic> connectedReturnData = await personCardService.getPersonCardByIdForConnectedData(_newConnectedUserObj.personCardId);
-
-    /// 2. Secure Storage: Write to SecureStorage
+    /// 1. Update Global Current Connected User
+    /// 1.1. Secure Storage: Write to SecureStorage
     await connectedUserService.writeConnectedUserObjectDataToSecureStorage(_newConnectedUserObj);
 
-    /// 3. Secure Storage: Write RotaryRoleEnum to SecureStorage
-    Constants.RotaryRolesEnum _roleEnum = connectedReturnData['roleEnumDisplay'];
-    await connectedUserService.writeRotaryRoleEnumDataToSecureStorage(_roleEnum);
-
-    /// 4. Secure Storage: Write PersonCardAvatarImageUrl to SecureStorage
-    String _personCardPictureUrl = connectedReturnData['personCardPictureUrl'];
-    await connectedUserService.writePersonCardAvatarImageUrlToSecureStorage(_personCardPictureUrl);
-
     var userGlobal = ConnectedUserGlobal();
-    /// 5. App Global: Update Global Current Connected User
+    /// 1.2. App Global: Update Global Current Connected User
     await userGlobal.setConnectedUserObject(_newConnectedUserObj);
 
-    /// 6. App Global: Update RotaryRoleEnum
-    await userGlobal.setRotaryRoleEnum(_roleEnum);
 
-    /// 7. App Global: Update PersonCardAvatarImageUrl
-    await userGlobal.setPersonCardAvatarImageUrl(_personCardPictureUrl);
+    /// 2. Fetch Connected PersonCard Data
+    PersonCardService personCardService = PersonCardService();
+    Map<String, dynamic> connectedReturnData;
+
+    if (_newConnectedUserObj.personCardId != null) {
+      connectedReturnData = await personCardService.getPersonCardByIdForConnectedData(_newConnectedUserObj.personCardId);
+      if (connectedReturnData != null) {
+        /// 3. PersonCard / RotaryRoleEnum
+        Constants.RotaryRolesEnum _roleEnum = connectedReturnData['roleEnumDisplay'];
+        if (_roleEnum != null) {
+          /// 3.1. Secure Storage: Write RotaryRoleEnum to SecureStorage
+          await connectedUserService.writeRotaryRoleEnumDataToSecureStorage(_roleEnum);
+
+          /// 3.2. App Global: Update RotaryRoleEnum
+          await userGlobal.setRotaryRoleEnum(_roleEnum);
+        } else {
+          await connectedUserService.writeRotaryRoleEnumDataToSecureStorage(null);
+          await userGlobal.setRotaryRoleEnum(null);
+        }
+
+        /// 4. PersonCard / AvatarImageUrl
+        String _personCardPictureUrl = connectedReturnData['personCardPictureUrl'];
+        if (_personCardPictureUrl != null) {
+          /// 4.1. Secure Storage: Write PersonCardAvatarImageUrl to SecureStorage
+          await connectedUserService.writePersonCardAvatarImageUrlToSecureStorage(_personCardPictureUrl);
+          /// 4.2. App Global: Update PersonCardAvatarImageUrl
+          await userGlobal.setPersonCardAvatarImageUrl(_personCardPictureUrl);
+        } else {
+          await connectedUserService.writePersonCardAvatarImageUrlToSecureStorage(null);
+          await userGlobal.setPersonCardAvatarImageUrl(null);
+        }
+      }
+    } else {
+      /// If No PersonCardId --->>> Remove PersonCard Data
+      await connectedUserService.writeRotaryRoleEnumDataToSecureStorage(null);
+      await userGlobal.setRotaryRoleEnum(null);
+      await connectedUserService.writePersonCardAvatarImageUrlToSecureStorage(null);
+      await userGlobal.setPersonCardAvatarImageUrl(null);
+    }
 
     print('ApplicationSettingsScreen / updateApplicationType / NewConnectedUserObj: $_newConnectedUserObj');
   }

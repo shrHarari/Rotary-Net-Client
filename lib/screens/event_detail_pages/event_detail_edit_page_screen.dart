@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:rotary_net/BLoCs/bloc_provider.dart';
@@ -48,7 +47,6 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
   String currentEventImage;
   ConnectedUserObject currentConnectedUserObj;
-  FileInfo currentEventImageFileInfo;
   bool isEventExist = false;
   Widget currentHebrewEventTimeLabel;
 
@@ -63,6 +61,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
   String error = '';
   bool loading = false;
+  bool imageLoading = false;
   //#endregion
 
   @override
@@ -76,9 +75,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
   //#region Get All Required Data For Build
   Future<DataRequiredForBuild> getAllRequiredDataForBuild() async {
-    setState(() {
-      loading = true;
-    });
+    setState(() {loading = true;});
 
     ConnectedUserObject _connectedUserObj = ConnectedUserGlobal.currentConnectedUserObject;
 
@@ -92,9 +89,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
     PersonCardPopulatedObject _personCardPopulatedObject =
               await _personCardService.getPersonCardByIdPopulated(_personCardId);
 
-    setState(() {
-      loading = false;
-    });
+    setState(() {loading = false;});
 
     return DataRequiredForBuild(
       personCardPopulatedObject: _personCardPopulatedObject,
@@ -195,7 +190,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
     setState(() {
       error = '';
-      loading = true;
+      imageLoading = true;
     });
 
     String originalImageFileName;
@@ -246,7 +241,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
     setState(() {
       if ((_imagePickerError != null) && (_imagePickerError.length > 0)) error = _imagePickerError;
-      loading = false;
+      imageLoading = false;
     });
   }
   //#endregion
@@ -272,9 +267,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
   //#region Update Event
   Future updateEvent(EventsListBloc aEventBloc) async {
 
-    setState(() {
-      loading = true;
-    });
+    setState(() {loading = true;});
 
     bool validationVal = await checkValidation();
 
@@ -343,7 +336,6 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
         await aEventBloc.insertEvent(_newEventPopulatedObj);
       }
-
       /// Return multiple data using MAP
       final returnEventDataMap = {
         "EventPopulatedObject": _newEventPopulatedObj,
@@ -352,9 +344,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
       FocusScope.of(context).requestFocus(FocusNode());
       Navigator.pop(context, returnEventDataMap);
     }
-    setState(() {
-      loading = false;
-    });
+    setState(() {loading = false;});
   }
   //#endregion
 
@@ -382,7 +372,8 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? Loading() :
+    Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.blue[50],
 
@@ -428,7 +419,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
                 argTitleLabelText: '',
                 argDisplayApplicationMenu: false,
                 argApplicationMenuFunction: null,
-                argDisplayExit: false,
+                argDisplayExit: true,
                 argReturnFunction: exitAndNavigateBack,
               ),
             ),
@@ -494,7 +485,7 @@ class _EventDetailEditPageScreenState extends State<EventDetailEditPageScreen> {
   Widget buildEventImage() {
     return Stack(
       children: <Widget>[
-        loading ? EventImagePickerLoading()
+        imageLoading ? EventImagePickerLoading()
         : Container(
           height: 200.0,
           width: double.infinity,

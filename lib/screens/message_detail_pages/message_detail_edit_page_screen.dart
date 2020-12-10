@@ -56,9 +56,7 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
 
   //#region Get All Required Data For Build
   Future<DataRequiredForBuild> getAllRequiredDataForBuild() async {
-    setState(() {
-      loading = true;
-    });
+    setState(() {loading = true;});
 
     ConnectedUserObject _connectedUserObj = ConnectedUserGlobal.currentConnectedUserObject;
 
@@ -72,9 +70,7 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
     PersonCardPopulatedObject _personCardPopulatedObject =
               await _personCardService.getPersonCardByIdPopulated(_personCardId);
 
-    setState(() {
-      loading = false;
-    });
+    setState(() {loading = false;});
 
     return DataRequiredForBuild(
       personCardPopulatedObject: _personCardPopulatedObject,
@@ -135,11 +131,17 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
 
   //#region Update Message
   Future updateMessage(MessagesListBloc aMessageBloc) async {
+
+    setState(() {loading = true;});
+
     bool validationVal = await checkValidation();
 
     if (validationVal){
 
       String _messageText = (messageController.text != null) ? (messageController.text) : '';
+
+
+      print('messageController.text: ${messageController.text}');
 
       MessagePopulatedObject _newMessagePopulatedObj;
 
@@ -203,16 +205,17 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
 
         await aMessageBloc.insertMessage(_newMessagePopulatedObj);
       }
-
       FocusScope.of(context).requestFocus(FocusNode());
       Navigator.pop(context, _newMessagePopulatedObj);
     }
+    setState(() {loading = false;});
   }
   //#endregion
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? Loading() :
+    Scaffold(
       backgroundColor: Colors.blue[50],
 
       body: FutureBuilder<DataRequiredForBuild>(
@@ -340,7 +343,7 @@ class _MessageDetailEditPageScreenState extends State<MessageDetailEditPageScree
                   controller: aController,
                   style: TextStyle(fontSize: 16.0),
                   decoration: TextInputDecoration.copyWith(hintText: textInputName), // Disabled Field
-                  validator: (val) => val.isEmpty ? '$textInputName' : null,
+                  validator: (val) => val.isEmpty ? 'חובה להקליד את $textInputName' : null,
                 ),
               ),
             ),

@@ -19,7 +19,7 @@ class BlocProvider<T extends BloC> extends StatefulWidget {
   }
 
   // 3: This is some trampolining to get a reference to the generic type.
-  static Type _providerType<T>() => T;
+  // static Type _providerType<T>() => T;
 
   @override
   State createState() => _BlocProviderState();

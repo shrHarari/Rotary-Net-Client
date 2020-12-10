@@ -415,9 +415,7 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
   //#region Update PersonCard
   Future updatePersonCard() async {
 
-    setState(() {
-      loading = true;
-    });
+    setState(() {loading = true;});
 
     bool validationVal = await checkValidation();
 
@@ -485,9 +483,7 @@ class _PersonalAreaPageTabPersonCardState extends State<PersonalAreaPageTabPerso
         });
       }
     }
-    setState(() {
-      loading = false;
-    });
+    setState(() {loading = false;});
   }
   //#endregion
 

@@ -12,6 +12,7 @@ import 'package:rotary_net/screens/rotary_users_pages/rotary_users_list_page_scr
 import 'package:rotary_net/screens/settings/user_settings_screen.dart';
 import 'package:rotary_net/services/connected_user_service.dart';
 import 'package:rotary_net/shared/person_card_image_avatar.dart';
+import 'package:rotary_net/services/globals_service.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 import 'package:rotary_net/utils/utils_class.dart';
 
@@ -41,6 +42,7 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
 
     userHasAdminPermission = Utils.getAdminPermission(currentConnectedUserObj.userType);
     userHasRotaryPermission = Utils.getRotaryPermission(currentRotaryRolesEnum);
+
     super.initState();
   }
 
@@ -77,7 +79,7 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
         Column(
           children: <Widget>[
           Container(
-           height: height * 0.3,
+           height: height * 0.33,
             child: DrawerHeader(
               child:
               Column(
@@ -166,21 +168,23 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
 
                 if (userHasRotaryPermission) Divider(),
 
-                ListTile(
-                  leading: Icon(Icons.settings),
-                  title: Text('הגדרות'),
-                  onTap: () => {
-                    Navigator.of(context).pop(),
+                /// Only when RunningMode = Debug:
+                if (!GlobalsService.applicationRunningMode)
+                  ListTile(
+                    leading: Icon(Icons.settings),
+                    title: Text('הגדרות'),
+                    onTap: () => {
+                      Navigator.of(context).pop(),
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            UserSettingsScreen(),
-                      ),
-                    )
-                  },
-                ),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              UserSettingsScreen(),
+                        ),
+                      )
+                    },
+                  ),
 
                 if (userHasAdminPermission)
                   ListTile(
@@ -198,7 +202,8 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
                       ),
                     },
                   ),
-                if (userHasAdminPermission) Divider(),
+                if (userHasAdminPermission) Divider()
+                else if (!GlobalsService.applicationRunningMode) Divider(),
 
                 ListTile(
                   leading: Icon(Icons.exit_to_app),
@@ -218,14 +223,15 @@ class _ApplicationMenuDrawerState extends State<ApplicationMenuDrawer> {
   //#region Build Personal Area Icon
   Widget buildPersonalAreaIcon ()
   {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
-      child:
-
-      PersonCardImageAvatar(
-        argPersonCardPictureUrl: currentPersonCardAvatarImageUrl,
-        argIcon: Icons.person_outline,
-        argOnTapFunction: null,
+    return InkWell(
+      onTap: () {openPersonalAreaScreen();},
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10.0),
+        child: PersonCardImageAvatar(
+          argPersonCardPictureUrl: currentPersonCardAvatarImageUrl,
+          argIcon: Icons.person_outline,
+          argOnTapFunction: null,
+        ),
       ),
     );
   }

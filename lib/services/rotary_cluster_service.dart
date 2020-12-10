@@ -12,12 +12,15 @@ class RotaryClusterService {
   //#region Create RotaryCluster As Object
   //=============================================================================
   RotaryClusterObject createRotaryClusterAsObject(
-      String aClusterId, String aClusterName,)
+      String aClusterId,
+      String aClusterName,
+      List<String> aClubs)
   {
-      return RotaryClusterObject(
+    return RotaryClusterObject(
         clusterId: aClusterId,
         clusterName: aClusterName,
-      );
+        clubs: aClubs
+    );
   }
   //#endregion
 

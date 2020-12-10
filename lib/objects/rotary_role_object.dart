@@ -43,7 +43,7 @@ class RotaryRoleObject {
 
   factory RotaryRoleObject.fromMap(Map<String, dynamic> jsonFromMap) {
     return RotaryRoleObject(
-      roleId: jsonFromMap['_id'],
+      // roleId: jsonFromMap['_id'],
       roleEnum: jsonFromMap['roleEnum'],
       roleName: jsonFromMap['roleName'],
     );
@@ -51,7 +51,7 @@ class RotaryRoleObject {
 
   Map<String, dynamic> toMap() {
     return {
-      '_id': roleId,
+      if ((roleId != null) && (roleId != '')) '_id': roleId,
       'roleEnum': roleEnum,
       'roleName': roleName,
     };

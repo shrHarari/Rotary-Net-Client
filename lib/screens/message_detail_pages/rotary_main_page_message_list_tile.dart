@@ -293,7 +293,7 @@ class RotaryMainPageMessageListTile extends StatelessWidget {
     }
     //#endregion
 
-    //#region Open Message Dialog To Confirm Deleting [--->>> Option]
+    //#region Open Message Dialog To Confirm Deleting
     Future<bool> openMessageDialogToConfirmDeleting() async {
 
       return await showDialog(

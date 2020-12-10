@@ -62,7 +62,10 @@ class PageHeaderApplicationMenu extends StatelessWidget {
                   icon: Icon(
                   Icons.close, color: Colors.white, size: 26.0,),
                   onPressed: () async {
-                    Navigator.of(context).pop();
+                    if (argReturnFunction == null)
+                      Navigator.of(context).pop();
+                    else
+                      argReturnFunction();
                   },
                 ),
               ),
@@ -75,7 +78,12 @@ class PageHeaderApplicationMenu extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 0.0, top: 20.0, right: 10.0, bottom: 0.0),
                 child: IconButton(
                   icon: Icon(Icons.arrow_forward, color: Colors.white),
-                  onPressed: () {argReturnFunction();}
+                  onPressed: () async {
+                    if (argReturnFunction == null)
+                      Navigator.of(context).pop();
+                    else
+                      argReturnFunction();
+                  },
                 ),
               ),
             ),

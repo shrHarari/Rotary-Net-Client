@@ -308,6 +308,7 @@ class _PersonCardDetailPageScreenState extends State<PersonCardDetailPageScreen>
                   if (aPersonCardObj.phoneNumber != "") buildDetailImageIcon(Icons.phone, aPersonCardObj.phoneNumber, Utils.makePhoneCall),
                   if (aPersonCardObj.phoneNumber != "") buildDetailImageIcon(Icons.sms, aPersonCardObj.phoneNumber, Utils.sendSms),
                   if (aPersonCardObj.address != "") buildDetailImageIcon(Icons.home, aPersonCardObj.address, Utils.launchInMapByAddress),
+                  if (aPersonCardObj.address != "") buildDetailImageIcon(Icons.home, aPersonCardObj.address, Utils.launchInMapByCoordinates),
                   if (aPersonCardObj.internetSiteUrl != "") buildDetailImageIcon(Icons.alternate_email, aPersonCardObj.internetSiteUrl, Utils.launchInBrowser),
                 ],
               ),

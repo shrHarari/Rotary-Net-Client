@@ -14,17 +14,19 @@ class RotaryAreaService {
   RotaryAreaObject createRotaryAreaAsObject(
       String aAreaId,
       String aAreaName,
-      )
+      List<String> aClusters)
   {
     if (aAreaId == null)
       return RotaryAreaObject(
-        areaId: '0',
-        areaName: '',
+          areaId: '0',
+          areaName: '',
+          clusters: []
       );
     else
       return RotaryAreaObject(
-        areaId: aAreaId,
-        areaName: aAreaName,
+          areaId: aAreaId,
+          areaName: aAreaName,
+          clusters: aClusters
       );
   }
   //#endregion

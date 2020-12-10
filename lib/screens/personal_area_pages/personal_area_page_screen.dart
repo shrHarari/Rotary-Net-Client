@@ -62,7 +62,11 @@ class _PersonalAreaScreenState extends State<PersonalAreaScreen> {
 
   //#region Get PersonalCard From Server
   Future<PersonCardObject> getPersonalCardFromServer(String aPersonCardId) async {
-    dynamic personCardsObj = await personCardService.getPersonCardByPersonId(aPersonCardId);
+    dynamic personCardsObj;
+
+    if ((aPersonCardId != null ) && (aPersonCardId != ''))
+      personCardsObj = await personCardService.getPersonCardByPersonId(aPersonCardId);
+
     return personCardsObj;
   }
   //endregion

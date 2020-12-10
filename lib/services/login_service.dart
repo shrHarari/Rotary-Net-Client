@@ -38,20 +38,20 @@ class LoginService {
 
           connectedUserObj = ConnectedUserObject.fromJson(_connectedUser, withPopulate: withPopulate);
 
-          /// RoleEnum: fetch from json --->>> based on query type (?withPopulate)
           int _roleEnumValue;
           Constants.RotaryRolesEnum _roleEnumDisplay;
-          String _personCardPictureUrl;
-          if (withPopulate) {
-            _roleEnumValue = _connectedUser['personCardId']['roleId']["roleEnum"];
-            /// RoleId: Convert [int] to [Enum]
-            Constants.RotaryRolesEnum roleEnum;
-            _roleEnumDisplay = roleEnum.convertToEnum(_roleEnumValue);
-            _personCardPictureUrl = _connectedUser['personCardId']['pictureUrl'];
-          }
-          else {
-            _roleEnumDisplay = null;
-            _personCardPictureUrl = null;
+          String _personCardPictureUrl = '';
+          /// If a User does NOT have a PersonCard --->>> No personCardId will be in <connectedUserObj>
+          if ((connectedUserObj.personCardId != null) && (connectedUserObj.personCardId != ''))
+          {
+            /// RoleEnum: fetch from json --->>> based on query type (?withPopulate)
+            if (withPopulate) {
+              _roleEnumValue = _connectedUser['personCardId']['roleId']['roleEnum'];
+              /// RoleId: Convert [int] to [Enum]
+              Constants.RotaryRolesEnum roleEnum;
+              _roleEnumDisplay = roleEnum.convertToEnum(_roleEnumValue);
+              _personCardPictureUrl = _connectedUser['personCardId']['pictureUrl'];
+            }
           }
 
           return ConnectedLoginObject(
@@ -82,5 +82,4 @@ class LoginService {
     }
   }
   //#endregion
-
 }

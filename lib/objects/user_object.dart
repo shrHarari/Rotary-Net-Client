@@ -147,7 +147,7 @@ class UserObject {
 
   Map<String, dynamic> toMap() {
     /// UserType: Convert [Enum] to [String]
-    String _userType = EnumToString.parse(userType);
+    String _userType = EnumToString.convertToString(userType);
 
     return {
       if ((userId != null) && (userId != '')) '_id': userId,

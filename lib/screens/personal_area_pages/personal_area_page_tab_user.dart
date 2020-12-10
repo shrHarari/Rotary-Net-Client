@@ -7,6 +7,7 @@ import 'package:rotary_net/services/connected_user_service.dart';
 import 'package:rotary_net/services/user_service.dart';
 import 'package:rotary_net/shared/decoration_style.dart';
 import 'package:rotary_net/shared/action_button_decoration.dart';
+import 'package:rotary_net/shared/loading.dart';
 import 'package:rotary_net/shared/constants.dart' as Constants;
 
 class PersonalAreaPageTabUser extends StatefulWidget {
@@ -64,6 +65,9 @@ class _PersonalAreaPageTabUserState extends State<PersonalAreaPageTabUser> {
 
   //#region Update User
   Future updateUser() async {
+
+    setState(() {loading = true;});
+
     bool validationVal = await checkValidation();
 
     if (validationVal){
@@ -93,12 +97,14 @@ class _PersonalAreaPageTabUserState extends State<PersonalAreaPageTabUser> {
 
       Navigator.pop(context, newConnectedUserObj);
     }
+    setState(() {loading = false;});
   }
   //#endregion
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return loading ? Loading() :
+    Column(
       children: [
         Expanded(
           flex: 4,
